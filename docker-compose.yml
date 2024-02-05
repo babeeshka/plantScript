@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  app-backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+
+  app-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+
+  mongodb:
+    image: mongo
+    container_name: plantscript-mongo
+    volumes:
+      - plantscript-mongodbdata:/data/db
+    ports:
+      - "27017:27017"
+
+volumes:
+  plantscript-mongodbdata:

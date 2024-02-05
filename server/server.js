@@ -9,7 +9,7 @@ app.use(cors());
 require('dotenv').config();
 
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('plantScript!');
 });
 
 app.get('/api/plants/:name', async (req, res) => {
