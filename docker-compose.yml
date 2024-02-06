@@ -1,12 +1,14 @@
 version: '3.8'
 services:
   app-backend:
-    # Backend configuration remains unchanged
     build:
       context: ./server
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PERENUAL_API_KEY=${PERENUAL_API_KEY} # Reference the variable from .env file
     depends_on:
       - mongodb
 
@@ -15,10 +17,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:80" # Ensure this matches the port your Vue.js app is served on
+      - "8080:80"
+    depends_on:
+      - app-backend
 
   mongodb:
-    # MongoDB configuration remains unchanged
     image: mongo
     container_name: plantscript-mongo
     volumes:
