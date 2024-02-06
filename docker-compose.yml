@@ -1,6 +1,7 @@
 version: '3.8'
 services:
   app-backend:
+    # Backend configuration remains unchanged
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -14,9 +15,10 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
+      - "8080:80" # Ensure this matches the port your Vue.js app is served on
 
   mongodb:
+    # MongoDB configuration remains unchanged
     image: mongo
     container_name: plantscript-mongo
     volumes:
