@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import Home from '@/components/Home.vue';
-import Search from '@/components/Search.vue';
+import HomePage from '@/components/HomePage.vue';
+import SearchComponent from '@/components/SearchComponent.vue';
 import ManagePlant from '@/components/ManagePlant.vue';
 import PlantDetail from '@/views/PlantDetail.vue'; // Assuming this is the correct path
 
@@ -9,12 +9,12 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: HomePage,
   },
   {
     path: '/search',
     name: 'Search',
-    component: Search,
+    component: SearchComponent,
   },
   {
     path: '/manage',

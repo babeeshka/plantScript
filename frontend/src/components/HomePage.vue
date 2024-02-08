@@ -5,11 +5,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script>
 export default {
-  name: 'Home',
-};
+  name: 'HomePage',
+  // Component logic
+}
 </script>
+
 
 <style scoped>
 /* Home component styles */
