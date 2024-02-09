@@ -2,9 +2,9 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import HomePage from '@/components/HomePage.vue';
 import SearchComponent from '@/components/SearchComponent.vue';
 import ManagePlant from '@/components/ManagePlant.vue';
-import PlantDetail from '@/views/PlantDetail.vue'; // Assuming this is the correct path
+import PlantDetail from '@/views/PlantDetail.vue'; 
 
-// Define the routes for your application
+// define the routes for your application
 const routes = [
   {
     path: '/',
@@ -28,7 +28,7 @@ const routes = [
   }
 ];
 
-// Create the router instance and export it
+// create the router instance and export it
 const router = createRouter({
   history: createWebHistory(),
   routes,

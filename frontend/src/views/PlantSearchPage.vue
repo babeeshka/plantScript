@@ -2,7 +2,7 @@
     <div>
       <input v-model="searchQuery" @keyup.enter="searchPlants" placeholder="Search plants...">
       <button @click="searchPlants">Search</button>
-      <!-- Display search results here -->
+      <!-- TODO display search results here -->
     </div>
   </template>
   

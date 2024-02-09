@@ -1,20 +1,20 @@
-# Use the official Node.js 14 as a parent image
-FROM node:14
+# Use a Node.js base image that includes npm
+FROM node:latest
 
-# Set the working directory in the container
+# Set the working directory inside the container
 WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json (if available)
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install any dependencies
+# Install dependencies
 RUN npm install
 
-# Bundle app source
+# Copy the rest of your application's code
 COPY . .
 
-# Map port
-EXPOSE 3000
+# If you're compiling TypeScript to JavaScript, run the compilation here
+# RUN npm run build
 
-# Command to run the app
-CMD ["node", "server.js"]
+# Command to run your app, using ts-node if directly running TypeScript
+CMD ["npx", "ts-node", "server.ts"]

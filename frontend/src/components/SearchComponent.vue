@@ -2,7 +2,7 @@
     <div class="search">
       <h2>Plant Search</h2>
       <input type="text" placeholder="Search for a plant..." />
-      <!-- Add search functionality -->
+      <!-- TODO add search functionality -->
     </div>
   </template>
   

@@ -1,7 +1,7 @@
 <template>
     <div>
       <h1>Plant Gallery</h1>
-      <!-- Display a gallery of plants -->
+      <!-- TODO display a gallery of plants -->
     </div>
   </template>
   

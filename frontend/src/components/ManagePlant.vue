@@ -1,7 +1,7 @@
 <template>
     <div class="manage-plant">
       <h2>Manage Plant</h2>
-      <!-- Management form or details -->
+      <!-- TODO add management form or details -->
     </div>
   </template>
   

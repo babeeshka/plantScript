@@ -3,7 +3,7 @@
       <h1>Welcome to PlantScript</h1>
       <div v-if="randomPlant">
         <p>{{ randomPlant.scientificName }}</p>
-        <!-- Display more details -->
+        <!-- TODO add more display details -->
       </div>
     </div>
   </template>
@@ -19,7 +19,7 @@
     },
     async created() {
       try {
-        const response = await axios.get('/api/plants/random'); // Adjust API endpoint as needed
+        const response = await axios.get('/api/plants/random'); // adjust API endpoint as needed
         this.randomPlant = response.data;
       } catch (error) {
         console.error(error);

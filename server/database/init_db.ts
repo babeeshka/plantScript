@@ -1,5 +1,5 @@
 const monk = require('monk');
-require('dotenv').config(); // Ensure this is called to load MongoDB URI from .env
+require('dotenv').config(); // load MongoDB URI from .env
 
 // Connect to MongoDB database
 const db = monk(process.env.MONGODB_URI);
@@ -10,7 +10,7 @@ db.then(() => {
   console.error('Error connecting to MongoDB:', err.message);
 });
 
-// Optionally, verify the connection and list collections as a test
+// also can verify the connection and list collections as a test
 db.listCollections().toArray().then((collections) => {
   console.log('Available collections:', collections.map(col => col.name));
 }).catch((err) => {
@@ -18,11 +18,11 @@ db.listCollections().toArray().then((collections) => {
 });
 
 
-// Creating the collection if it doesn't exist
+// create the collection if it doesn't exist
 const plants = db.get('plants');
 console.log('Plants collection is ready for use.');
 
-// Close the database connection when done (optional here since we're not keeping the script running)
+// close the database connection when done (optional here since we're not keeping the script running)
 db.close().then(() => {
   console.log('Closed the MongoDB connection.');
 }).catch((err) => {

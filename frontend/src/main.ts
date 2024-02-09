@@ -1,12 +1,12 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'; // You should add this line after setting up Vue Router
+import router from './router'; 
 
-// Create the Vue application instance
+// create the Vue application instance
 const app = createApp(App);
 
-// Use the router with the Vue application
+// use the router with the Vue application
 app.use(router);
 
-// Mount the Vue application to the DOM
+// mount the Vue application to the DOM
 app.mount('#app');

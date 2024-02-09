@@ -9,6 +9,8 @@ services:
     environment:
       - NODE_ENV=development
       - PERENUAL_API_KEY=${PERENUAL_API_KEY} # reference the api key from the .env file
+      - MONGODB_URI=mongodb://mongodb:27017/plantscript # use the service name `mongodb` as host
+
     depends_on:
       - mongodb
 

@@ -18,9 +18,9 @@
         headers: [
           { text: 'Common Name', value: 'common_name' },
           { text: 'Scientific Name', value: 'scientific_name' },
-          // Add other fields as needed
+          // TODO add other fields as needed
         ],
-        plants: [] // This will be populated from the API
+        plants: [] // this will be populated from the API
       }
     },
     mounted() {
@@ -29,14 +29,14 @@
     methods: {
       async fetchPlants() {
         try {
-          let response = await axios.get("/api/plants"); // Replace with your API endpoint
+          let response = await axios.get("/api/plants"); // TODO replace with the API endpoint
           this.plants = response.data;
         } catch (error) {
           console.error("An error occurred:", error);
         }
       },
       showPlantDetails(plant) {
-        // For now, just log the plant details. You can expand this to show a modal or navigate to a plant details page.
+        // for now, just log the plant details. We can expand this to show a modal or navigate to a plant details page
         console.log(plant);
       }
     }

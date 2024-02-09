@@ -1,18 +1,18 @@
 <template>
   <div class="home">
     <h1>Welcome to PlantScript</h1>
-    <!-- Other home page content -->
+    <!-- TODO add other home page content -->
   </div>
 </template>
 
 <script>
 export default {
   name: 'HomePage',
-  // Component logic
+  // component logic
 }
 </script>
 
 
 <style scoped>
-/* Home component styles */
+/* home component styles */
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <PlantSearch/>
-    <!-- Other components or content -->
+    <!-- TODO other components or content -->
   </div>
 </template>
 

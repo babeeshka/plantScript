@@ -2,7 +2,7 @@
     <div>
       <h1>{{ plant.commonName }}</h1>
       <p>Scientific Name: {{ plant.scientificName }}</p>
-      <!-- Add more plant details here -->
+      <!-- TODO add more plant details here -->
     </div>
   </template>
   

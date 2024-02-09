@@ -4,7 +4,7 @@
       <button @click="fetchPlantData">Search</button>
       <div v-if="plantDetails">
         <h2>{{ plantDetails.common_name }}</h2>
-        <!-- Display other plant details as needed -->
+        <!-- TODO display other plant details as needed -->
       </div>
     </div>
   </template>
@@ -27,7 +27,7 @@
         } catch (error) {
           console.error('Error fetching plant data:', error);
           this.plantDetails = null;
-          // Handle the error (e.g., show an error message)
+          // handle the error (e.g., show an error message)
         }
       },
     },

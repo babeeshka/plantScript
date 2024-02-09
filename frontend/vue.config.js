@@ -6,5 +6,8 @@ module.exports = {
         changeOrigin: true,
       },
     },
-  },
+  }, 
+  configureWebpack: {
+    entry: './src/main.ts',
+  }
 };
