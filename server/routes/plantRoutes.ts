@@ -1,6 +1,5 @@
 import express from 'express';
 import { fetchSpeciesList, searchPlantByName, fetchPlantDetails } from '../services/plantService';
-import { fetchSpeciesList, searchPlantByName, fetchPlantDetails } from './apiUtils'; 
 
 const router = express.Router();
 
@@ -13,7 +12,11 @@ app.get('/api/plants', async (req, res) => {
     const data = await fetchSpeciesList(page);
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
 });
 
@@ -24,7 +27,11 @@ app.get('/api/plants/search', async (req, res) => {
     const data = await searchPlantByName(query);
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
 });
 
@@ -35,7 +42,11 @@ app.get('/api/plants/:id/details', async (req, res) => {
     const data = await fetchPlantDetails(id);
     res.json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
   }
 });
 export default router;

@@ -1,8 +1,9 @@
 import express from 'express';
-import plantRoutes from './routes/plantRoutes';
-import axios from 'axios';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import db from './database/database'; // import database instance
+import plantRoutes from './routes/plantRoutes';
+import axios from 'axios';
 import { create as createPlant } from './models/plant';
 import plantSchema from './schemas/plantSchema';
 
@@ -16,6 +17,9 @@ interface Plant {
 
 export const app = express();
 app.use(cors());
+app.use(express.json()); // for parsing application/json
+
+app.use('/api/plants', plantRoutes); // api routes and other middleware
 
 app.get('/api/plants/:name', async (req, res) => {
   try {
@@ -47,9 +51,26 @@ app.get('/api/plants/:name', async (req, res) => {
   }
 });
 
+const startServer = async () => {
+  try {
+    // wait for the database connection to be established
+    await db;
+    console.log('Connected to MongoDB.');
 
-// Optionally, you can still have the listening logic conditionally run for non-test environments
+    // Start the Express server
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => console.log(`Server listening on port ${port}`));
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error('Error connecting to MongoDB:', err.message);
+    } else {
+      console.error('An unexpected error occurred:', err);
+    }
+    process.exit(1); // exit the process if the database connection fails
+  }
+};
+
+// start the server if this file is run directly
 if (require.main === module) {
-  const port = process.env.PORT || 3000;
-  app.listen(port, () => console.log(`Server listening on port ${port}`));
+  startServer();
 }
