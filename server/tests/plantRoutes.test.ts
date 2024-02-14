@@ -8,3 +8,4 @@ describe('Test /api/plants endpoint', () => {
     // TODO add more assertions here based on the expected response body
   });
 });
+

@@ -9,7 +9,7 @@ services:
     environment:
       - NODE_ENV=development
       - PERENUAL_API_KEY=${PERENUAL_API_KEY} # reference the api key from the .env file
-      - MONGODB_URI=${MONGODB_URI}
+      - DATABASE_URI=${MONGODB_URI}
 
     depends_on:
       - mongodb

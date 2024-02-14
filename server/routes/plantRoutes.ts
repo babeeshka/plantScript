@@ -3,10 +3,8 @@ import { fetchSpeciesList, searchPlantByName, fetchPlantDetails } from '../servi
 
 const router = express.Router();
 
-const app = express();
-
 // route for fetching species list with pagination
-app.get('/api/plants', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const data = await fetchSpeciesList(page);
@@ -21,7 +19,7 @@ app.get('/api/plants', async (req, res) => {
 });
 
 // route for searching plants by name
-app.get('/api/plants/search', async (req, res) => {
+router.get('/search', async (req, res) => {
   try {
     const query = req.query.q as string;
     const data = await searchPlantByName(query);
@@ -36,7 +34,7 @@ app.get('/api/plants/search', async (req, res) => {
 });
 
 // route for fetching plant details by ID
-app.get('/api/plants/:id/details', async (req, res) => {
+router.get('/:id/details', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
     const data = await fetchPlantDetails(id);

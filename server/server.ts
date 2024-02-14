@@ -59,7 +59,11 @@ const startServer = async () => {
 
     // Start the Express server
     const port = process.env.PORT || 3000;
-    app.listen(port, () => console.log(`Server listening on port ${port}`));
+    if (process.env.NODE_ENV !== 'test') {
+      app.listen(port, () => {
+        console.log(`Server listening on port ${port}`);
+      });
+    }
   } catch (err) {
     if (err instanceof Error) {
       console.error('Error connecting to MongoDB:', err.message);
