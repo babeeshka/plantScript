@@ -11,4 +11,4 @@ dist/
 build/
 *.tmp
 *.temp
-./server/tests/dbtest.ts
+./server/.env.test
