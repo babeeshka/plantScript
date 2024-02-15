@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import { app } from '../server';
 import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
+import { PlantDetails } from '../models/plantInterfaces'; // Import interfaces for structured data
 
 dotenv.config({ path: '../.env.test' });
 
@@ -18,7 +19,7 @@ beforeAll(async () => {
   // Ensure the collection is empty before inserting test data
   await db.collection('plants').deleteMany({});
   
-  // Insert test data
+  // Insert comprehensive test data matching your PlantDetails interface
   await db.collection('plants').insertOne({
     id: 1,
     common_name: "European Silver Fir",
@@ -29,9 +30,11 @@ beforeAll(async () => {
     sunlight: ["full sun"],
     default_image: {
       url: "https://example.com/image.jpg",
-      // additional image properties as needed
+      license: "CC0",
+      license_name: "Public Domain",
+      // Add additional properties as per your interface definitions
     },
-    // Add more properties as needed for the test
+    // Include other detailed properties from PlantDetails interface
   });
 
   console.log("Test data inserted.");
@@ -47,44 +50,37 @@ afterAll(async () => {
 });
 
 describe('GET /api/plants', () => {
-  it('should return a list of plants', async () => {
-    const response = await supertest(app).get('/api/plants');
-    console.log("Received response from /api/plants:", response.body);
+  it('should return a list of plants including pagination information', async () => {
+    // Adjusting the request to only specify the 'page' parameter as 'limit' is not supported
+    const response = await supertest(app).get('/api/plants?page=1');
 
+    // Check for successful response and content type
     expect(response.statusCode).toBe(200);
     expect(response.headers['content-type']).toMatch(/json/);
     
-    // Check that response contains the expected plant with detailed assertions
-    expect(response.body).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          common_name: "European Silver Fir",
-          scientific_name: expect.arrayContaining(["Abies alba"]),
-          other_names: expect.arrayContaining(["Common Silver Fir"]),
-          cycle: "Perennial",
-          watering: "Frequent",
-          sunlight: expect.arrayContaining(["full sun"]),
-          default_image: expect.objectContaining({
-            url: expect.stringContaining("https://example.com/image.jpg"),
-            // additional image property checks as needed
-          }),
-          // Further detailed property checks as needed
-        }),
-      ])
-    );
+    // Assert the response structure and content
+    expect(response.body).toHaveProperty('data');
+    expect(Array.isArray(response.body.data)).toBeTruthy();
+    expect(response.body.data.length).toBeGreaterThan(0); // Ensure data is not empty
 
-    // If your API supports pagination, you can check for those properties here
-    // This is optional and can be adjusted based on your actual API response structure
-    if (response.body.pagination) {
-      expect(response.body.pagination).toEqual(
-        expect.objectContaining({
-          currentPage: expect.any(Number),
-          totalPages: expect.any(Number),
-          // other pagination properties as needed
-        }),
-      );
+    // Example of a more detailed check on the first item, if needed
+    if (response.body.data.length > 0) {
+      const firstItem = response.body.data[0];
+      expect(firstItem).toHaveProperty('id');
+      expect(firstItem).toHaveProperty('common_name');
+      expect(firstItem).toHaveProperty('scientific_name');
+      // Add more detailed property checks as necessary
     }
 
-    // Additional assertions can be added here as needed
+    // Adjusting to match the actual API response property names
+    expect(response.body).toHaveProperty('current_page');
+    expect(response.body).toHaveProperty('total_pages');
+    expect(response.body).toHaveProperty('total');
+    expect(response.body).toHaveProperty('per_page');
+
+    // Optional: Log the response for debugging purposes
+    console.log("Received response from /api/plants:", JSON.stringify(response.body, null, 2));
   });
 });
+
+

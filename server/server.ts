@@ -67,7 +67,7 @@ app.get('/api/plants/:name', async (req, res) => {
   }
 });
 
-/*const startServer = async () => {
+const startServer = async () => {
   console.log('Starting server...');
   try {
     console.log('Waiting for database connection...');
@@ -91,9 +91,9 @@ app.get('/api/plants/:name', async (req, res) => {
     process.exit(1); // exit the process if the database connection fails
   }
 };
-*/
 
-const startServer = async () => {
+
+/* const startServer = async () => {
   console.log('Attempting direct MongoDB connection...');
   const dbTest = monk(process.env.MONGODB_URI!);
   dbTest.then(() => {
@@ -102,7 +102,7 @@ const startServer = async () => {
   }).catch(err => {
     console.error('Direct MongoDB connection failed:', err);
   });
-};
+}; */
 
 if (require.main === module) {
   startServer();
