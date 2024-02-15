@@ -1,3 +1,5 @@
+// server/models/plantInterfaces.ts
+
 export interface DefaultImage {
   license: number;
   license_name: string;
@@ -14,9 +16,9 @@ export interface PlantSummary {
   common_name: string;
   scientific_name: string[];
   other_name?: string[];
-  cycle: string;
-  watering: string;
-  sunlight: string[];
+  cycle?: string;
+  watering?: string;
+  sunlight?: string[];
   default_image?: DefaultImage;
 }
 
@@ -37,19 +39,11 @@ export interface PlantDetails extends PlantSummary {
     min: string;
     max: string;
   };
-  depth_water_requirement?: string[];
-  volume_water_requirement?: string[];
   watering_period?: string | null;
   watering_general_benchmark?: {
     value: string;
     unit: string;
   };
-  plant_anatomy?: string[];
-  pruning_month?: string[];
-  pruning_count?: number[];
-  seeds?: number;
-  maintenance?: string | null;
-  soil?: string[];
   growth_rate?: string;
   drought_tolerant?: boolean;
   salt_tolerant?: boolean;
@@ -59,7 +53,6 @@ export interface PlantDetails extends PlantSummary {
   indoor?: boolean;
   care_level?: string;
   pest_susceptibility?: string[];
-  pest_susceptibility_api?: string;
   flowers?: boolean;
   flowering_season?: string | null;
   flower_color?: string;
@@ -67,13 +60,8 @@ export interface PlantDetails extends PlantSummary {
   fruits?: boolean;
   edible_fruit?: boolean;
   edible_fruit_taste_profile?: string;
-  fruit_nutritional_value?: string;
-  fruit_color?: string[];
-  harvest_season?: string | null;
   leaf?: boolean;
   leaf_color?: string[];
-  edible_leaf?: boolean;
-  cuisine?: boolean;
   medicinal?: boolean;
   poisonous_to_humans?: number;
   poisonous_to_pets?: number;

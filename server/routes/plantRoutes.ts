@@ -6,10 +6,14 @@ const router = express.Router();
 // route for fetching species list with pagination
 router.get('/', async (req, res) => {
   try {
+    console.log(`Received request on / with query:`, req.query);
     const page = parseInt(req.query.page as string) || 1;
+    console.log(`Fetching species list for page ${page}`);
     const data = await fetchSpeciesList(page);
+    console.log(`Data fetched successfully for page ${page}:`, data);
     res.json(data);
   } catch (error) {
+    console.error(`Error fetching species list for page:`, error);
     if (error instanceof Error) {
       res.status(500).json({ error: error.message });
     } else {

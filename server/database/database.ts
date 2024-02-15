@@ -1,17 +1,20 @@
-import monk from 'monk';
+// server/database/database.ts
 import dotenv from 'dotenv';
+dotenv.config({ path: '../../.env' }); // Make sure this path is correct based on your project structure
 
-dotenv.config();
+import monk from 'monk';
 
-// Ensure that MONGODB_URI is defined
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/mylocaldb';
+console.log(`Attempting to connect to MongoDB with URI: ${MONGODB_URI}`);
 
 const db = monk(MONGODB_URI);
 
 db.then(() => {
-  console.log('Connected correctly to MongoDB server using Monk');
+  console.log('Successfully connected to MongoDB server using Monk');
 }).catch((err) => {
-  console.error('Error connecting to MongoDB:', err.message);
+  console.error('Failed to connect to MongoDB:', err);
 });
+db.on('open', () => console.log('Database connection opened.'));
+db.on('error', err => console.error('Database connection error:', err));
 
 export default db;

@@ -4,6 +4,7 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'], // points jest to the tests folder
   setupFiles: ['<rootDir>/jest.setup.ts'],
+  globalSetup: '<rootDir>/tests/globalSetup.ts',
   testMatch: ['**/tests/**/*.test.ts'], // adjust as needed
   transform: {
     '^.+\\.{ts|tsx}?$': ['ts-jest', {

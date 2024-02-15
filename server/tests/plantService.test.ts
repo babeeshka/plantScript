@@ -24,12 +24,12 @@ describe('Plant Service Tests', () => {
             watering: "Frequent",
             sunlight: ["full sun"],
           }],
-          to: 10, // Example value, adjust as needed
-          per_page: 10, // Example value
-          current_page: 1, // Example value
-          from: 1, // Example value
-          last_page: 1, // Example value
-          total: 1, // Example value
+          to: 30,
+          per_page: 30,
+          current_page: 1, 
+          from: 1, 
+          last_page: 337,
+          total: 10102
         };
       mockedAxios.get.mockResolvedValue({ data: mockResponse });
 
