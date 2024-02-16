@@ -1,5 +1,13 @@
 import express from 'express';
-import { fetchSpeciesList, searchPlantByName, fetchPlantDetails, createPlantInDb } from '../services/plantService';
+import {
+  fetchSpeciesList,
+  searchPlantByName,
+  fetchPlantDetails,
+  createPlantInDb,
+  getPlantDetailsById,
+  updatePlantDetails,
+  removePlantFromDb,
+} from '../services/plantService';
 
 const router = express.Router();
 
@@ -63,6 +71,30 @@ router.post('/', async (req, res) => {
     } else {
       res.status(500).json({ error: "An unknown error occurred" });
     }
+  }
+});
+
+// route to update plant details by ID
+router.put('/:id', async (req, res) => {
+  try {
+    const id = req.params.id; // Adjust if necessary
+    const updatedPlant = await updatePlantDetails(id, req.body); // Ensure body validation before updating
+    res.json(updatedPlant);
+  } catch (error) {
+    console.error(`Error updating plant for ID ${req.params.id}:`, error);
+    res.status(500).json({ error: error instanceof Error ? error.message : "An unknown error occurred" });
+  }
+});
+
+// route to delete a plant by ID
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = req.params.id; // Adjust if necessary
+    await removePlantFromDb(id);
+    res.status(204).send(); // No content to send back
+  } catch (error) {
+    console.error(`Error deleting plant for ID ${req.params.id}:`, error);
+    res.status(500).json({ error: error instanceof Error ? error.message : "An unknown error occurred" });
   }
 });
 
