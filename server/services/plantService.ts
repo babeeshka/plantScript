@@ -1,54 +1,61 @@
-import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
-import { createPlant, findPlants, findPlantById, updatePlant, deletePlant } from '../models/plant';
 import axios from 'axios';
+import Joi from 'joi';
+import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
+import { createPlant, findPlantById, updatePlant, deletePlant } from '../models/plant';
+import plantSchema from '../schemas/plantSchema'; // Import Joi validation schema
+import { ValidationErrorItem } from '@hapi/joi';
 
 const API_KEY = process.env.PERENUAL_API_KEY; // Ensure this is set in .env
 const BASE_URL = 'https://perenual.com/api';
 
+// Helper function for validating API response against Joi schema
+const validateApiResponse = <T>(data: any, schema: Joi.ObjectSchema<T>): T => {
+  const { value, error } = schema.validate(data);
+  if (error) {
+    throw new Error(`Validation failed: ${error.details.map((x: ValidationErrorItem) => x.message).join(', ')}`);
+  }
+  return value;
+};
 // Functions to interact with the external API
 export async function fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
-  const response = await axios.get(`${BASE_URL}/species-list`, {
+  const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {
     params: { key: API_KEY, page },
   });
-  return response.data;
-}
-
-export async function findAllPlants(): Promise<ApiResponse<PlantSummary>> {
-  const response = await axios.get(`${BASE_URL}/species-list`, {
-    params: { key: API_KEY },
-  });
-  return response.data;
+  // Optionally validate data here if you have a Joi schema for ApiResponse<PlantSummary>
+  return data;
 }
 
 export async function searchPlantByName(query: string): Promise<ApiResponse<PlantSummary>> {
-  const response = await axios.get(`${BASE_URL}/species-list`, {
+  const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {
     params: { key: API_KEY, q: query },
   });
-  return response.data;
+  // Optionally validate data here
+  return data;
 }
 
 export async function fetchPlantDetails(plantId: number): Promise<PlantDetails> {
-  const response = await axios.get(`${BASE_URL}/species/details/${plantId}`, {
+  const { data } = await axios.get(`${BASE_URL}/species/details/${plantId}`, {
     params: { key: API_KEY },
   });
-  return response.data;
+  // Validate the response with Joi schema
+  return validateApiResponse<PlantDetails>(data, plantSchema);
 }
 
 // Database interaction functions
 export async function createPlantInDb(plantData: PlantDetails): Promise<PlantDetails> {
-  return createPlant(plantData); // Assuming create function returns the created plant
+  // Ensure plantData matches PlantDetails interface; validation occurs inside createPlant
+  return createPlant(plantData);
 }
 
 export async function getPlantDetailsById(plantId: string): Promise<PlantDetails | null> {
-  return findPlantById(plantId); // Assuming getPlantById function returns the plant or null if not found
+  return findPlantById(plantId);
 }
 
 export async function updatePlantDetails(plantId: string, updateData: Partial<PlantDetails>): Promise<PlantDetails> {
-  return updatePlant(plantId, updateData); // Assuming updatePlant function updates and returns the updated plant
+  return updatePlant(plantId, updateData);
 }
 
 export async function removePlantFromDb(plantId: string): Promise<void> {
-  await deletePlant(plantId); 
-  // await the deletion 
-  // no return statement needed since the function is expected to return Promise<void>
+  await deletePlant(plantId);
+  // Function is expected to return Promise<void>, so no return statement is needed
 }
