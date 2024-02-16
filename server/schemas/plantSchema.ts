@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-// Assuming PlantDetails includes complex objects and arrays, like dimensions, hardiness, etc.
+// PlantDetails includes complex objects and arrays, like dimensions, hardiness, etc.
 const plantSchema = Joi.object({
   id: Joi.number().required(),
   common_name: Joi.string().required(),
@@ -66,7 +66,7 @@ const plantSchema = Joi.object({
   poisonous_to_humans: Joi.number().optional(),
   poisonous_to_pets: Joi.number().optional(),
   description: Joi.string().optional(),
-  // Include default_image and other_images if needed, following a similar pattern
+  // include default_image and other_images if needed, following a similar pattern
   default_image: Joi.object({
     license: Joi.number().required(),
     license_name: Joi.string().required(),
@@ -77,7 +77,7 @@ const plantSchema = Joi.object({
     small_url: Joi.string().uri().required(),
     thumbnail: Joi.string().uri().required(),
   }).optional(),
-  // Assuming other_images is an array of URLs
+  // other_images is an array of URLs
   other_images: Joi.array().items(Joi.string().uri()).optional(),
 });
 

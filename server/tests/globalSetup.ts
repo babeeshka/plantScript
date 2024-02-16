@@ -9,9 +9,9 @@ const globalSetup = async () => {
   try {
     await client.connect();
     const db = client.db();
-    await db.collection('plants').deleteMany({}); // Clear the collection
+    await db.collection('plants').deleteMany({}); // clear the collection
 
-    // Insert default plant data
+    // insert default plant data
     await db.collection('plants').insertOne({
         id: 1,
         common_name: "European Silver Fir",

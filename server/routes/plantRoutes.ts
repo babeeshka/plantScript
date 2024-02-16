@@ -1,16 +1,16 @@
 import express from 'express';
-import { fetchSpeciesList, searchPlantByName, fetchPlantDetails } from '../services/plantService';
+import { fetchSpeciesList, searchPlantByName, fetchPlantDetails, createPlantInDb } from '../services/plantService';
 
 const router = express.Router();
 
 // route for fetching species list with pagination
 router.get('/', async (req, res) => {
   try {
-    console.log(`Received request on / with query:`, req.query);
+    //console.log(`Received request on / with query:`, req.query);
     const page = parseInt(req.query.page as string) || 1;
-    console.log(`Fetching species list for page ${page}`);
+    //console.log(`Fetching species list for page ${page}`);
     const data = await fetchSpeciesList(page);
-    console.log(`Data fetched successfully for page ${page}:`, data);
+    //console.log(`Data fetched successfully for page ${page}:`, data);
     res.json(data);
   } catch (error) {
     console.error(`Error fetching species list for page:`, error);
@@ -51,4 +51,19 @@ router.get('/:id/details', async (req, res) => {
     }
   }
 });
+
+// route for adding a new plant
+router.post('/', async (req, res) => {
+  try {
+    const newPlant = await createPlantInDb(req.body); // make sure the body data is already validated
+    res.status(201).json(newPlant);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: "An unknown error occurred" });
+    }
+  }
+});
+
 export default router;

@@ -1,41 +1,36 @@
 // server/models/plant.ts
+import db from '../database/database';
+import { PlantDetails } from './plantInterfaces'; // adjust the import path as necessary
 
-import monk from 'monk';
-import plantSchema from '../schemas/plantSchema';
-import { ObjectId } from 'mongodb';
-
-// confirm dotenv.config() is called at the application's entry point
-const db = monk(process.env.MONGODB_URI || '');
 const plantsCollection = db.get('plants');
 
-interface Plant {
-  _id?: string;
-  name: string;
-  species: string;
-  // TODO add more properties
-}
-
-// Use this interface for creating new plants to omit the _id property
-interface PlantInput {
-  name: string;
-  species: string;
-  // TODO add more properties without _id
-}
-
-// insert a new plant with validation
-const create = async (plant: PlantInput): Promise<Plant> => {
-  const { error, value } = plantSchema.validate(plant);
-  
-  if (error) {
-    throw new Error(`Validation failed: ${error.details.map(x => x.message).join(', ')}`);
-  }
-
-  return await plantsCollection.insert(value);
+// CRUD operations
+const createPlant = async (plantData: PlantDetails): Promise<PlantDetails> => {
+  return plantsCollection.insert(plantData);
 };
 
-// TODO create tther model operations with similar validation integration...
+const findPlants = async (): Promise<PlantDetails[]> => {
+  return plantsCollection.find({});
+};
+
+const findPlantById = async (id: string): Promise<PlantDetails> => {
+  return plantsCollection.findOne({ _id: id });
+};
+
+const updatePlant = async (id: string, plantData: Partial<PlantDetails>): Promise<PlantDetails> => {
+  await plantsCollection.update({ _id: id }, { $set: plantData });
+  return findPlantById(id); // return the updated document
+};
+
+const deletePlant = async (id: string): Promise<{ message: string }> => {
+  await plantsCollection.remove({ _id: id });
+  return { message: `Plant with id ${id} deleted successfully.` };
+};
 
 export {
-  create,
-  // TODO export other operations...
+  createPlant,
+  findPlants,
+  findPlantById,
+  updatePlant,
+  deletePlant,
 };

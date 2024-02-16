@@ -1,4 +1,4 @@
-// jest.config.js at your project root
+// jest.config.js at project root
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
