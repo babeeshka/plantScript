@@ -1,14 +1,14 @@
 import axios from 'axios';
 import Joi from 'joi';
 import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
-import { createPlant, findPlantById, updatePlant, deletePlant } from '../models/plant';
+import { createPlant, findPlants, findPlantById, updatePlant, deletePlant } from '../models/plant';
 import plantSchema from '../schemas/plantSchema'; // Import Joi validation schema
 import { ValidationErrorItem } from '@hapi/joi';
 
 const API_KEY = process.env.PERENUAL_API_KEY; // Ensure this is set in .env
 const BASE_URL = 'https://perenual.com/api';
 
-// Helper function for validating API response against Joi schema
+// helper function for validating API response against Joi schema
 const validateApiResponse = <T>(data: any, schema: Joi.ObjectSchema<T>): T => {
   const { value, error } = schema.validate(data);
   if (error) {
@@ -16,7 +16,7 @@ const validateApiResponse = <T>(data: any, schema: Joi.ObjectSchema<T>): T => {
   }
   return value;
 };
-// Functions to interact with the external API
+// functions to interact with the external API
 export async function fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
   const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {
     params: { key: API_KEY, page },
@@ -41,10 +41,14 @@ export async function fetchPlantDetails(plantId: number): Promise<PlantDetails> 
   return validateApiResponse<PlantDetails>(data, plantSchema);
 }
 
-// Database interaction functions
+// database interaction functions
 export async function createPlantInDb(plantData: PlantDetails): Promise<PlantDetails> {
   // Ensure plantData matches PlantDetails interface; validation occurs inside createPlant
   return createPlant(plantData);
+}
+
+export async function findAllPlantsFromDb(): Promise<PlantDetails[]> {
+  return findPlants();
 }
 
 export async function getPlantDetailsById(plantId: string): Promise<PlantDetails | null> {

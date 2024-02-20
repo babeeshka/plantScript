@@ -4,10 +4,12 @@ import {
   searchPlantByName,
   fetchPlantDetails,
   createPlantInDb,
+  findAllPlantsFromDb,
   getPlantDetailsById,
   updatePlantDetails,
   removePlantFromDb,
 } from '../services/plantService';
+import { findPlantById } from 'models/plant';
 
 const router = express.Router();
 
@@ -57,6 +59,33 @@ router.get('/:id/details', async (req, res) => {
     } else {
       res.status(500).json({ error: "An unknown error occurred" });
     }
+  }
+});
+
+// route for fetching all plants from the db
+router.get('/db/plants', async (req, res) => {
+  try {
+    const plants = await findAllPlantsFromDb(); // Assuming findPlants() fetches all plants from the database
+    res.json(plants);
+  } catch (error) {
+    console.error(`Error fetching plants from the database:`, error);
+    res.status(500).json({ error: "An error occurred while fetching plants from the database" });
+  }
+});
+
+// route for fetching a plant by ID from the db
+router.get('/db/plants/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const plant = await findPlantById(id);
+    if (plant) {
+      res.json(plant);
+    } else {
+      res.status(404).json({ error: "Plant not found" });
+    }
+  } catch (error) {
+    console.error(`Error fetching plant with ID ${id}:`, error);
+    res.status(500).json({ error: "An error occurred while fetching the plant from the database" });
   }
 });
 
