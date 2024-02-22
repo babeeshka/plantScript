@@ -1,3 +1,4 @@
+// /server/services/plantService.ts
 import axios from 'axios';
 import Joi from 'joi';
 import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';

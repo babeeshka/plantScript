@@ -1,3 +1,4 @@
+// /server/routes/plantRoutes.ts
 import express from 'express';
 import {
   fetchSpeciesList,
@@ -5,11 +6,11 @@ import {
   fetchPlantDetails,
   createPlantInDb,
   findAllPlantsFromDb,
-  getPlantDetailsById,
   updatePlantDetails,
   removePlantFromDb,
+
 } from '../services/plantService';
-import { findPlantById } from 'models/plant';
+import { findPlantById } from '../models/plant';
 
 const router = express.Router();
 
@@ -65,7 +66,7 @@ router.get('/:id/details', async (req, res) => {
 // route for fetching all plants from the db
 router.get('/db/plants', async (req, res) => {
   try {
-    const plants = await findAllPlantsFromDb(); // Assuming findPlants() fetches all plants from the database
+    const plants = await findAllPlantsFromDb();
     res.json(plants);
   } catch (error) {
     console.error(`Error fetching plants from the database:`, error);

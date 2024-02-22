@@ -8,10 +8,12 @@
     "baseUrl": "."
   },
   "include": [
+    "**/*.ts",
     "./*.ts",
     "./models/**/*.ts",
     "./schemas/**/*.ts",
-    "tests/server.test.ts"
+    "tests/server.test.ts",
+    "../global.d.ts" 
   ],
   "exclude": [
     "node_modules",

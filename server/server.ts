@@ -35,6 +35,7 @@ app.use(express.json()); // for parsing application/json
 app.get('/test', (req, res) => res.send('Server is running!'));
 
 app.use('/api/plants', plantRoutes); // API routes and other middleware
+app.use('/db/plants', plantRoutes); // API routes and other middleware
 
 app.get('/api/plants/:name', async (req, res) => {
   console.log('/api/plants endpoint hit');
