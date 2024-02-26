@@ -4,6 +4,11 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/tests'], // points jest to the tests folder
   setupFiles: ['<rootDir>/jest.setup.ts'],
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json'
+    }
+  },
   globalSetup: '<rootDir>/tests/globalSetup.ts',
   globalTeardown: '<rootDir>/tests/globalTeardown.ts',
   testMatch: ['**/tests/**/*.test.ts'], // adjust as needed

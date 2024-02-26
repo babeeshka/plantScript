@@ -8,10 +8,12 @@
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
-      "./types"
+      "../global.d.ts"
     ],
     "types": [
-      "node"
+      "node",
+      "jest",
+      "global"
     ]
   },
   "include": [
@@ -19,7 +21,6 @@
     "./*.ts",
     "./models/**/*.ts",
     "./schemas/**/*.ts",
-    "tests/**.ts",
     "../global.d.ts"
   ],
   "exclude": [

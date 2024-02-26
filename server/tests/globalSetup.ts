@@ -2,12 +2,15 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import dotenv from 'dotenv';
 import monk from 'monk';
 
-dotenv.config({ path: './.env.test' });
+dotenv.config({ path: '../.env' });
 
 const globalSetup = async () => {
   const mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
   const db = monk(mongoUri);
+
+  // Assign the mongo server instance to the global namespace
+  (global as unknown as Global).__MONGOD__ = mongoServer;
 
   try {
     await db.get('plants').remove({}); // clear the collection
@@ -79,10 +82,10 @@ const globalSetup = async () => {
   }
 
   // Store the URI for use in your tests
-  process.env.MONGO_URI = mongoUri;
-  // Optional: Export the server for potential use in globalTeardown
-  if (global.__MONGO_URI__) {
-    console.log("MongoDB URI from in-memory server:", global.__MONGO_URI__);
+  process.env.MONGODB_URI = mongoUri;
+
+  if ((global as unknown as Global).__MONGO_URI__) {
+    console.log("MongoDB URI from in-memory server:", (global as unknown as Global).__MONGO_URI__);
   }
 };
 

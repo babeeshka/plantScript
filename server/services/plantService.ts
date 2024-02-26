@@ -17,6 +17,7 @@ const validateApiResponse = <T>(data: any, schema: Joi.ObjectSchema<T>): T => {
   }
   return value;
 };
+
 // functions to interact with the external API
 export async function fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
   const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {

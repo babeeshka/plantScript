@@ -8,18 +8,17 @@ import { jest } from '@jest/globals';
 // Mock the database module
 jest.mock('../database/database', () => {
     const plantsCollectionMock = {
-        find: jest.fn().mockResolvedValue(),
+        find: jest.fn().mockResolvedValue([]),
         findOne: jest.fn().mockResolvedValue(null),
-        insert: jest.fn().mockResolvedValue({} as PlantDetails),
-        update: jest.fn(),
-        remove: jest.fn(),
+        insert: jest.fn().mockResolvedValue({}),
+        update: jest.fn().mockResolvedValue({}),
+        remove: jest.fn().mockResolvedValue({}),
     };
     return {
         get: jest.fn(() => plantsCollectionMock),
         close: jest.fn(),
     };
 });
-
 
 // Mock plantService
 jest.mock('../services/plantService', () => ({
@@ -34,6 +33,7 @@ const mockPlantService = require('../services/plantService');
 
 describe('DB Plant Routes', () => {
     beforeEach(() => {
+        // Clear all instances and calls to constructor and all methods:
         jest.clearAllMocks();
     });
 
@@ -43,18 +43,17 @@ describe('DB Plant Routes', () => {
             { id: '1', common_name: "anotherCommonName", scientific_name: ["anotherScientificName"] },
         ];
 
-        mockPlantService.findAllPlantsFromDb.mockResolvedValue(mockPlants as PlantDetails[]);
+        mockPlantService.findAllPlantsFromDb.mockResolvedValue(mockPlants);
 
         const response = await request(app).get('/db/plants');
         expect(response.status).toBe(200);
         expect(response.body).toEqual(mockPlants);
     });
 
-    // Add more tests for other CRUD operations here...
     it('should return a plant by id from the database', async () => {
         const mockPlant: PlantDetails = { id: '0', common_name: "someCommonName", scientific_name: ["someScientificName"] };
 
-        mockPlantService.getPlantDetailsById.mockResolvedValue(mockPlant as PlantDetails | null);
+        mockPlantService.getPlantDetailsById.mockResolvedValue(mockPlant);
 
         const response = await request(app).get('/db/plants/0');
         expect(response.status).toBe(200);
@@ -62,7 +61,7 @@ describe('DB Plant Routes', () => {
     });
 
     it('should create a new plant in the database', async () => {
-        const newPlant: PlantDetails = { id: '0', common_name: "someCommonName", scientific_name: ["someScientificName"] };
+        const newPlant: PlantDetails = { id: '2', common_name: "newCommonName", scientific_name: ["newScientificName"] };
 
         mockPlantService.createPlantInDb.mockResolvedValue(newPlant);
 
@@ -72,7 +71,7 @@ describe('DB Plant Routes', () => {
     });
 
     it('should update a plant in the database', async () => {
-        const updatedPlant: PlantDetails = { id: '0', common_name: "someCommonName", scientific_name: ["someScientificName"] };
+        const updatedPlant: PlantDetails = { id: '0', common_name: "updatedCommonName", scientific_name: ["updatedScientificName"] };
 
         mockPlantService.updatePlantDetails.mockResolvedValue(updatedPlant);
 
@@ -82,22 +81,23 @@ describe('DB Plant Routes', () => {
     });
 
     it('should remove a plant from the database', async () => {
-        const removedPlant: PlantDetails = { id: '0', common_name: "someCommonName", scientific_name: ["someScientificName"] };
+        const removedPlantId = '0';
+        const removedPlant: PlantDetails = { id: removedPlantId, common_name: "someCommonName", scientific_name: ["someScientificName"] };
 
         mockPlantService.removePlantFromDb.mockResolvedValue(removedPlant);
 
-        const response = await request(app).delete('/db/plants/0');
+        const response = await request(app).delete(`/db/plants/${removedPlantId}`);
         expect(response.status).toBe(200);
         expect(response.body).toEqual(removedPlant);
     });
 
-    // You might want to test for failure cases as well, such as when a plant is not found.
     it('should return 404 when a plant is not found', async () => {
         mockPlantService.getPlantDetailsById.mockResolvedValue(null);
 
-        const response = await request(app).get('/db/plants/0');
+        const response = await request(app).get('/db/plants/999');
         expect(response.status).toBe(404);
     });
 
-    // add more error cases for other CRUD operations...
+    // TODO: Add more error cases for other CRUD operations...
+    // such as trying to update a plant that doesn't exist, or remove a plant that isn't in the database.
 });

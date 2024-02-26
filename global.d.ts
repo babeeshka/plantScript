@@ -1,12 +1,10 @@
-// global.d.ts
-declare namespace NodeJS {
-  interface Global {
-    mockAxios: any; // Preferably, use a more specific type than `any` if available.
+declare global {
+  namespace NodeJS {
+    interface Global {
+      __MONGOD__: MongoMemoryServer;
+      __MONGO_URI__?: string;
+    }
   }
 }
 
-declare namespace NodeJS {
-  interface Global {
-    __MONGO_URI__?: string;
-  }
-}
+export {};
