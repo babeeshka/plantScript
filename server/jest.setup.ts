@@ -1,6 +1,10 @@
 // jest.setup.js
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
+declare global {
+  var __MONGOD__: MongoMemoryServer;
+}
+
 let mongoServer: MongoMemoryServer;
 
 beforeAll(async () => {
@@ -9,5 +13,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoServer.stop();
+  if (mongoServer) {
+    await mongoServer.stop();
+  }
 });

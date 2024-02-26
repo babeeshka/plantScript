@@ -1,9 +1,11 @@
 // server/tsconfig.jest.json
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-      "module": "commonjs", // Jest works well with CommonJS out of the box
-      "esModuleInterop": true,
-    }
-  }
-  
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs", // Jest works well with CommonJS out of the box
+    "esModuleInterop": true,
+  },
+  "include": [
+    "**/*.test.ts"
+  ]
+}
