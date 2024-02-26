@@ -3,7 +3,7 @@ import { PlantDetails } from '../models/plantInterfaces';
 export const mockPlantDetails: PlantDetails = {
     id: "1",
     common_name: "Mock Plant",
-    scientific_name: ["Mockus plantae"],
+    scientific_name: [ "Mockus plantae" ],
     other_name: ["Test Plant"],
     family: "Mockaceae",
     origin: ["Testland"],

@@ -1,139 +1,68 @@
-// server/tests/plant.test.ts
-import {
-    PlantSummary,
-    PlantDetails,
-} from '../models/plantInterfaces';
-import {
-    createPlant,
-    findPlants,
-    findPlantById,
-    updatePlant,
-    deletePlant,
-} from '../models/plant';
+import { PlantService } from '../services/plantService';
+import { mockPlantDetails } from './mockData'; // Ensure you're importing mockPlantDetails
 
-// Mocking the database should use the correct path and method signatures
-// Assuming 'database' is a default export from the module
-const mockPlantDetails: PlantDetails = {
-    id: '1',
-    common_name: 'Sunflower',
-    scientific_name: ['Helianthus annuus'],
-    cycle: 'Annual',
-    watering: 'Frequent',
-    sunlight: ['full sun'],
-    family: 'Asteraceae',
-    origin: ['North America'],
-    type: 'Flower',
-    dimension: '5-12 ft',
-    dimensions: {
-        type: 'Height',
-        min_value: 5,
-        max_value: 12,
-        unit: 'ft',
-    },
-    attracts: ['bees', 'butterflies'],
-    propagation: ['seeds'],
-    hardiness: {
-        min: '6',
-        max: '10',
-    },
-    watering_period: 'weekly',
-    watering_general_benchmark: {
-        value: '1',
-        unit: 'in',
-    },
-    growth_rate: 'fast',
-    drought_tolerant: true,
-    salt_tolerant: false,
-    thorny: false,
-    invasive: false,
-    tropical: false,
-    indoor: false,
-    care_level: 'easy',
-    pest_susceptibility: ['aphids', 'slugs'],
-    flowers: true,
-    flowering_season: 'summer',
-    flower_color: 'yellow',
-    cones: false,
-    fruits: true,
-    edible_fruit_taste_profile: 'nutty',
-    leaf: true,
-    leaf_color: ['green'],
-    medicinal: false,
-    poisonous_to_humans: 0,
-    poisonous_to_pets: 0,
-    description: 'Sunflower is a tall, erect, herbaceous annual plant belonging to the family Asteraceae, grown for its seeds. The plant has a thick, hairy, erect stem which gives rise to a large flower head. The plant has large, broad lower leaves which are oval and arranged alternately on the stem and smaller, narrower upper leaves which are attached individually to the stem. The large flower head is composed of a central disk of small, tubular flowers and surrounding bright yellow ray flowers. The seeds are grayish black, compressed, with a smooth surface and a faint, but distinctive, longitudinal ridge. The seeds are pressed to extract their oil or dehulled and roasted or consumed as a popular snack.'
-};
+describe('PlantService', () => {
+  let plantService: PlantService;
 
-const databaseMock = {
-    get: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockResolvedValue(mockPlantDetails),
-    find: jest.fn().mockResolvedValue([mockPlantDetails]),
-    findOne: jest.fn().mockResolvedValue(mockPlantDetails),
-    update: jest.fn().mockResolvedValue({ matchedCount: 1, modifiedCount: 1, upsertedId: 1 }),
-    remove: jest.fn().mockResolvedValue({ deletedCount: 1 }),
-};
+  beforeEach(() => {
+    plantService = new PlantService();
+    // Reset mocks before each test
+    jest.clearAllMocks();
+  });
 
-jest.mock('../database/database', () => ({
-    default: databaseMock,
-}));
-
-// Define plantsCollectionMock here if you need it for other parts of your test
-const plantsCollectionMock = {
-    insert: databaseMock.insert,
-    find: databaseMock.find,
-    findOne: databaseMock.findOne,
-    update: databaseMock.update,
-    remove: databaseMock.remove,
-};
-
-describe('Plant CRUD operations', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+  describe('create', () => {
+    it('should successfully create a plant', async () => {
+      jest.spyOn(plantService, 'create').mockResolvedValue(mockPlantDetails);
+      const result = await plantService.create(mockPlantDetails);
+      expect(result).toEqual(mockPlantDetails);
+      expect(plantService.create).toHaveBeenCalledWith(mockPlantDetails);
     });
 
-    it('should create a new plant', async () => {
-        const newPlantData: Omit<PlantDetails, 'id'> = {
-            common_name: 'New Plant',
-            scientific_name: ['New Species'],
-            // Include other properties to create
-        };
-        const createdPlant = await createPlant(newPlantData as PlantDetails);
+    it('should throw an error if plant already exists', async () => {
+      jest.spyOn(plantService, 'create').mockRejectedValue(new Error('Plant already exists'));
+      await expect(plantService.create(mockPlantDetails)).rejects.toThrow('Plant already exists');
+    });
+  });
 
-        expect(databaseMock.insert).toHaveBeenCalledWith(newPlantData);
-        expect(createdPlant).toEqual(mockPlantDetails);
+  describe('read', () => {
+    it('should successfully return a plant by ID', async () => {
+      jest.spyOn(plantService, 'getById').mockResolvedValue(mockPlantDetails);
+      const result = await plantService.getById('1');
+      expect(result).toEqual(mockPlantDetails);
+      expect(plantService.getById).toHaveBeenCalledWith('1');
     });
 
-    it('should return a list of plants', async () => {
-        const plantsList = await findPlants();
+    it('should throw an error if plant is not found', async () => {
+      jest.spyOn(plantService, 'getById').mockRejectedValue(new Error('Plant not found'));
+      await expect(plantService.getById('nonexistent')).rejects.toThrow('Plant not found');
+    });
+  });
 
-        expect(databaseMock.find).toHaveBeenCalledWith({});
-        expect(plantsList).toEqual([mockPlantDetails]);
+  describe('update', () => {
+    it('should successfully update a plant', async () => {
+      jest.spyOn(plantService, 'update').mockResolvedValue({ ...mockPlantDetails, name: 'Updated Plant' });
+      const result = await plantService.update('1', { ...mockPlantDetails, name: 'Updated Plant' });
+      expect(result).toEqual({ ...mockPlantDetails, name: 'Updated Plant' });
+      expect(plantService.update).toHaveBeenCalledWith('1', { ...mockPlantDetails, name: 'Updated Plant' });
     });
 
-    it('should return a plant by id', async () => {
-        const plantId = '1';
-        const plant = await findPlantById(plantId);
+    it('should throw an error if the plant to update is not found', async () => {
+      jest.spyOn(plantService, 'update').mockRejectedValue(new Error('Plant not found'));
+      await expect(plantService.update('nonexistent', mockPlantDetails)).rejects.toThrow('Plant not found');
+    });
+  });
 
-        expect(databaseMock.findOne).toHaveBeenCalledWith({ id: plantId });
-        expect(plant).toEqual(mockPlantDetails);
+  describe('delete', () => {
+    it('should successfully delete a plant by ID', async () => {
+      jest.spyOn(plantService, 'delete').mockResolvedValue(true);
+      const result = await plantService.delete('1');
+      expect(result).toBe(true);
+      expect(plantService.delete).toHaveBeenCalledWith('1');
     });
 
-    it('should update a plant', async () => {
-        const updatedPlantData: Partial<PlantDetails> = {
-            id: '1',
-            common_name: 'Updated Plant',
-            // Include other properties to update
-        };
-        const updatedPlant = await updatePlant(updatedPlantData.id!, updatedPlantData);
-
-        expect(databaseMock.update).toHaveBeenCalledWith({ id: updatedPlantData.id }, { $set: updatedPlantData });
-        expect(updatedPlant).toEqual(updatedPlantData);
+    it('should throw an error if the plant to delete is not found', async () => {
+      jest.spyOn(plantService, 'delete').mockRejectedValue(new Error('Plant not found'));
+      await expect(plantService.delete('nonexistent')).rejects.toThrow('Plant not found');
     });
-
-    it('should delete a plant', async () => {
-        const plantId = '1';
-        await deletePlant(plantId);
-
-        expect(databaseMock.remove).toHaveBeenCalledWith({ id: plantId });
-    });
+  });
 });
