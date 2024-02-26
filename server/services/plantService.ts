@@ -34,7 +34,7 @@ export async function searchPlantByName(query: string): Promise<ApiResponse<Plan
   return data;
 }
 
-export async function fetchPlantDetails(plantId: number): Promise<PlantDetails> {
+export async function fetchPlantDetails(plantId: string): Promise<PlantDetails> {
   const { data } = await axios.get(`${BASE_URL}/species/details/${plantId}`, {
     params: { key: API_KEY },
   });

@@ -1,12 +1,25 @@
 // server/models/plant.ts
 import db from '../database/database';
-import { PlantDetails } from './plantInterfaces'; // adjust the import path as necessary
+import { PlantDetails } from './plantInterfaces';
 
 const plantsCollection = db.get('plants');
 
+// ensure indexes
+const ensureIndexes = async () => {
+  try {
+    await plantsCollection.createIndex({ dateAdded: 1 });
+    console.log('Indexes ensured successfully');
+  } catch (error) {
+    console.error('Error ensuring indexes:', error);
+  }
+};
+
+ensureIndexes();
+
 // CRUD operations
-const createPlant = async (plantData: PlantDetails): Promise<PlantDetails> => {
-  return plantsCollection.insert(plantData);
+const createPlant = async (plantData: Omit<PlantDetails, 'dateAdded'>): Promise<PlantDetails> => {
+  const fullPlantData = { ...plantData, dateAdded: new Date() }; // add dateAdded
+  return plantsCollection.insert(fullPlantData);
 };
 
 const findPlants = async (): Promise<PlantDetails[]> => {
@@ -19,7 +32,7 @@ const findPlantById = async (id: string): Promise<PlantDetails> => {
 
 const updatePlant = async (id: string, plantData: Partial<PlantDetails>): Promise<PlantDetails> => {
   await plantsCollection.update({ _id: id }, { $set: plantData });
-  return findPlantById(id); // return the updated document
+  return findPlantById(id); // return updated plant
 };
 
 const deletePlant = async (id: string): Promise<{ message: string }> => {

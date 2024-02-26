@@ -19,7 +19,7 @@ describe('Plant API Endpoints', () => {
   it('GET /api/plants - should return a list of plants', async () => {
     const mockPlants: PlantSummary[] = [
       {
-        id: 1,
+        id: '1',
         common_name: 'European Silver Fir',
         scientific_name: ['Abies alba'],
         cycle: 'Perennial',
@@ -48,7 +48,7 @@ describe('Plant API Endpoints', () => {
 
   it('GET /api/plants/:id - should return plant details', async () => {
     const mockPlant: PlantDetails = {
-      id: 2,
+      id: '2',
       common_name: 'Common Fig',
       scientific_name: ['Ficus carica'],
       cycle: 'Perennial',

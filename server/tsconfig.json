@@ -5,15 +5,22 @@
     "module": "commonjs",
     "outDir": "./dist",
     "rootDir": "./",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ],
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "**/*.ts",
     "./*.ts",
     "./models/**/*.ts",
     "./schemas/**/*.ts",
-    "tests/server.test.ts",
-    "../global.d.ts" 
+    "tests/**.ts",
+    "../global.d.ts"
   ],
   "exclude": [
     "node_modules",

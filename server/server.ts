@@ -1,16 +1,16 @@
 // import dotenv first
 import dotenv from 'dotenv';
-console.log(`Current working directory: ${process.cwd()}`);
+//console.log(`Current working directory: ${process.cwd()}`);
 dotenv.config({ path: '../.env' }); 
-console.log(`Database URI: ${process.env.MONGODB_URI}`);
-console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
+//console.log(`Database URI: ${process.env.MONGODB_URI}`);
+//console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 // import other dependencies
-import monk from 'monk';
 import express from 'express';
 import cors from 'cors';
 import db from './database/database'; 
-import plantRoutes from './routes/plantRoutes';
+import apiRoutes from './routes/apiRoutes';
+import dbRoutes from './routes/dbRoutes';
 import axios from 'axios';
 import { createPlant } from './models/plant'; 
 import plantSchema from './schemas/plantSchema';
@@ -34,8 +34,8 @@ app.use(express.json()); // for parsing application/json
 
 app.get('/test', (req, res) => res.send('Server is running!'));
 
-app.use('/api/plants', plantRoutes); // API routes and other middleware
-app.use('/db/plants', plantRoutes); // API routes and other middleware
+app.use('/api/plants', apiRoutes); // API routes and other middleware
+app.use('/db/plants', dbRoutes); // API routes and other middleware
 
 app.get('/api/plants/:name', async (req, res) => {
   console.log('/api/plants endpoint hit');
