@@ -1,5 +1,5 @@
 // Import dependencies
-import * as plantService from '../services/plantService';
+import plantService from '../services/plantService';
 import axios from 'axios';
 import { mockPlantDetails } from './mockData';
 
@@ -20,7 +20,7 @@ describe('apiRoutes tests', () => {
       mockedAxios.get.mockResolvedValue({ data: mockPlantDetails });
 
       // Execution
-      const result = await plantService.fetchPlantDetails(plantId);
+      const result = await plantService.fetchPlantDetails(plantId.toString());
 
       // Assertion
       expect(result).toEqual(mockPlantDetails);
@@ -64,7 +64,7 @@ describe('apiRoutes tests', () => {
       mockedAxios.put.mockResolvedValue({ data: updatedPlantDetails });
 
       // Execution
-      const result = await plantService.updatePlantDetails(updatedPlantDetails.id, updatedPlantDetails);
+      const result = await plantService.updatePlantDetails(updatedPlantDetails.id.toString(), updatedPlantDetails);
 
       // Assertion
       expect(result).toEqual(updatedPlantDetails);
@@ -79,7 +79,7 @@ describe('apiRoutes tests', () => {
       mockedAxios.delete.mockResolvedValue({ data: { message: 'Plant deleted successfully' } });
 
       // Execution
-      const result = await plantService.removePlantFromDb(plantId);
+      const result = await plantService.removePlantFromDb(plantId.toString());
 
       // Assertion
       expect(result).toEqual({ message: 'Plant deleted successfully' });

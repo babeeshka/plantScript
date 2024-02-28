@@ -1,15 +1,14 @@
 import request from 'supertest';
-import { app } from '../server'; // Adjust this import based on your actual server setup
+import { app } from '../server'; 
 import { PlantDetails } from '../models/plantInterfaces';
-import { mockPlantDetails } from './mockData'; // Ensure this import matches your project structure
+import { mockPlantDetails } from './mockData';
 
-// Assuming database.ts exports functions that are used in the routes
 jest.mock('../database/database', () => ({
   getPlants: jest.fn().mockResolvedValue([mockPlantDetails]),
   getPlantById: jest.fn().mockResolvedValue(mockPlantDetails),
   addPlant: jest.fn().mockResolvedValue(mockPlantDetails),
   updatePlant: jest.fn().mockResolvedValue({ ...mockPlantDetails, common_name: "Updated Name" }),
-  deletePlant: jest.fn().mockResolvedValue(true) // Assuming it returns a boolean or void
+  deletePlant: jest.fn().mockResolvedValue(true) 
 }));
 
 describe('Database Routes', () => {
@@ -34,7 +33,8 @@ describe('Database Routes', () => {
       const newPlantDetails: Omit<PlantDetails, 'id'> = { 
         common_name: "New Plant", 
         scientific_name: ["New Species"],
-        // include other required properties based on your PlantDetails interface
+        // TODO include other required properties based on your PlantDetails interface
+
       };
       const response = await request(app).post('/db/plants').send(newPlantDetails);
       expect(response.status).toBe(201);

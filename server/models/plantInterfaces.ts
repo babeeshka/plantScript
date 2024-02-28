@@ -14,7 +14,7 @@ export interface DefaultImage {
 
 // type for fetchSpeciesList
 export interface PlantSummary {
-  id: string;
+  id: number;
   common_name: string;
   scientific_name: string[];
   other_name?: string[];
@@ -26,6 +26,7 @@ export interface PlantSummary {
 
 // type for fetchPlantDetails
 export interface PlantDetails extends PlantSummary {
+  _id?: string; // MongoDB's ObjectId
   family?: string | null;
   origin?: string[];
   type?: string;

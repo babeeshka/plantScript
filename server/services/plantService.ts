@@ -1,19 +1,18 @@
-// /server/services/plantService.ts
 import axios from 'axios';
-import Joi from 'joi';
+import Joi, { ValidationErrorItem } from 'joi';
 import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
 import { createPlant, findPlants, findPlantById, updatePlant, deletePlant } from '../models/plant';
-import plantSchema from '../schemas/plantSchema'; // Import Joi validation schema
-import { ValidationErrorItem } from '@hapi/joi';
+import { findPlantByApiId } from '../database/database';
+import plantSchema from '../schemas/plantSchema'; // Make sure this import path is correct
 
 const API_KEY = process.env.PERENUAL_API_KEY; // Ensure this is set in .env
 const BASE_URL = 'https://perenual.com/api';
 
 class PlantService {
-  private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema<T>): T {
+  private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema): T {
     const { value, error } = schema.validate(data);
     if (error) {
-      throw new Error(`Validation failed: ${error.details.map((x: ValidationErrorItem) => x.message).join(', ')}`);
+      throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
     }
     return value;
   }
@@ -32,11 +31,15 @@ class PlantService {
     return data;
   }
 
-  public async fetchPlantDetails(plantId: string): Promise<PlantDetails> {
-    const { data } = await axios.get(`${BASE_URL}/species/details/${plantId}`, {
-      params: { key: API_KEY },
-    });
-    return this.validateApiResponse<PlantDetails>(data, plantSchema);
+  public async fetchPlantDetails(plantId: number): Promise<PlantDetails> {
+    const response = await axios.get(`${process.env.BASE_URL}/species/details/${plantId}?key=${process.env.API_KEY}`);
+    const validatedResponse = this.validateApiResponse<PlantDetails>(
+      response.data, plantSchema);
+    return validatedResponse;
+  }
+
+  public async getPlantByApiId(id: number): Promise<PlantDetails | null> {
+    return findPlantByApiId(id);
   }
 
   public async createPlantInDb(plantData: PlantDetails): Promise<PlantDetails> {
@@ -60,36 +63,5 @@ class PlantService {
   }
 }
 
-export { PlantService };
-  export function fetchSpeciesList() {
-    throw new Error('Function not implemented.');
-  }
-
-  export function searchPlantByName(query: string) {
-    throw new Error('Function not implemented.');
-  }
-
-  export function fetchPlantDetails(plantId: string) {
-    throw new Error('Function not implemented.');
-  }
-
-  export function createPlantInDb(plantData: { common_name: string; scientific_name: string[]; }) {
-    throw new Error('Function not implemented.');
-  }
-
-  export function findAllPlantsFromDb() {
-    throw new Error('Function not implemented.');
-  }
-
-  export function getPlantDetailsById(plantId: string) {
-    throw new Error('Function not implemented.');
-  }
-
-  export function updatePlantDetails(plantId: string, updateData: { common_name: string; scientific_name: string[]; }) {
-    throw new Error('Function not implemented.');
-  }
-
-  export function removePlantFromDb(plantId: string) {
-    throw new Error('Function not implemented.');
-  }
-
+const plantService = new PlantService();
+export default plantService;

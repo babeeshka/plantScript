@@ -1,4 +1,4 @@
-import * as plantService from '../services/plantService';
+import plantService from '../services/plantService';
 import * as plantModel from '../models/plant';
 import axios from 'axios';
 
@@ -24,7 +24,7 @@ describe('plantService', () => {
       mockedAxios.get.mockResolvedValue(mockResponse);
 
       const result = await plantService.fetchSpeciesList();
-      expect(result).toEqual(mockResponse.data.results);
+      expect(result).toEqual(mockResponse.data); // Use .data directly if it contains the results key
       expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('/species-list'), expect.any(Object));
     });
   });
@@ -36,7 +36,7 @@ describe('plantService', () => {
 
       const query = 'Rose';
       const result = await plantService.searchPlantByName(query);
-      expect(result).toEqual(mockResponse.data.results);
+      expect(result).toEqual(mockResponse.data);
       expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('/search'), {
         params: { q: query },
       });
@@ -48,7 +48,7 @@ describe('plantService', () => {
       const mockResponse = { data: {} };
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      const plantId = '1';
+      const plantId = "1";
       const result = await plantService.fetchPlantDetails(plantId);
       expect(result).toEqual(mockResponse.data);
       expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining(`/species/details/${plantId}`), expect.any(Object));
@@ -65,7 +65,7 @@ describe('plantService', () => {
     });
 
     it('creates a plant in the database', async () => {
-      const plantData = { common_name: 'Rose', scientific_name: 'Rosa' };
+      const plantData = { id: '1', common_name: 'Rose', scientific_name: ['Rosa'] };
       const result = await plantService.createPlantInDb(plantData);
       expect(plantModel.createPlant).toHaveBeenCalledWith(plantData);
       expect(result).toEqual({ id: '1', common_name: 'Rose', scientific_name: ['Rosa'] });
@@ -86,10 +86,10 @@ describe('plantService', () => {
 
     it('updates plant details in the database', async () => {
       const plantId = '1';
-      const updateData = { common_name: 'Updated Rose', scientific_name: 'Rosa' };
+      const updateData = { common_name: 'Updated Rose', scientific_name: ['Rosa'] };
       const result = await plantService.updatePlantDetails(plantId, updateData);
       expect(plantModel.updatePlant).toHaveBeenCalledWith(plantId, updateData);
-      expect(result).toEqual({ id: '1', common_name: 'Updated Rose', scientific_name: 'Rosa' });
+      expect(result).toEqual({ id: '1', common_name: 'Updated Rose', scientific_name: ['Rosa'] });
     });
 
     it('deletes a plant from the database', async () => {

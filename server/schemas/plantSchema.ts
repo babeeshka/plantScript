@@ -2,6 +2,7 @@ import Joi from 'joi';
 
 const plantSchema = Joi.object({
   id: Joi.number().required(),
+  _id: Joi.string().optional(),
   common_name: Joi.string().required(),
   scientific_name: Joi.array().items(Joi.string()).required(),
   other_names: Joi.array().items(Joi.string()).allow(null).optional(),

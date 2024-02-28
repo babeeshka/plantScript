@@ -1,9 +1,10 @@
 import { PlantDetails } from '../models/plantInterfaces';
 
 export const mockPlantDetails: PlantDetails = {
-    id: "1",
+    _id: "60f8e9f3b4b6c7d3e6a3d3a0",
+    id: 1,
     common_name: "Mock Plant",
-    scientific_name: [ "Mockus plantae" ],
+    scientific_name: ["Mockus plantae"],
     other_name: ["Test Plant"],
     family: "Mockaceae",
     origin: ["Testland"],
@@ -80,6 +81,5 @@ export const mockPlantDetails: PlantDetails = {
         small_url: "https://example.com/mock_plant_small.jpg",
         thumbnail: "https://example.com/mock_plant_thumbnail.jpg",
     },
-    other_images: "https://example.com/mock_plant_other.jpg",
-    dateAdded: new Date("2024-02-26T00:00:00Z")
+    other_images: "https://example.com/mock_plant_other.jpg"
 };

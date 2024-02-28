@@ -1,11 +1,6 @@
 // /server/routes/apiRoutes.ts
 import express from 'express';
-import {
-    fetchSpeciesList,
-    searchPlantByName,
-    fetchPlantDetails
-
-} from '../services/plantService';
+import plantService from '../services/plantService';
 
 const router = express.Router();
 
@@ -15,7 +10,7 @@ router.get('/', async (req, res) => {
         //console.log(`Received request on / with query:`, req.query);
         const page = parseInt(req.query.page as string) || 1;
         //console.log(`Fetching species list for page ${page}`);
-        const data = await fetchSpeciesList(page);
+        const data = await plantService.fetchSpeciesList(page);
         //console.log(`Data fetched successfully for page ${page}:`, data);
         res.json(data);
     } catch (error) {
@@ -32,7 +27,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
     try {
         const query = req.query.q as string;
-        const data = await searchPlantByName(query);
+        const data = await plantService.searchPlantByName(query);
         res.json(data);
     } catch (error) {
         if (error instanceof Error) {
@@ -46,16 +41,14 @@ router.get('/search', async (req, res) => {
 // route for fetching plant details by ID
 router.get('/:id/details', async (req, res) => {
     try {
-        const id = req.params.id.toString();
-        const data = await fetchPlantDetails(id);
-        res.json(data);
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).send('Invalid ID format.');
+  
+      const data = await plantService.fetchPlantDetails(id);
+      res.json(data);
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: "An unknown error occurred" });
-        }
+      res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
     }
-});
+  });
 
 export default router;

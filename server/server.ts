@@ -16,9 +16,6 @@ import { createPlant } from './models/plant';
 import plantSchema from './schemas/plantSchema';
 import { PlantDetails } from './models/plantInterfaces'; 
 
-db.on('open', () => console.log('Database connection opened.'));
-db.on('error', (err: any) => console.error('Database connection error:', err));
-
 export const app = express();
 export const port = process.env.PORT || 3000;
 
@@ -26,16 +23,15 @@ if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Attempting to listen on port ${port}...`);
     console.log(`Server listening on port ${port}`);
-    console.log(`You can now try accessing the server via http://localhost:${port}/api/plants`);
+    console.log(`You can now try accessing the server via http://localhost:${port}`);
   });
 }
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 
 app.get('/test', (req, res) => res.send('Server is running!'));
-
-app.use('/api/plants', apiRoutes); // API routes and other middleware
-app.use('/db/plants', dbRoutes); // API routes and other middleware
+app.use('/api/plants', apiRoutes); 
+app.use('/db/plants', dbRoutes); 
 
 app.get('/api/plants/:name', async (req, res) => {
   console.log('/api/plants endpoint hit');
@@ -80,7 +76,7 @@ const startServer = async () => {
     if (process.env.NODE_ENV !== 'test') {
       app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
-        console.log(`You can now try accessing the server via http://localhost:${port}/api/plants`);
+        console.log(`You can now try accessing the server via http://localhost:${port}`);
       });
     }
   } catch (err) {
