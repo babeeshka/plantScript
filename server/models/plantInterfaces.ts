@@ -12,7 +12,7 @@ export interface DefaultImage {
   thumbnail: string;
 }
 
-// type for fetchSpeciesList
+// type for fetchSpeciesList based on perenual response
 export interface PlantSummary {
   id: number;
   common_name: string;
@@ -24,7 +24,7 @@ export interface PlantSummary {
   default_image?: DefaultImage;
 }
 
-// type for fetchPlantDetails
+// type for fetchPlantDetails based on perenual response
 export interface PlantDetails extends PlantSummary {
   _id?: string; // MongoDB's ObjectId
   family?: string | null;
@@ -32,7 +32,7 @@ export interface PlantDetails extends PlantSummary {
   type?: string;
   dimension?: string;
   dimensions?: {
-    type: string;
+    type?: string;
     min_value: number;
     max_value: number;
     unit: string;
@@ -109,7 +109,7 @@ export interface PlantDetails extends PlantSummary {
 
 
 
-// type for fetchSpeciesList response
+// type for fetchSpeciesList from perenual API
 export interface ApiResponse<T> {
   data: T[];
   to: number;

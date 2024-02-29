@@ -1,15 +1,19 @@
-import axios from 'axios';
-import Joi, { ValidationErrorItem } from 'joi';
+// /services/plantService.ts
+import dotenv from 'dotenv';
+import * as plantModel from '../models/plant';
 import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
-import { createPlant, findPlants, findPlantById, updatePlant, deletePlant } from '../models/plant';
-import { findPlantByApiId } from '../database/database';
-import plantSchema from '../schemas/plantSchema'; // Make sure this import path is correct
+import Joi, { ValidationErrorItem } from 'joi';
+import axios from 'axios';
+import plantSchema from '../schemas/plantSchema';
 
-const API_KEY = process.env.PERENUAL_API_KEY; // Ensure this is set in .env
-const BASE_URL = 'https://perenual.com/api';
+dotenv.config({ path: '../.env' });
+
+const API_BASE_URL = 'https://perenual.com/api';
+const API_KEY = process.env.PERENUAL_API_KEY;
 
 class PlantService {
-  private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema): T {
+  // validation
+  private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema<T>): T {
     const { value, error } = schema.validate(data);
     if (error) {
       throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
@@ -17,51 +21,50 @@ class PlantService {
     return value;
   }
 
+  // Fetch species list with pagination
   public async fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
-    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {
+    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
       params: { key: API_KEY, page },
     });
     return data;
   }
 
+  // Search plants by name
   public async searchPlantByName(query: string): Promise<ApiResponse<PlantSummary>> {
-    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${BASE_URL}/species-list`, {
+    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
       params: { key: API_KEY, q: query },
     });
     return data;
   }
 
-  public async fetchPlantDetails(plantId: number): Promise<PlantDetails> {
-    const response = await axios.get(`${process.env.BASE_URL}/species/details/${plantId}?key=${process.env.API_KEY}`);
-    const validatedResponse = this.validateApiResponse<PlantDetails>(
-      response.data, plantSchema);
-    return validatedResponse;
+  // Fetch plant details by ID and validate response
+  public async fetchPlantDetails(id: number): Promise<PlantDetails> {
+    const response = await axios.get(`${API_BASE_URL}/species/details/${id}`, {
+      params: { key: API_KEY },
+    });
+    return this.validateApiResponse<PlantDetails>(response.data, plantSchema);
   }
 
-  public async getPlantByApiId(id: number): Promise<PlantDetails | null> {
-    return findPlantByApiId(id);
-  }
-
+  // database plant methods
   public async createPlantInDb(plantData: PlantDetails): Promise<PlantDetails> {
-    return createPlant(plantData);
+    return plantModel.createPlant(plantData);
   }
 
   public async findAllPlantsFromDb(): Promise<PlantDetails[]> {
-    return findPlants();
+    return plantModel.findAllPlants();
   }
 
-  public async getPlantDetailsById(plantId: string): Promise<PlantDetails | null> {
-    return findPlantById(plantId);
+  public async getPlantByApiId(id: number): Promise<PlantDetails | null> {
+    return plantModel.findPlantByApiId(id);
   }
 
-  public async updatePlantDetails(plantId: string, updateData: Partial<PlantDetails>): Promise<PlantDetails> {
-    return updatePlant(plantId, updateData);
+  public async updatePlantDetails(apiId: number, updateData: Partial<PlantDetails>): Promise<PlantDetails | null> {
+    return plantModel.updatePlantByApiId(apiId, updateData);
   }
 
-  public async removePlantFromDb(plantId: string): Promise<void> {
-    await deletePlant(plantId);
+  public async removePlantFromDb(apiId: number): Promise<PlantDetails | null> {
+    return plantModel.deletePlantByApiId(apiId);
   }
 }
 
-const plantService = new PlantService();
-export default plantService;
+export const plantService = new PlantService();
