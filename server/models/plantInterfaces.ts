@@ -1,5 +1,7 @@
 // server/models/plantInterfaces.ts
 
+import { array } from "joi";
+
 // type for Default Image which is present in both fetchSpeciesList and fetchPlantDetails
 export interface DefaultImage {
   license: number;
@@ -60,7 +62,10 @@ export interface PlantDetails extends PlantSummary {
     full_iframe: string;
   };
   watering?: string;
-  depth_water_requirement?: string[];
+  depth_water_requirement?: {
+    unit: string;
+    value: number;
+  }
   volume_water_requirement?: string[];
   watering_period?: string | null;
   watering_general_benchmark?: {
@@ -70,7 +75,7 @@ export interface PlantDetails extends PlantSummary {
   plant_anatomy?: PlantAnatomy[];
   sunlight?: string[];
   pruning_month?: string[];
-  pruning_count: PruningCount;
+  pruning_count?: PruningCount;
   seeds?: number;
   maintenance?: string | null;
   care_guides?: string;

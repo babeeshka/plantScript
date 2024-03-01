@@ -29,7 +29,10 @@ export const mockPlantDetails: PlantDetails = {
         full_iframe: "<iframe src='https://example.com/hardiness_zone_map'></iframe>",
     },
     watering: "Moderate",
-    depth_water_requirement: ["15cm"],
+    depth_water_requirement: {
+        value: 1,
+        unit: "cm",
+    },
     volume_water_requirement: ["1L per week"],
     watering_period: "Weekly",
     watering_general_benchmark: {
@@ -49,8 +52,8 @@ export const mockPlantDetails: PlantDetails = {
     sunlight: ["Partial shade"],
     pruning_month: ["March", "April"],
     pruning_count: {
-      amount: 1,
-      interval: "yearly",
+        amount: 1,
+        interval: "Year",
     },
     seeds: 100,
     maintenance: "Low",

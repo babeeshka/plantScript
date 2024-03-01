@@ -16,10 +16,13 @@ const plantAnatomySchema = Joi.object({
     color: Joi.array().items(Joi.string()).required(),
 });
 
-const pruningCountSchema = Joi.object({
-    amount: Joi.number().required(),
-    interval: Joi.string().required(),
-});
+const pruningCountSchema = Joi.alternatives().try(
+    Joi.object({
+        amount: Joi.number().required(),
+        interval: Joi.string().required(),
+    }).allow(null).required(),
+    Joi.array().length(0)
+).optional();
 
 const plantSchema = Joi.object({
     id: Joi.number().required(),
@@ -48,20 +51,26 @@ const plantSchema = Joi.object({
         full_iframe: Joi.string().required(),
     }).allow(null).optional(),
     watering: Joi.string().required(),
-    depth_water_requirement: Joi.array().items(Joi.string()).allow(null).optional(),
+    depth_water_requirement: Joi.alternatives().try(
+        Joi.object({
+            unit: Joi.string().allow(null).required(),
+            value: Joi.number().allow(null).required(),
+        }),
+        Joi.array().length(0)
+    ).optional(),
     volume_water_requirement: Joi.array().items(Joi.string()).allow(null).optional(),
     watering_period: Joi.string().allow(null).optional(),
     watering_general_benchmark: Joi.object({
-        value: Joi.string().required(),
-        unit: Joi.string().required(),
+        value: Joi.string().allow(null).required(),
+        unit: Joi.string().allow(null).required(),
     }).allow(null).optional(),
     plant_anatomy: Joi.array().items(plantAnatomySchema).required(),
     sunlight: Joi.array().items(Joi.string()).required(),
-    pruning_month: Joi.array().items(Joi.string()).required(),
+    pruning_month: Joi.array().items(Joi.string()).allow(null).required(),
     pruning_count: pruningCountSchema,
     seeds: Joi.number().allow(null).optional(),
-    maintenance: Joi.string().required(),
-    care_guides: Joi.string().uri().required(),
+    maintenance: Joi.string().allow(null).required(),
+    care_guides: Joi.string().uri().optional(),
     soil: Joi.array().items(Joi.string()).required(),
     growth_rate: Joi.string().required(),
     drought_tolerant: Joi.boolean().required(),
@@ -74,8 +83,8 @@ const plantSchema = Joi.object({
     pest_susceptibility: Joi.array().items(Joi.string()).allow(null).optional(),
     pest_susceptibility_api: Joi.string().allow('Coming Soon', null, '').optional(),
     flowers: Joi.boolean().required(),
-    flowering_season: Joi.string().required(),
-    flower_color: Joi.string().required(),
+    flowering_season: Joi.string().allow(null).required(),
+    flower_color: Joi.string().allow("").required(),
     cones: Joi.boolean().required(),
     fruits: Joi.boolean().required(),
     edible_fruit: Joi.boolean().required(),
