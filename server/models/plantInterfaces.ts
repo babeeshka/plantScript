@@ -120,6 +120,7 @@ export interface PlantDetails extends PlantSummary {
   };
   other_images?: string;
   dateAdded?: Date;
+  lastEditedAt?: Date;
 }
 
 // type for fetchSpeciesList from perenual API

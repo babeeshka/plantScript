@@ -7,7 +7,13 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const plants = await plantService.findAllPlantsFromDb();
-        res.json(plants);
+        // For example, you can add a count of all plants
+        const count = plants.length; // This works if you're not implementing pagination
+        const metadata = {
+            totalPlants: count,
+            
+        };
+        res.json({ data: plants, metadata });
     } catch (error) {
         console.error('Error fetching plants from the database:', error);
         res.status(500).json({ error: "An error occurred while fetching plants from the database" });
@@ -23,7 +29,6 @@ router.get('/:id', async (req, res) => {
   
     try {
       const plant = await plantService.getPlantByApiId(id);
-      console.log(`Plant found for ID ${id}:`, plant); // Debug output
       if (plant) {
         res.json(plant);
       } else {
@@ -33,8 +38,7 @@ router.get('/:id', async (req, res) => {
       console.error(`Error fetching plant with API ID ${id}:`, error);
       res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
     }
-  });
-
+});
 
 // Route for adding a new plant to the db
 router.post('/', async (req, res) => {
@@ -48,6 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // Route to update plant details by the external API's ID in the db
+// TODO add last edited property to plant details
 router.put('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
@@ -63,7 +68,7 @@ router.put('/:id', async (req, res) => {
         }
     } catch (error) {
         console.error(`Error updating plant for API ID ${id}:`, error);
-        res.status(500).json({ error: 'An error occurred while updating the plant in the database' });
+        res.status(500).json({ error: error instanceof Error ? error.message : "An error occurred while updating the plant in the database" });
     }
 });
 
