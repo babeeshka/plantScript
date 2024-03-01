@@ -6,19 +6,14 @@ import dbRoutes from './routes/dbRoutes';
 
 dotenv.config({ path: '../.env' }); 
 
-const app = express();
+export const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
 
-// Test route to confirm the server is running
 app.get('/test', (req, res) => res.send('Server is running!'));
-
-// Use apiRoutes for routes starting with /api/plants
 app.use('/api/plants', apiRoutes);
-
-// Use dbRoutes for routes starting with /db/plants
 app.use('/db/plants', dbRoutes);
 
 // Start the server

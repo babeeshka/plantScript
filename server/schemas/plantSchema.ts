@@ -16,6 +16,11 @@ const plantAnatomySchema = Joi.object({
     color: Joi.array().items(Joi.string()).required(),
 });
 
+const pruningCountSchema = Joi.object({
+    amount: Joi.number().required(),
+    interval: Joi.string().required(),
+});
+
 const plantSchema = Joi.object({
     id: Joi.number().required(),
     common_name: Joi.string().required(),
@@ -52,11 +57,11 @@ const plantSchema = Joi.object({
     }).allow(null).optional(),
     plant_anatomy: Joi.array().items(plantAnatomySchema).required(),
     sunlight: Joi.array().items(Joi.string()).required(),
-    pruning_month: Joi.string().allow(null).optional(),
-    pruning_count: Joi.array().items(Joi.number()).allow(null).optional(),
+    pruning_month: Joi.array().items(Joi.string()).required(),
+    pruning_count: pruningCountSchema,
     seeds: Joi.number().allow(null).optional(),
     maintenance: Joi.string().required(),
-    "care-guides": Joi.string().uri().required(),
+    care_guides: Joi.string().uri().required(),
     soil: Joi.array().items(Joi.string()).required(),
     growth_rate: Joi.string().required(),
     drought_tolerant: Joi.boolean().required(),
@@ -88,6 +93,6 @@ const plantSchema = Joi.object({
     description: Joi.string().required(),
     default_image: defaultImageSchema.allow(null).optional(),
     other_images: Joi.any().optional(), // TODO consider defining a more specific schema if possible
-}).unknown(true); 
+}).unknown(true);
 
 export default plantSchema;

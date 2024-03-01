@@ -24,6 +24,17 @@ export interface PlantSummary {
   default_image?: DefaultImage;
 }
 
+// type for PlantAnatomy which is present in fetchPlantDetails
+export interface PlantAnatomy {
+  part: string;
+  color: string[];
+}
+
+export interface PruningCount {
+  amount: number;
+  interval: string;
+}
+
 // type for fetchPlantDetails based on perenual response
 export interface PlantDetails extends PlantSummary {
   _id?: string; // MongoDB's ObjectId
@@ -56,10 +67,10 @@ export interface PlantDetails extends PlantSummary {
     value: string;
     unit: string;
   };
-  plant_anatomy?: string[];
+  plant_anatomy?: PlantAnatomy[];
   sunlight?: string[];
   pruning_month?: string[];
-  pruning_count?: string[];
+  pruning_count: PruningCount;
   seeds?: number;
   maintenance?: string | null;
   care_guides?: string;
@@ -105,9 +116,6 @@ export interface PlantDetails extends PlantSummary {
   other_images?: string;
   dateAdded?: Date;
 }
-
-
-
 
 // type for fetchSpeciesList from perenual API
 export interface ApiResponse<T> {

@@ -50,18 +50,22 @@ class PlantService {
     return plantModel.createPlant(plantData);
   }
 
+  // Fetch all plants from database
   public async findAllPlantsFromDb(): Promise<PlantDetails[]> {
     return plantModel.findAllPlants();
   }
 
+  // Fetch plant by API ID from database
   public async getPlantByApiId(id: number): Promise<PlantDetails | null> {
     return plantModel.findPlantByApiId(id);
   }
 
+  // Update plant details in database
   public async updatePlantDetails(apiId: number, updateData: Partial<PlantDetails>): Promise<PlantDetails | null> {
     return plantModel.updatePlantByApiId(apiId, updateData);
   }
 
+  // Remove plant from database
   public async removePlantFromDb(apiId: number): Promise<PlantDetails | null> {
     return plantModel.deletePlantByApiId(apiId);
   }

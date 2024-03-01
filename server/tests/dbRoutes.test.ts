@@ -1,63 +1,80 @@
 import request from 'supertest';
-import { app } from '../server'; 
+import express from 'express';
+import dbRoutes from '../routes/dbRoutes';
+import monk, { IMonkManager } from 'monk';
+import { jest } from '@jest/globals';
 import { PlantDetails } from '../models/plantInterfaces';
 import { mockPlantDetails } from './mockData';
 
-jest.mock('../database/database', () => ({
-  getPlants: jest.fn().mockResolvedValue([mockPlantDetails]),
-  getPlantById: jest.fn().mockResolvedValue(mockPlantDetails),
-  addPlant: jest.fn().mockResolvedValue(mockPlantDetails),
-  updatePlant: jest.fn().mockResolvedValue({ ...mockPlantDetails, common_name: "Updated Name" }),
-  deletePlant: jest.fn().mockResolvedValue(true) 
-}));
+const app = express();
+app.use(express.json());
+app.use('/db/plants', dbRoutes);
 
-describe('Database Routes', () => {
-  describe('GET /db/plants', () => {
-    it('should return a list of plants', async () => {
-      const response = await request(app).get('/db/plants');
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual([mockPlantDetails]);
-    });
-  });
-
-  describe('GET /db/plants/:id', () => {
-    it('should return a plant by id', async () => {
-      const response = await request(app).get(`/db/plants/${mockPlantDetails.id}`);
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockPlantDetails);
-    });
-  });
-
-  describe('POST /db/plants', () => {
-    it('should add a new plant', async () => {
-      const newPlantDetails: Omit<PlantDetails, 'id'> = { 
-        common_name: "New Plant", 
-        scientific_name: ["New Species"],
-        // TODO include other required properties based on your PlantDetails interface
-
-      };
-      const response = await request(app).post('/db/plants').send(newPlantDetails);
-      expect(response.status).toBe(201);
-      // Assuming the response includes the newly added plant, adjust as necessary
-      expect(response.body).toMatchObject({ id: expect.any(String), ...newPlantDetails });
-    });
-  });
-
-  describe('PUT /db/plants/:id', () => {
-    it('should update a plant', async () => {
-      const updates = { common_name: "Updated Name" };
-      const response = await request(app).put(`/db/plants/${mockPlantDetails.id}`).send(updates);
-      expect(response.status).toBe(200);
-      expect(response.body.common_name).toEqual("Updated Name");
-    });
-  });
-
-  describe('DELETE /db/plants/:id', () => {
-    it('should delete a plant', async () => {
-      const response = await request(app).delete(`/db/plants/${mockPlantDetails.id}`);
-      expect(response.status).toBe(204);
-    });
-  });
+jest.mock('monk', () => {
+  const collectionMock = {
+    findOne: jest.fn(),
+    find: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn(),
+    findOneAndUpdate: jest.fn(),
+    findOneAndDelete: jest.fn(),
+  };
+  return jest.fn(() => ({
+    get: jest.fn().mockReturnValue(collectionMock),
+    then: jest.fn().mockReturnThis(),
+    catch: jest.fn().mockReturnThis(),
+  }));
 });
 
-// Make sure to adjust the endpoint URLs based on your actual API endpoints
+const db: IMonkManager = monk('mock-db-uri');
+const collection = db.get('plants');
+
+describe('DB Routes with Monk', () => {
+  beforeEach(() => {
+    jest.clearAllMocks(); // Clear all mocks before each test
+    (collection.find as jest.Mock).mockReturnValueOnce([mockPlantDetails] as PlantDetails[]);
+    (collection.findOne as jest.Mock).mockReturnValue(mockPlantDetails as PlantDetails | null);
+    (collection.update as jest.Mock).mockReturnValueOnce({
+      matchedCount: 1,
+      modifiedCount: 1,
+      upsertedId: null,
+    });
+    (collection.remove as jest.Mock).mockReturnValueOnce({ deletedCount: 1 });
+  });
+
+  it('fetches all plants successfully', async () => {
+    const response = await request(app).get('/db/plants');
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual([mockPlantDetails]);
+    expect(collection.find).toHaveBeenCalled();
+  });
+
+  // TODO review this test as it is returning a 200 OK and failing the test instead of returning a 404
+  it('should handle the case where a plant does not exist for fetching', async () => {
+    (collection.findOne as jest.Mock).mockImplementation((query: any) => { 
+      if (query._id === '2') {
+        return Promise.resolve(null); 
+      }
+      return Promise.resolve(mockPlantDetails); 
+    });
+    const response = await request(app).get('/db/plants/2');
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBeDefined();
+  });
+
+  it('should handle the case where a plant does not exist for updating', async () => {
+    (collection.findOneAndUpdate as jest.Mock).mockReturnValueOnce(null);
+    const response = await request(app).put('/db/plants/99999').send({ common_name: "New Name" });
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBeDefined();
+  });
+
+  it('should handle the case where a plant does not exist for deletion', async () => {
+    (collection.findOneAndDelete as jest.Mock).mockReturnValueOnce(null);
+    const response = await request(app).delete('/db/plants/99999');
+    expect(response.statusCode).toBe(404);
+    expect(response.body.error).toBeDefined();
+  });
+
+  // more tests as needed
+});

@@ -1,97 +1,73 @@
-// Import dependencies
-import plantService from '../services/plantService';
-import axios from 'axios';
+jest.mock('../services/plantService');
+import { plantService } from '../services/plantService';
+import request from 'supertest';
+import express from 'express';
+import apiRoutes from '../routes/apiRoutes';
 import { mockPlantDetails } from './mockData';
 
-// Mock axios
-jest.mock('axios');
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+const app = express();
+app.use(express.json());
+app.use('/api/plants', apiRoutes);
 
-describe('apiRoutes tests', () => {
-  beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-  });
-
-  describe('fetchPlantDetails', () => {
-    it('successfully fetches plant details from the API', async () => {
-      // Setup
-      const plantId = mockPlantDetails.id;
-      mockedAxios.get.mockResolvedValue({ data: mockPlantDetails });
-
-      // Execution
-      const result = await plantService.fetchPlantDetails(plantId.toString());
-
-      // Assertion
-      expect(result).toEqual(mockPlantDetails);
-      expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining(`plants/${plantId}`));
+describe('API Routes', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
     });
-  });
 
-  describe('fetchPlantsList', () => {
-    it('successfully fetches list of plants', async () => {
-      // Setup
-      const mockPlantsList = [mockPlantDetails];
-      mockedAxios.get.mockResolvedValue({ data: mockPlantsList });
-
-      // Execution
-      const result = await plantService.fetchSpeciesList();
-
-      // Assertion
-      expect(result).toEqual(mockPlantsList);
-      expect(mockedAxios.get).toHaveBeenCalledWith(expect.stringContaining('plants/list'));
+    it('responds with plant details', async () => {
+        (plantService.fetchPlantDetails as jest.Mock).mockResolvedValue(mockPlantDetails);
+        const response = await request(app).get('/api/plants/1/details');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual(mockPlantDetails);
+        expect(plantService.fetchPlantDetails).toHaveBeenCalledWith(1);
     });
-  });
 
-  describe('createPlant', () => {
-    it('successfully creates a new plant', async () => {
-      // Setup
-      mockedAxios.post.mockResolvedValue({ data: mockPlantDetails });
-
-      // Execution
-      const result = await plantService.createPlantInDb(mockPlantDetails);
-
-      // Assertion
-      expect(result).toEqual(mockPlantDetails);
-      expect(mockedAxios.post).toHaveBeenCalledWith(expect.stringContaining('plants'), mockPlantDetails);
+    it('responds with 404 for non-existent plant details', async () => {
+        (plantService.fetchPlantDetails as jest.Mock).mockResolvedValue(null);
+        const response = await request(app).get('/api/plants/999/details');
+        expect(response.statusCode).toBe(404);
     });
-  });
 
-  describe('updatePlant', () => {
-    it('successfully updates a plant', async () => {
-      // Setup
-      const updatedPlantDetails = { ...mockPlantDetails, common_name: "Updated Mock Plant" };
-      mockedAxios.put.mockResolvedValue({ data: updatedPlantDetails });
-
-      // Execution
-      const result = await plantService.updatePlantDetails(updatedPlantDetails.id.toString(), updatedPlantDetails);
-
-      // Assertion
-      expect(result).toEqual(updatedPlantDetails);
-      expect(mockedAxios.put).toHaveBeenCalledWith(expect.stringContaining(`plants/${updatedPlantDetails.id}`), updatedPlantDetails);
+    it('fetches species list with pagination', async () => {
+        const mockSpeciesList = { data: [], total: 100, per_page: 10, current_page: 1 };
+        (plantService.fetchSpeciesList as jest.Mock).mockResolvedValue(mockSpeciesList);
+        const response = await request(app).get('/api/plants/?page=1');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual(mockSpeciesList);
+        expect(plantService.fetchSpeciesList).toHaveBeenCalledWith(1);
     });
-  });
 
-  describe('deletePlant', () => {
-    it('successfully deletes a plant', async () => {
-      // Setup
-      const plantId = mockPlantDetails.id;
-      mockedAxios.delete.mockResolvedValue({ data: { message: 'Plant deleted successfully' } });
-
-      // Execution
-      const result = await plantService.removePlantFromDb(plantId.toString());
-
-      // Assertion
-      expect(result).toEqual({ message: 'Plant deleted successfully' });
-      expect(mockedAxios.delete).toHaveBeenCalledWith(expect.stringContaining(`plants/${plantId}`));
+    it('responds with search results', async () => {
+        const mockSearchResults = [mockPlantDetails];
+        (plantService.searchPlantByName as jest.Mock).mockResolvedValue(mockSearchResults);
+        const response = await request(app).get('/api/plants/search?q=mock');
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual(mockSearchResults);
+        expect(plantService.searchPlantByName).toHaveBeenCalledWith('mock');
     });
-  });
 
-  // Reset Axios mock before each test
-  beforeEach(() => {
-    mockedAxios.get.mockReset();
-    mockedAxios.post.mockReset();
-    mockedAxios.put.mockReset();
-    mockedAxios.delete.mockReset();
-  });
+    it('responds with 400 for invalid id', async () => {
+        const response = await request(app).get('/api/plants/invalid-id/details');
+        expect(response.statusCode).toBe(400);
+    });
+
+    it('responds with 500 for service layer error', async () => {
+        (plantService.fetchPlantDetails as jest.Mock).mockRejectedValue(new Error('Service Layer Error'));
+        const response = await request(app).get('/api/plants/1/details');
+        expect(response.statusCode).toBe(500);
+    });
+
+    // Testing missing API key scenario
+    it('responds with error when API key is missing', async () => {
+        (plantService.fetchSpeciesList as jest.Mock).mockImplementation(() => {
+            throw new Error("API key is missing");
+        });
+        const response = await request(app).get('/api/plants/');
+        expect(response.statusCode).not.toBe(200);
+        expect(response.body.error).toContain("API key is missing");
+    });
+
+    // TODO review and add tests for query parameters (present, correctly formatted, or malformed)
+    // TODO test the response when pagination params are valid, invalid, or at boundary conditions (e.g., page 1, last page, beyond the last page)
+    // TODO ensure handling of unexpected server errors, such as 500, 503, etc.
 });

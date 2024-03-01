@@ -1,3 +1,4 @@
+// /server/tests/mockData.ts
 import { PlantDetails } from '../models/plantInterfaces';
 
 export const mockPlantDetails: PlantDetails = {
@@ -35,13 +36,25 @@ export const mockPlantDetails: PlantDetails = {
         value: "1",
         unit: "L/week",
     },
-    plant_anatomy: ["Roots", "Stem", "Leaves"],
+    plant_anatomy: [
+        {
+            part: "Leaf",
+            color: ["Green"],
+        },
+        {
+            part: "Flower",
+            color: ["Yellow"],
+        },
+    ],
     sunlight: ["Partial shade"],
-    pruning_month: ["March", "September"],
-    pruning_count: ["Once"],
+    pruning_month: ["March", "April"],
+    pruning_count: {
+      amount: 1,
+      interval: "yearly",
+    },
     seeds: 100,
     maintenance: "Low",
-    care_guides: "Regular watering and monthly fertilization.",
+    care_guides: "https://example-care-guide.com",
     soil: ["Loamy"],
     growth_rate: "Medium",
     drought_tolerant: false,

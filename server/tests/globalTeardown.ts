@@ -1,6 +1,11 @@
-// tests/globalTeardown.ts
+// globalTeardown.ts
+import { MongoMemoryServer } from 'mongodb-memory-server';
+
 module.exports = async () => {
-  if (global.__MONGOD__) {
-      await global.__MONGOD__.stop();
-  }
+  await MongoMemoryServer.prototype.stop();
+};
+
+module.exports = async () => {
+  const instance = new MongoMemoryServer();
+  await instance.stop();
 };

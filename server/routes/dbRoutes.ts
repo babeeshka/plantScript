@@ -6,7 +6,6 @@ const router = express.Router();
 // Route for fetching all plants from the db
 router.get('/', async (req, res) => {
     try {
-        console.log('GET request to /db/plants');
         const plants = await plantService.findAllPlantsFromDb();
         res.json(plants);
     } catch (error) {
@@ -19,27 +18,28 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-        return res.status(400).json({ error: 'Invalid ID format' });
+      return res.status(400).json({ error: 'Invalid ID format' });
     }
-
+  
     try {
-        console.log(`GET request to /db/plants/${id}`);
-        const plant = await plantService.getPlantByApiId(id);
-        if (plant) {
-            res.json(plant);
-        } else {
-            res.status(404).json({ error: 'Plant not found' });
-        }
+      const plant = await plantService.getPlantByApiId(id);
+      console.log(`Plant found for ID ${id}:`, plant); // Debug output
+      if (plant) {
+        res.json(plant);
+      } else {
+        res.status(404).json({ error: 'Plant not found' });
+      }
     } catch (error) {
-        console.error(`Error fetching plant with API ID ${id}:`, error);
-        res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
+      console.error(`Error fetching plant with API ID ${id}:`, error);
+      res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
     }
-});
+  });
+
 
 // Route for adding a new plant to the db
 router.post('/', async (req, res) => {
     try {
-        const newPlant = await plantService.createPlantInDb(req.body); // Ensure req.body is validated against PlantDetails schema
+        const newPlant = await plantService.createPlantInDb(req.body);
         res.status(201).json(newPlant);
     } catch (error) {
         console.error('Error adding a new plant:', error);
@@ -55,7 +55,7 @@ router.put('/:id', async (req, res) => {
     }
 
     try {
-        const updatedPlant = await plantService.updatePlantDetails(id, req.body); // Adjust according to plantService method
+        const updatedPlant = await plantService.updatePlantDetails(id, req.body);
         if (updatedPlant) {
             res.json(updatedPlant);
         } else {
@@ -75,8 +75,12 @@ router.delete('/:id', async (req, res) => {
     }
 
     try {
-        await plantService.removePlantFromDb(id);
-        res.status(204).send();
+        const deleteResult = await plantService.removePlantFromDb(id);
+        if (deleteResult) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ error: 'Plant not found' });
+        }
     } catch (error) {
         console.error(`Error deleting plant for API ID ${id}:`, error);
         res.status(500).json({ error: error instanceof Error ? error.message : "An unknown error occurred" });

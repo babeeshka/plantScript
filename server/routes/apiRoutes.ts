@@ -38,14 +38,18 @@ router.get('/search', async (req, res) => {
 // route for fetching plant details by ID
 router.get('/:id/details', async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) return res.status(400).send('Invalid ID format.');
-  
-      const data = await plantService.fetchPlantDetails(id);
-      res.json(data);
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).send('Invalid ID format.');
+
+        const data = await plantService.fetchPlantDetails(id);
+        if (data) {
+            res.json(data);
+        } else {
+            res.status(404).json({ error: 'Plant not found' });
+        }
     } catch (error) {
-      res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+        res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
     }
-  });
+});
 
 export default router;
