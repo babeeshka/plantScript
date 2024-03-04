@@ -1,7 +1,7 @@
 // /services/plantService.ts
 import dotenv from 'dotenv';
 import * as plantModel from '../models/plant';
-import { ApiResponse, PlantSummary, PlantDetails } from '../models/plantInterfaces';
+import { ApiResponse, PlantSummary, PlantDetails } from '../../types/plantInterfaces';
 import Joi, { ValidationErrorItem } from 'joi';
 import axios from 'axios';
 import plantSchema from '../schemas/plantSchema';
@@ -68,6 +68,14 @@ class PlantService {
   // Remove plant from database
   public async removePlantFromDb(apiId: number): Promise<PlantDetails | null> {
     return plantModel.deletePlantByApiId(apiId);
+  }
+
+  // Fetch a random plant
+  public async fetchRandomPlant(): Promise<PlantDetails> {
+    const response = await axios.get(`${API_BASE_URL}/species/random`, {
+      params: { key: API_KEY },
+    });
+    return this.validateApiResponse<PlantDetails>(response.data, plantSchema);
   }
 }
 

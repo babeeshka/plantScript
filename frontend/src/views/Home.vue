@@ -2,7 +2,7 @@
     <div>
       <h1>Welcome to PlantScript</h1>
       <div v-if="randomPlant">
-        <p>{{ randomPlant.scientificName }}</p>
+        <p>{{ randomPlant.scientific_name }}</p>
         <!-- TODO add more display details -->
       </div>
     </div>

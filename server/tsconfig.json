@@ -8,7 +8,8 @@
     "baseUrl": ".",
     "typeRoots": [
       "./node_modules/@types",
-      "../"
+      "../",
+      "../../types/*"
     ],
     "types": [
       "node",
@@ -22,7 +23,7 @@
     "./schemas/**/*.ts",
     "types/**/*",
     "globals.d.ts"
-  ],
+, "../types/plantInterfaces.ts"  ],
   "exclude": [
     "node_modules"
   ]

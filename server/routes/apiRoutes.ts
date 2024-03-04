@@ -52,4 +52,14 @@ router.get('/:id/details', async (req, res) => {
     }
 });
 
+// route for fetching a random plant
+router.get('/random', async (req, res) => {
+    try {
+        const data = await plantService.fetchRandomPlant();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+    }
+});
+
 export default router;

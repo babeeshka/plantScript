@@ -1,5 +1,5 @@
 // /server/tests/mockData.ts
-import { PlantDetails } from '../models/plantInterfaces';
+import { PlantDetails } from '../../types/plantInterfaces';
 
 export const mockPlantDetails: PlantDetails = {
     _id: "60f8e9f3b4b6c7d3e6a3d3a0",

@@ -1,5 +1,5 @@
 import db from '../database/database';
-import { PlantDetails } from './plantInterfaces';
+import { PlantDetails } from '../../types/plantInterfaces';
 import Joi from 'joi';
 import plantSchema from '../schemas/plantSchema';
 
@@ -21,9 +21,13 @@ export const findPlantByApiId = async (id: number): Promise<PlantDetails | null>
 };
 
 export const createPlant = async (plantData: PlantDetails): Promise<PlantDetails> => {
-  const validatedData = validatePlant(plantData);
+  const validatedData = {
+    ...validatePlant(plantData),
+    dateAdded: new Date(),  
+  };
   return plantsCollection.insert(validatedData);
 };
+
 
 export const updatePlantByApiId = async (id: number, updateData: Partial<PlantDetails>): Promise<PlantDetails | null> => {
   const updateWithMetadata = {

@@ -1,36 +1,21 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import HomePage from '@/components/HomePage.vue';
-import SearchComponent from '@/components/SearchComponent.vue';
-import ManagePlant from '@/components/ManagePlant.vue';
-import PlantDetail from '@/views/PlantDetail.vue'; 
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from './views/Home.vue';
+import PlantDetail from './views/PlantDetail.vue';
+import PlantSearchPage from './views/PlantSearchPage.vue';
 
-// define the routes for your application
+Vue.use(VueRouter);
+
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: HomePage,
-  },
-  {
-    path: '/search',
-    name: 'Search',
-    component: SearchComponent,
-  },
-  {
-    path: '/manage',
-    name: 'ManagePlant',
-    component: ManagePlant,
-  },
-  {
-    path: '/plants/:id', // :id is a dynamic segment
-    name: 'PlantDetail',
-    component: PlantDetail,
-  }
+  { path: '/', name: 'home', component: Home },
+  { path: '/plant/:id', name: 'plant-detail', component: PlantDetail, props: true },
+  { path: '/search', name: 'plant-search', component: PlantSearchPage },
+  // other routes as necessary
 ];
 
-// create the router instance and export it
-const router = createRouter({
-  history: createWebHistory(),
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
   routes,
 });
 

@@ -3,7 +3,7 @@ import express from 'express';
 import dbRoutes from '../routes/dbRoutes';
 import monk, { IMonkManager } from 'monk';
 import { jest } from '@jest/globals';
-import { PlantDetails } from '../models/plantInterfaces';
+import { PlantDetails } from '../../types/plantInterfaces';
 import { mockPlantDetails } from './mockData';
 
 const app = express();

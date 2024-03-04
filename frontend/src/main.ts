@@ -1,12 +1,8 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'; 
+import Vue from 'vue';
+import App from './App.vue';
+import router from './router';
 
-// create the Vue application instance
-const app = createApp(App);
-
-// use the router with the Vue application
-app.use(router);
-
-// mount the Vue application to the DOM
-app.mount('#app');
+new Vue({
+  router,
+  render: h => h(App),
+}).$mount('#app');
