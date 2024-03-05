@@ -7,7 +7,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["../types/*"]
+      "@/*": ["src/*"],
+      "@rootTypes/*": ["../types/*"]
     }
   },
   "include": [

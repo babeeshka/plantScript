@@ -1,7 +1,7 @@
 // /services/plantService.ts
 import dotenv from 'dotenv';
 import * as plantModel from '../models/plant';
-import { ApiResponse, PlantSummary, PlantDetails } from '../../types/plantInterfaces';
+import { ApiResponse, PlantSummary, PlantDetails } from '@rootTypes/plantInterfaces';
 import Joi, { ValidationErrorItem } from 'joi';
 import axios from 'axios';
 import plantSchema from '../schemas/plantSchema';

@@ -1,5 +1,5 @@
 import db from '../database/database';
-import { PlantDetails } from '../../types/plantInterfaces';
+import { PlantDetails } from '@rootTypes/plantInterfaces';
 import Joi from 'joi';
 import plantSchema from '../schemas/plantSchema';
 

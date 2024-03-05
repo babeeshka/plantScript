@@ -4,26 +4,26 @@
     "target": "es2019",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./",
-    "baseUrl": ".",
+    "baseUrl": "..",
     "typeRoots": [
       "./node_modules/@types",
-      "../",
-      "../../types/*"
+      "./types"
     ],
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "paths": {
+      "@rootTypes/*": ["types/*"]
+    }
   },
   "include": [
     "**/*.ts",
     "./*.ts",
     "./models/**/*.ts",
     "./schemas/**/*.ts",
-    "types/**/*",
-    "globals.d.ts"
-, "../types/plantInterfaces.ts"  ],
+    "../types/**/*"
+  ],
   "exclude": [
     "node_modules"
   ]
