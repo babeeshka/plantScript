@@ -1,21 +1,20 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { defineAsyncComponent } from 'vue';
 import Home from './views/Home.vue';
-import PlantDetail from './views/PlantDetail.vue';
-import PlantSearchPage from './views/PlantSearchPage.vue';
 
-Vue.use(VueRouter);
+const PlantGallery = () => import('./views/PlantGallery.vue');
+const PlantDetail = defineAsyncComponent(() => import('./views/PlantDetail.vue'));
+const PlantSearchPage = defineAsyncComponent(() => import('./views/PlantSearchPage.vue'));
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: Home },
   { path: '/plant/:id', name: 'plant-detail', component: PlantDetail, props: true },
   { path: '/search', name: 'plant-search', component: PlantSearchPage },
-  // other routes as necessary
+  { path: '/gallery', name: 'plant-gallery', component: PlantGallery },
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
   routes,
 });
 

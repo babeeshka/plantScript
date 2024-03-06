@@ -1,3 +1,4 @@
+// /types/plantInterfaces.ts
 import { array } from "joi";
 
 // type for Default Image which is present in both fetchSpeciesList and fetchPlantDetails

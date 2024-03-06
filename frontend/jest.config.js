@@ -1,5 +1,22 @@
-// frontend/jest.config.js
 module.exports = {
-    preset: '@vue/cli-plugin-unit-jest',
-    // Frontend-specific Jest configuration here
-  };
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  transform: {
+    "^.+\\.vue$": "vue-jest",
+    "^.+\\.(ts|tsx)$": "ts-jest",
+  },
+  testMatch: [
+    "**/tests/unit/**/*.spec.(ts|tsx|js)"
+  ],
+  globals: {
+    'ts-jest': {
+      babelConfig: true
+    },
+    'vue-jest': {
+      experimentalCSSCompile: true,
+    },
+  },
+};

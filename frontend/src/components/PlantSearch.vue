@@ -1,3 +1,4 @@
+<!-- /frontend/src/components/PlantSearch.vue -->
 <script lang="ts">
 import { axiosInstance } from '../axiosInstance';
 
@@ -11,7 +12,7 @@ export default {
   },
   methods: {
     searchPlants() {
-      axios.get(`/api/plants/search?query=${this.searchQuery}`)
+      axiosInstance.get(`/api/plants/search?query=${this.searchQuery}`)
         .then(response => {
           this.searchResults = response.data;
         })

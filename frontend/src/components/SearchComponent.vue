@@ -1,3 +1,4 @@
+<!-- /frontend/src/components/SearchComponent.vue -->
 <template>
     <div class="search">
       <h2>Plant Search</h2>

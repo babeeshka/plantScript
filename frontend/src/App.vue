@@ -1,21 +1,31 @@
+<!-- /frontend/src/App.vue -->
 <template>
   <div id="app">
-    <PlantSearch/>
-    <!-- TODO other components or content -->
+    <router-view></router-view> 
   </div>
 </template>
 
 <script lang="ts">
-import PlantSearch from './components/PlantSearch.vue';
-
 export default {
   name: 'App',
-  components: {
-    PlantSearch,
-  },
 };
 </script>
 
 <style>
-/* Global styles */
+html, body {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+button, input, select {
+  font-family: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
 </style>
+

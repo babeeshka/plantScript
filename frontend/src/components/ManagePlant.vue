@@ -1,3 +1,4 @@
+<!-- /frontend/src/components/ManagePlant.vue -->
 <script lang="ts">
 import axios from 'axios';
 import { axiosInstance } from '../axiosInstance';
