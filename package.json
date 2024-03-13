@@ -13,6 +13,7 @@
     "lint-frontend": "cd frontend && npm run lint"
   },
   "devDependencies": {
+    "@soda/friendly-errors-webpack-plugin": "^1.8.1",
     "@types/axios": "^0.14.0",
     "@types/hapi__joi": "^17.1.14",
     "@types/jest": "^29.5.12",

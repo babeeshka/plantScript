@@ -14,6 +14,6 @@ module.exports = defineConfig({
     'vuetify'
   ],
   configureWebpack: {
-    entry: '/Users/wbabich/_projects/plantScript/frontend/src/main.ts',
+    entry: './src/main.ts',
   }
 });
