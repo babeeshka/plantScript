@@ -1,13 +1,19 @@
-module.exports = {
+// /frontend/vue.config.js
+const { defineConfig } = require('@vue/cli-service')
+
+module.exports = defineConfig({
   devServer: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000', // Adjust this if your backend server runs on a different port
+        target: 'http://localhost:3000',
         changeOrigin: true,
       },
     },
-  }, 
+  },
+  transpileDependencies: [
+    'vuetify'
+  ],
   configureWebpack: {
-    entry: './src/main.ts',
+    entry: '/Users/wbabich/_projects/plantScript/frontend/src/main.ts',
   }
-};
+});

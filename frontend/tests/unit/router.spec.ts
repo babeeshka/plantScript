@@ -1,5 +1,6 @@
+// frontend/tests/unit/router.spec.ts
 import { createRouter, createWebHistory } from 'vue-router';
-import routes from '@/router';
+import routes from '@/router'
 
 describe('router/index.ts', () => {
   it('has a home route that uses Home view', () => {

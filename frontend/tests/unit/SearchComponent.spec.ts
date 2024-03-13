@@ -1,3 +1,4 @@
+// frontend/tests/unit/SearchComponent.spec.ts
 import { mount } from '@vue/test-utils';
 import SearchComponent from '@/components/SearchComponent.vue';
 

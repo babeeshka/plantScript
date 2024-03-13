@@ -27,9 +27,12 @@
     "mongodb-memory-server": "^9.1.6",
     "prettier": "^2.4.1",
     "supertest": "^6.3.4",
-    "ts-jest": "^29.1.2"
+    "ts-jest": "^29.1.2",
+    "vue-loader": "^17.3.1",
+    "vue-template-compiler": "^2.7.16"
   },
   "dependencies": {
+    "@vue/test-utils": "^2.4.4",
     "axios": "^1.6.7",
     "mongodb": "^6.3.0",
     "ts-node": "^10.9.2",

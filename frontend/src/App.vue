@@ -1,7 +1,6 @@
-<!-- /frontend/src/App.vue -->
 <template>
   <div id="app">
-    <router-view></router-view> 
+    <router-view></router-view>
   </div>
 </template>
 
@@ -12,13 +11,16 @@ export default {
 </script>
 
 <style>
-html, body {
+html,
+body {
   font-family: 'Arial', sans-serif;
   color: #333;
   line-height: 1.6;
 }
 
-button, input, select {
+button,
+input,
+select {
   font-family: inherit;
 }
 
@@ -28,4 +30,3 @@ button, input, select {
   padding: 20px;
 }
 </style>
-

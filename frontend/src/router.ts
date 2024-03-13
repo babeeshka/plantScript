@@ -1,3 +1,4 @@
+// /frontend/src/router.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { defineAsyncComponent } from 'vue';
 import Home from './views/Home.vue';

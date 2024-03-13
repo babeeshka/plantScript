@@ -1,5 +1,6 @@
+// frontend/tests/unit/RandomPlantDetails.spec.ts
 import { mount } from '@vue/test-utils';
-import RandomPlantDetails from '@/components/RandomPlantDetails.vue'
+import RandomPlantDetails from '@/components/RandomPlantDetails.vue';
 
 describe('RandomPlantDetails.vue', () => {
   it('renders plant details correctly', () => {

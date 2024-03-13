@@ -12,8 +12,8 @@
 
 <script>
 import axios from 'axios';
-import PlantsList from './components/PlantsList.vue'; // Adjust path as needed
-import PlantDetail from './components/PlantDetail.vue'; // Adjust path as needed
+import PlantsList from '@/components/PlantsList.vue'; 
+import PlantDetail from '@/components/PlantDetail.vue'; 
 
 export default {
   components: {
@@ -31,7 +31,6 @@ export default {
   methods: {
     async searchPlants() {
       try {
-        // Adjust the endpoint as necessary to match your API's search functionality
         const response = await axios.get(`/api/search/${encodeURIComponent(this.searchQuery)}`);
         this.searchResults = response.data;
       } catch (error) {
