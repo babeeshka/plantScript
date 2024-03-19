@@ -5,7 +5,7 @@ module.exports = {
     "^@/(.*)$": "<rootDir>/src/$1"
   },
   transform: {
-    "^.+\\.vue$": "vue-jest",
+    "^.+\\.vue$": "@vue/vue3-jest",
     "^.+\\.(ts|tsx)$": "ts-jest",
   },
   testMatch: [
@@ -14,9 +14,6 @@ module.exports = {
   globals: {
     'ts-jest': {
       babelConfig: true
-    },
-    'vue-jest': {
-      experimentalCSSCompile: true,
-    },
+    }
   },
 };

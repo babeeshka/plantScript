@@ -1,14 +1,14 @@
 import Joi from 'joi';
 
 const defaultImageSchema = Joi.object({
-    license: Joi.number().required(),
-    license_name: Joi.string().required(),
-    license_url: Joi.string().uri().required(),
-    original_url: Joi.string().uri().required(),
-    regular_url: Joi.string().uri().required(),
-    medium_url: Joi.string().uri().required(),
-    small_url: Joi.string().uri().required(),
-    thumbnail: Joi.string().uri().required(),
+    license: Joi.number().optional(),
+    license_name: Joi.string().optional(),
+    license_url: Joi.string().uri().optional(),
+    original_url: Joi.string().uri().optional(),
+    regular_url: Joi.string().uri().optional(),
+    medium_url: Joi.string().uri().optional(),
+    small_url: Joi.string().uri().optional(),
+    thumbnail: Joi.string().uri().optional(),
 });
 
 const plantAnatomySchema = Joi.object({
@@ -32,19 +32,22 @@ const plantSchema = Joi.object({
     family: Joi.string().allow(null).optional(),
     origin: Joi.array().items(Joi.string()).allow(null).optional(),
     type: Joi.string().required(),
-    dimension: Joi.string().allow(null).optional(),
-    dimensions: Joi.object({
-        type: Joi.string().allow(null).optional(),
-        min_value: Joi.number(),
-        max_value: Joi.number(),
-        unit: Joi.string(),
-    }).allow(null).optional(),
-    cycle: Joi.string().required(),
+    dimension: Joi.string().allow(null, "").optional(),
+    dimensions: Joi.alternatives().try(
+        Joi.object({
+            type: Joi.string().allow(null).optional(),
+            min_value: Joi.number().optional(),
+            max_value: Joi.number().optional(),
+            unit: Joi.string().allow("").optional(),
+        }),
+        Joi.array().length(0)
+    ).optional(),
+    cycle: Joi.string().allow(null, "").optional(),
     attracts: Joi.array().items(Joi.string()).allow(null).optional(),
     propagation: Joi.array().items(Joi.string()).required(),
     hardiness: Joi.object({
-        min: Joi.string().required(),
-        max: Joi.string().required(),
+        min: Joi.string().allow("").optional(),
+        max: Joi.string().allow("").optional(),
     }).allow(null).optional(),
     hardiness_location: Joi.object({
         full_url: Joi.string().uri().required(),
@@ -53,12 +56,18 @@ const plantSchema = Joi.object({
     watering: Joi.string().required(),
     depth_water_requirement: Joi.alternatives().try(
         Joi.object({
-            unit: Joi.string().allow(null).required(),
-            value: Joi.number().allow(null).required(),
+            unit: Joi.string().allow(null, "").required(),
+            value: Joi.number().allow(null, "").required(),
         }),
         Joi.array().length(0)
     ).optional(),
-    volume_water_requirement: Joi.array().items(Joi.string()).allow(null).optional(),
+    volume_water_requirement: Joi.alternatives().try(
+        Joi.object({
+            unit: Joi.string().required(),
+            value: Joi.number().required(),
+        }),
+        Joi.array().length(0)
+    ).optional(),
     watering_period: Joi.string().allow(null).optional(),
     watering_general_benchmark: Joi.object({
         value: Joi.string().allow(null).required(),
@@ -79,7 +88,7 @@ const plantSchema = Joi.object({
     invasive: Joi.boolean().required(),
     tropical: Joi.boolean().required(),
     indoor: Joi.boolean().required(),
-    care_level: Joi.string().required(),
+    care_level: Joi.string().allow(null).required(),
     pest_susceptibility: Joi.array().items(Joi.string()).allow(null).optional(),
     pest_susceptibility_api: Joi.string().allow('Coming Soon', null, '').optional(),
     flowers: Joi.boolean().required(),

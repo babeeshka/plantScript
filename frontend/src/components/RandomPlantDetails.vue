@@ -1,4 +1,3 @@
-<!-- frontend/src/components/RandomPlantDetails.vue -->
 <template>
   <div>
     <h2>{{ plant.common_name }}</h2>

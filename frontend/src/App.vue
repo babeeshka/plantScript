@@ -1,32 +1,23 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-  </div>
+  <nav class="navbar">
+    <ul>
+      <li><router-link to="/">Home</router-link></li>
+      <li><router-link to="/gallery">Plant Gallery</router-link></li>
+      <li><router-link to="/search">Plant Search</router-link></li>
+    </ul>
+  </nav>
+  <router-view />
 </template>
 
 <script lang="ts">
+import NavBar from './components/NavBar.vue';
 export default {
   name: 'App',
+  components: {
+    NavBar,
+  },
 };
 </script>
 
 <style>
-html,
-body {
-  font-family: 'Arial', sans-serif;
-  color: #333;
-  line-height: 1.6;
-}
-
-button,
-input,
-select {
-  font-family: inherit;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
 </style>

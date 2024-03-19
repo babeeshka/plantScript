@@ -1,14 +1,13 @@
 <template>
   <div>
     <h1>Welcome to PlantScript</h1>
-    <!-- Pass the randomPlant data to RandomPlantDetails component -->
     <RandomPlantDetails v-if="randomPlant" :plant="randomPlant" />
   </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
-import RandomPlantDetails from '@/components/RandomPlantDetails.vue'; // Ensure this path is correct
+import RandomPlantDetails from '@/components/RandomPlantDetails.vue'; // @ is an alias to /src
 import { PlantDetails } from '@rootTypes/plantInterfaces';
 
 export default {
@@ -22,12 +21,17 @@ export default {
   },
   async created() {
     try {
-      const response = await axios.get('/api/plants/random');
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await axios.get(`${apiUrl}/api/plants/random`);
       this.randomPlant = response.data;
     } catch (error) {
-console.error(error);
+      console.error(error);
     }
   },
   name: 'Home',
 };
 </script>
+
+<style scoped>
+  /* Your scoped CSS here, this will only apply to this component */
+</style>

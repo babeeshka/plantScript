@@ -1,11 +1,10 @@
-// /frontend/src/router.ts
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import { defineAsyncComponent } from 'vue';
-import Home from './views/Home.vue';
+import Home from '@/views/Home.vue';
 
-const PlantGallery = () => import('./views/PlantGallery.vue');
-const PlantDetail = defineAsyncComponent(() => import('./views/PlantDetail.vue'));
-const PlantSearchPage = defineAsyncComponent(() => import('./views/PlantSearchPage.vue'));
+const PlantGallery = () => import('@/views/PlantGallery.vue');
+const PlantDetail = defineAsyncComponent(() => import('@/components/PlantDetail.vue'));
+const PlantSearchPage = defineAsyncComponent(() => import('@/views/PlantSearchPage.vue'));
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: Home },
@@ -15,7 +14,7 @@ const routes: RouteRecordRaw[] = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory(import.meta.env.VITE_BASE_URL),
   routes,
 });
 

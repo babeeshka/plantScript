@@ -1,7 +1,7 @@
-// frontend/tsconfig.json
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "allowJs": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",

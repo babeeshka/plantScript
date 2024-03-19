@@ -1,4 +1,3 @@
-// server/tsconfig.jest.json
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {

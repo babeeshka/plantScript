@@ -1,4 +1,3 @@
-<!-- /frontend/src/components/PlantsList.vue -->
 <template>
   <div>
     <ul>

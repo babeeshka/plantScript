@@ -1,4 +1,3 @@
-<!-- /frontend/src/components/PlantSearch.vue -->
 <script lang="ts">
 import { axiosInstance } from '../axiosInstance';
 

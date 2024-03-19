@@ -1,4 +1,3 @@
-<!-- /frontend/src/components/DeleteConfirmation.vue -->
 <template>
     <v-dialog v-model="show">
       <v-card>

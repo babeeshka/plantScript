@@ -1,4 +1,3 @@
-<!-- /frontend/src/components/PlantForm.vue -->
 <template>
     <v-form>
       <v-text-field v-model="plant.common_name" label="Common Name" />

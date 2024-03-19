@@ -72,11 +72,25 @@ class PlantService {
 
   // Fetch a random plant
   public async fetchRandomPlant(): Promise<PlantDetails> {
-    const response = await axios.get(`${API_BASE_URL}/species/random`, {
-      params: { key: API_KEY },
-    });
-    return this.validateApiResponse<PlantDetails>(response.data, plantSchema);
+    const randomId: number = Math.floor(Math.random() * 10102) + 1;
+
+    try {
+      console.log(`Fetching plant details for ID: ${randomId}`);
+      const response = await axios.get(`${API_BASE_URL}/species/details/${randomId}`, {
+        params: { key: API_KEY },
+      });
+
+      return this.validateApiResponse<PlantDetails>(response.data, plantSchema);
+    } catch (error: unknown) {
+      console.error(`Error fetching plant details for ID ${randomId}:`, error);
+
+      if (error instanceof Error) {
+        console.log(error.message);
+      }
+
+      throw error;
+    }
   }
 }
 
-export const plantService = new PlantService();
+  export const plantService = new PlantService();

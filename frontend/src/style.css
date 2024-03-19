@@ -1,0 +1,67 @@
+:root {
+  /* Set base font properties */
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Define color variables for easy theme management */
+  --text-color: #333; /* Dark text for light background */
+  --bg-color: #f0f0f0; /* Light grey background for minimal design */
+  --link-color: #646cff; /* Color for links */
+  --link-hover-color: #535bf2; /* Color for links on hover */
+  --card-bg-color: #ffffff; /* Background color for cards */
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  min-height: 100vh;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  font-family: var(--font-family);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+a {
+  font-weight: 500;
+  color: var(--link-color);
+  text-decoration: inherit;
+}
+a:hover {
+  color: var(--link-hover-color);
+}
+
+.navbar {
+  background: #333;
+  color: #fff;
+  padding: 0.5em 1em;
+  position: sticky; /* or 'fixed' if you want it to stay at the top when scrolling */
+  top: 0;
+  width: 100%;
+  z-index: 1000; /* Make sure the navbar stays on top of other content */
+}
+
+.navbar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: flex-start; /* Adjust as needed */
+  align-items: center;
+}
+
+.navbar li {
+  margin-right: 1em;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}

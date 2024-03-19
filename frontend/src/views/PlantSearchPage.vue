@@ -1,4 +1,3 @@
-<!-- /frontend/src/views/PlantSearchPage.vue -->
 <template>
   <div>
     <input v-model="searchQuery" @keyup.enter="searchPlants" placeholder="Search plants...">

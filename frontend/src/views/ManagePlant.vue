@@ -1,4 +1,3 @@
-<!-- /frontend/src/views/ManagePlant.vue -->
 <template>
   <div>
     <v-btn @click="showNewPlantForm">Add New Plant</v-btn>
