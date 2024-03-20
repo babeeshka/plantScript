@@ -1,9 +1,10 @@
 <template>
   <div>
     <v-btn @click="showNewPlantForm">Add New Plant</v-btn>
-    <PlantTable :plants="plants" @edit="showEditForm" @delete="confirmDelete" />
-    <PlantForm v-model="currentPlant" @save="savePlant" />
-    <DeleteConfirmation v-model="showDeleteConfirm" @confirm="deletePlant" />
+    <div class="plant-list">
+      <PlantCard v-for="plant in plants" :key="plant.id" :plant="plant" @edit="navigateToEditPlant(plant)" />
+    </div>
+    <!-- PlantForm and DeleteConfirmation can be triggered from the PlantCard's actions -->
   </div>
 </template>
 

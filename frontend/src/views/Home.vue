@@ -1,37 +1,51 @@
 <template>
-  <div>
-    <h1>Welcome to PlantScript</h1>
-    <RandomPlantDetails v-if="randomPlant" :plant="randomPlant" />
+  <div class="container">
+    <PlantCard class="plant-card" v-if="randomPlant" :plant="randomPlant" />
+    <PlantModal v-if="isDialogOpen" :plant="selectedPlant" @close="isDialogOpen = false" />
   </div>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
-import RandomPlantDetails from '@/components/RandomPlantDetails.vue'; // @ is an alias to /src
+import PlantCard from '@/components/PlantCard.vue';
+import PlantModal from '@/components/PlantModal.vue';
 import { PlantDetails } from '@rootTypes/plantInterfaces';
 
 export default {
   components: {
-    RandomPlantDetails,
+    PlantCard,
+    PlantModal,
   },
   data() {
     return {
       randomPlant: null as PlantDetails | null,
+      isDialogOpen: false,
+      selectedPlant: null as PlantDetails | null,
     };
   },
-  async created() {
-    try {
-      const apiUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await axios.get(`${apiUrl}/api/plants/random`);
-      this.randomPlant = response.data;
-    } catch (error) {
-      console.error(error);
-    }
+  methods: {
+    async fetchRandomPlant() {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${apiUrl}/api/plants/random`);
+        this.randomPlant = response.data;
+      } catch (error) {
+        console.error('Failed to fetch a random plant:', error);
+      }
+    },
+    showPlantDetails(plant: PlantDetails) {
+      console.log("Plant details should show now", plant);
+      this.selectedPlant = plant;
+      this.isDialogOpen = true;
+    },
+    closeModal() {
+      this.isDialogOpen = false;
+    },
   },
-  name: 'Home',
+  created() {
+    this.fetchRandomPlant();
+  },
 };
 </script>
 
-<style scoped>
-  /* Your scoped CSS here, this will only apply to this component */
-</style>
+<style scoped></style>

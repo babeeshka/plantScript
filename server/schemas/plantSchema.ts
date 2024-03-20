@@ -108,7 +108,7 @@ const plantSchema = Joi.object({
     medicinal: Joi.boolean().required(),
     poisonous_to_humans: Joi.number().required(),
     poisonous_to_pets: Joi.number().required(),
-    description: Joi.string().required(),
+    description: Joi.string().allow(null).required(),
     default_image: defaultImageSchema.allow(null).optional(),
     other_images: Joi.any().optional(), // TODO consider defining a more specific schema if possible
 }).unknown(true);

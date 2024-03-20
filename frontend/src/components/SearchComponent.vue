@@ -1,18 +1,22 @@
 <template>
-    <div class="search">
-      <h2>Plant Search</h2>
-      <input type="text" placeholder="Search for a plant..." />
-      <!-- TODO add search functionality -->
-    </div>
-  </template>
-  
-  <script lang="ts">
-  export default {
-    name: 'Search',
-  };
-  </script>
-  
-  <style scoped>
-  /* Search component styles */
-  </style>
-  
+  <div class="search-bar-container">
+    <input type="text" v-model="localQuery" @keyup.enter="emitSearch" class="search-input"
+      placeholder="Search for a plant..." />
+    <button @click="emitSearch" class="search-button">Search</button>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      searchTerm: '',
+    };
+  },
+  methods: {
+    emitSearch() {
+      this.$emit('search', this.searchTerm);
+    },
+  },
+};
+</script>

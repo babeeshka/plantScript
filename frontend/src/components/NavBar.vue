@@ -1,18 +1,18 @@
 <template>
     <nav class="navbar">
-      <router-link to="/">Home</router-link>
-      <router-link to="/gallery">Plant Gallery</router-link>
-      <router-link to="/search">Plant Search</router-link>
-      <!-- Add other links as necessary -->
+        <ul>
+            <li><router-link to="/">Home</router-link></li>
+            <li><router-link to="/gallery">Plant Gallery</router-link></li>
+            <li><router-link to="/search">Plant Search</router-link></li>
+        </ul>
     </nav>
-  </template>
-  
-  <script>
-  export default {
+</template>
+
+
+<script>
+export default {
     name: 'NavBar',
-  };
-  </script>
-  
-  <style scoped>
-  </style>
-  
+};
+</script>
+
+<style></style>

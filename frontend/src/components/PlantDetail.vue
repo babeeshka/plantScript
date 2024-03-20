@@ -1,10 +1,14 @@
 <template>
   <div class="overlay" @click="close"></div>
   <div class="modal">
-    <div v-if="plant">
+    <div v-if="error">
+      <p class="error-message">{{ error }}</p>
+    </div>
+    <div v-else-if="plant">
       <h1>{{ plant.scientific_name }}</h1>
-      <h2>{{ plant.common_name }}</h2>
-      <p>{{ plant.description }}</p>
+      <h2 v-if="plant.common_name">{{ plant.common_name }}</h2>
+      <p v-if="plant.description">{{ plant.description }}</p>
+      <!-- Additional fields can be displayed here -->
     </div>
     <div v-else>
       <p>Loading plant details...</p>
@@ -13,66 +17,61 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import { axiosInstance } from '@/axiosInstance';
 import { PlantDetails } from '@rootTypes/plantInterfaces';
 
 export default {
-  data() {
-    return {
-      plant: null as PlantDetails | null,
-    };
-  },
-  async created() {
-    const plantId = this.$route.params.id;
-    try {
-      const response = await axiosInstance.get(`/api/plants/${plantId}`);
-      this.plant = response.data;
-    } catch (error) {
-      console.error(`Error fetching plant details: ${error}`);
-      this.error = 'Failed to fetch plant details.';
-    }
-  },
-  methods: {
-    close() {
-      this.$emit('close');
-    },
-  },
   props: {
     plant: {
       type: Object,
       required: true
+    },
+    plantId: {
+      type: Number,
+      required: false
+    }
+  },
+  data() {
+    return {
+      details: null as PlantDetails | null, // Renamed from 'localPlant' to 'details'
+      error: null as string | null, // Allow error to be string or null
+    };
+  },
+  watch: {
+    plantId: {
+      immediate: true,
+      handler(newVal: number) { // Added type annotation
+        if (newVal) {
+          this.fetchPlantDetails(newVal);
+        } else {
+          this.details = this.plant;
+        }
+      }
+    }
+  },
+  methods: {
+    async fetchPlantDetails(plantId: number) { // Added type annotation
+      try {
+        const response = await axiosInstance.get(`/api/plants/${plantId}`);
+        this.details = response.data;
+      } catch (error) {
+        console.error(`Error fetching plant details: ${error}`);
+        this.error = 'Failed to fetch plant details.';
+      }
+    },
+    close() {
+      this.$emit('close');
+    },
+  },
+  computed: {
+    plantDetails() { // Renamed to avoid naming conflict with prop 'plant'
+      return this.details;
     }
   },
   name: 'PlantDetail',
 };
 </script>
 
-<style scoped>
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 600px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  /* Make sure this is above everything else */
-}
 
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 999;
-  /* Just below the modal */
-}
-</style>
+<style scoped></style>
