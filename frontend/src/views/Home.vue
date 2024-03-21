@@ -1,9 +1,32 @@
 <template>
-  <div class="container">
-    <PlantCard class="plant-card" v-if="randomPlant" :plant="randomPlant" />
-    <PlantModal v-if="isDialogOpen" :plant="selectedPlant" @close="isDialogOpen = false" />
+  <div class="home-container">
+    <h3>Here's a random plant...</h3>
+    <!-- Plant Card -->
+    <PlantCard
+      v-if="randomPlant"
+      :plant="randomPlant"
+      :key="randomPlant.id"
+      @clicked="showPlantDetails(randomPlant)"
+      class="plant-card"
+    />
+
+    <!-- Fetch Random Plant Button -->
+    <div class="button-container">
+      <button class="button-primary" @click="fetchRandomPlant">
+        Fetch another random plant
+      </button>
+    </div>
+
+    <!-- Plant Details Modal -->
+    <PlantModal
+      v-if="isDialogOpen"
+      :plantDetails="selectedPlant"
+      :isDialogOpen.sync="isDialogOpen"
+      @close="closeModal"
+    />
   </div>
 </template>
+
 
 <script lang="ts">
 import axios from 'axios';
@@ -18,9 +41,9 @@ export default {
   },
   data() {
     return {
-      randomPlant: null as PlantDetails | null,
+      randomPlant: undefined as PlantDetails | undefined,
       isDialogOpen: false,
-      selectedPlant: null as PlantDetails | null,
+      selectedPlant: undefined as PlantDetails | undefined,
     };
   },
   methods: {
@@ -48,4 +71,20 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.top-container {
+  position: sticky;
+  top: var(--navbar-height); /* This ensures the sticky container stays below the navbar */
+  z-index: 20; /* This should be higher than the z-index of elements in .gallery-container */
+  background-color: var(--bg-color);
+  padding-top: 1rem; /* Add some space on top inside the sticky container */
+}
+
+.button-container {
+  text-align: center;
+  margin-top: 2em; 
+}
+
+</style>
+
+

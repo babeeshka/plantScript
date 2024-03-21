@@ -1,9 +1,7 @@
 <template>
   <NavBar />
   <div class="app-container">
-    <div class="container">
-      <router-view />
-    </div>
+    <router-view />
   </div>
 </template>
 
@@ -19,6 +17,6 @@ export default {
 
 <style>
 .app-container {
-  margin-top: 50px;
+  margin-top: var(--navbar-height);
 }
 </style>

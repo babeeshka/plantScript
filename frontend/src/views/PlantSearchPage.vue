@@ -3,10 +3,9 @@
     <SearchComponent @search="searchPlants" />
     <div v-if="searchMode === 'broad'">
       <!-- Display broad search results here -->
-      <div v-for="plant in searchResults" :key="plant.id" @click="toggleDetailedSearch(plant.id)">
-        <h3>{{ plant.common_name }}</h3>
-        <p>{{ plant.scientific_name }}</p>
-        <!-- Additional brief details -->
+      <div v-for="plant in searchResults" :key="plant.id">
+        <h3 @click="toggleDetailedSearch(plant.id)">{{ plant.common_name }}</h3>
+        <PlantDetail v-if="selectedPlantId === plant.id" :plantId="plant.id" />
       </div>
     </div>
     <div v-else>
@@ -18,7 +17,7 @@
 
 <script>
 import axios from 'axios';
-import PlantDetail from '@/components/PlantDetail.vue'; 
+import PlantDetail from '@/components/PlantDetail.vue';
 import SearchComponent from '@/components/SearchComponent.vue';
 
 export default {
@@ -36,7 +35,10 @@ export default {
   },
   methods: {
     async searchPlants(query) {
-      this.searchQuery = query;
+      const params = {
+        query,
+        ...this.filters
+      };
       try {
         const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/search/${encodeURIComponent(this.searchQuery)}`;
         const response = await axios.get(apiUrl);
@@ -46,15 +48,10 @@ export default {
         console.error(error);
       }
     },
-    async toggleDetailedSearch(plantId) {
-      try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/plants/${plantId}`;
-        const response = await axios.get(apiUrl);
-        this.selectedPlant = response.data;
-        this.searchMode = 'detailed';
-      } catch (error) {
-        console.error(error);
-      }
+    toggleDetailedSearch(plantId) {
+      this.selectedPlantId = plantId === this.selectedPlantId ? null : plantId;
+    }, navigateToEditPlant(plant) {
+      this.$router.push({ name: 'EditPlant', params: { plantId: plant.id } });
     },
   },
 };

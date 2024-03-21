@@ -10,12 +10,13 @@
   --link-color: #646cff;
   --link-hover-color: #535bf2;
   --card-bg-color: #ffffff;
+  --navbar-height: 40px;
 }
 
 body {
   margin: 0;
   padding: 2rem;
-  padding-top: [NavBarHeight]px;
+  padding-top: var(--navbar-height); 
   min-height: 100vh;
   color: var(--text-color);
   background-color: var(--bg-color);
@@ -42,6 +43,7 @@ a:hover {
   top: 0;
   left: 0;
   right: 0;
+  height: var(--navbar-height);
   background: #333;
   color: #fff;
   padding: 0.5em 1em;
@@ -71,11 +73,7 @@ a:hover {
 }
 
 /* global container */
-.container {
-  padding-top: 50px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* TODO add a class to the container */
 
 /* search bar styles */
 .search-bar {
@@ -153,4 +151,69 @@ a:hover {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 1em;
+}
+
+/* button styles */
+button {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  border: none;
+  display: inline-block;
+}
+
+/* Specific button styles */
+.button-primary {
+  background-color: var(--link-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-size: 1rem; /* Adjust font size if necessary */
+  /* Add other properties as required */
+}
+
+.button-primary:hover {
+  background-color: var(--link-hover-color);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #fff; 
+  color: #333; 
+  border: none;
+  width: 30px; 
+  height: 30px; 
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+  z-index: 1100; 
+}
+
+.close-btn:hover {
+  background: #e6e6e6;
+}
+
+.see-more-button {
+  display: inline-block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Smaller screens */
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 50px; /* Slightly smaller height for mobile devices */
+  }
 }

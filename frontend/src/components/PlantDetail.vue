@@ -34,14 +34,14 @@ export default {
   },
   data() {
     return {
-      details: null as PlantDetails | null, // Renamed from 'localPlant' to 'details'
-      error: null as string | null, // Allow error to be string or null
+      details: null as PlantDetails | null, 
+      error: null as string | null,
     };
   },
   watch: {
     plantId: {
       immediate: true,
-      handler(newVal: number) { // Added type annotation
+      handler(newVal: number) {
         if (newVal) {
           this.fetchPlantDetails(newVal);
         } else {
@@ -51,7 +51,7 @@ export default {
     }
   },
   methods: {
-    async fetchPlantDetails(plantId: number) { // Added type annotation
+    async fetchPlantDetails(plantId: number) {
       try {
         const response = await axiosInstance.get(`/api/plants/${plantId}`);
         this.details = response.data;
@@ -65,7 +65,7 @@ export default {
     },
   },
   computed: {
-    plantDetails() { // Renamed to avoid naming conflict with prop 'plant'
+    plantDetails() { 
       return this.details;
     }
   },
