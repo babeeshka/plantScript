@@ -1,58 +1,83 @@
 <template>
   <div>
-    <SearchComponent @search="searchPlants" />
-    <div v-if="searchMode === 'broad'">
-      <!-- Display broad search results here -->
-      <div v-for="plant in searchResults" :key="plant.id">
-        <h3 @click="toggleDetailedSearch(plant.id)">{{ plant.common_name }}</h3>
-        <PlantDetail v-if="selectedPlantId === plant.id" :plantId="plant.id" />
+    <div class="search-bar">
+      <input type="text" v-model="searchQuery" @keyup.enter="searchPlants" placeholder="Lookup a plant" />
+      <div class="button-container">
+        <button class="button-primary" @click="searchPlants">Search</button>
       </div>
     </div>
-    <div v-else>
-      <!-- Detailed search result using PlantDetail component -->
-      <PlantDetail v-if="selectedPlant" :plant="selectedPlant" />
+    <div v-if="searchMode === 'broad'">
+      <table>
+        <thead>
+          <tr>
+            <th>Common Name</th>
+            <th>Scientific Name</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="plant in searchResults" :key="plant.id">
+            <td>{{ plant.common_name }}</td>
+            <td>{{ plant.scientific_name.join(', ') }}</td>
+            <td>
+              <button @click="reviewPlantDetails(plant.id)">Review Plant Details</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <!-- Detailed search result section is not shown for simplicity -->
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import axios from 'axios';
-import PlantDetail from '@/components/PlantDetail.vue';
-import SearchComponent from '@/components/SearchComponent.vue';
+import { useRouter } from 'vue-router';
 
 export default {
-  components: {
-    PlantDetail,
-    SearchComponent,
+  setup() {
+    const router = useRouter();
+    return { router };
   },
   data() {
     return {
       searchQuery: '',
       searchResults: [],
-      selectedPlant: null,
-      searchMode: 'broad', // 'broad' or 'detailed'
+      searchMode: 'broad',
     };
   },
   methods: {
-    async searchPlants(query) {
-      const params = {
-        query,
-        ...this.filters
-      };
+    async searchPlants() {
+      console.log("searchPlants called with query:", this.searchQuery);
       try {
-        const apiUrl = `${import.meta.env.VITE_API_BASE_URL}/api/search/${encodeURIComponent(this.searchQuery)}`;
-        const response = await axios.get(apiUrl);
-        this.searchResults = response.data;
+        const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${apiUrl}/api/plants/search?q=${this.searchQuery}`);
+        this.searchResults = response.data.data;
         this.searchMode = 'broad';
       } catch (error) {
         console.error(error);
       }
     },
-    toggleDetailedSearch(plantId) {
-      this.selectedPlantId = plantId === this.selectedPlantId ? null : plantId;
-    }, navigateToEditPlant(plant) {
-      this.$router.push({ name: 'EditPlant', params: { plantId: plant.id } });
+    reviewPlantDetails(plantId) {
+      this.router.push({ name: 'ManagePlant', params: { plantId } });
     },
-  },
+  }
 };
 </script>
+
+<style scoped>
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+</style>

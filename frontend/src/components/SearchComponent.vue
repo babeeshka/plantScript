@@ -1,12 +1,13 @@
 <template>
-  <div class="search-bar-container">
-    <input type="text" v-model="localQuery" @keyup.enter="emitSearch" class="search-input"
-      placeholder="Search for a plant..." />
-    <button @click="emitSearch" class="search-button">Search</button>
+  <div class="search-bar">
+    <input type="text" v-on:search="searchPlants" @keyup.enter="emitSearch" placeholder="Lookup a plant" />
+    <div class="button-container">
+      <button @click="emitSearch">Search</button>
+    </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   data() {
     return {
@@ -15,8 +16,14 @@ export default {
   },
   methods: {
     emitSearch() {
+      console.log("Emitting search for:", this.searchTerm);
       this.$emit('search', this.searchTerm);
     },
   },
+  mounted() {
+    console.log("SearchComponent mounted");
+  }
 };
 </script>
+
+<style scoped></style>

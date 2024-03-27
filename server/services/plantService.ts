@@ -34,6 +34,7 @@ class PlantService {
     const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
       params: { key: API_KEY, q: query },
     });
+    console.log(`Search results for "${query}":`, data);
     return data;
   }
 

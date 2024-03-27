@@ -8,7 +8,7 @@ const ManagePlant = defineAsyncComponent(() => import('@/views/ManagePlant.vue')
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: Home },
-  { path: '/search', name: 'plant-search', component: PlantSearchPage },
+  { path: '/plant-search', name: 'plant-search', component: PlantSearchPage},
   { path: '/gallery', name: 'plant-gallery', component: PlantGallery },
   { path: '/manage', name: 'manage-plant', component: ManagePlant, props: true },
 ];

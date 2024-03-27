@@ -72,12 +72,15 @@ export default {
 </script>
 
 <style scoped>
-.top-container {
-  position: sticky;
-  top: var(--navbar-height); /* This ensures the sticky container stays below the navbar */
-  z-index: 20; /* This should be higher than the z-index of elements in .gallery-container */
-  background-color: var(--bg-color);
-  padding-top: 1rem; /* Add some space on top inside the sticky container */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - var(--navbar-height));
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1em;
 }
 
 .button-container {
