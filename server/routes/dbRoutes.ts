@@ -3,40 +3,47 @@ import { plantService } from '../services/plantService';
 
 const router = express.Router();
 
-// Route for fetching all plants from the db
+// Route for fetching plants with pagination
 router.get('/', async (req, res) => {
     try {
-        const plants = await plantService.findAllPlantsFromDb();
-        // For example, you can add a count of all plants
-        const count = plants.length; // This works if you're not implementing pagination
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = (page - 1) * limit;
+
+        const { plants, count } = await plantService.findAllPlantsWithPagination(limit, offset);
+
         const metadata = {
             totalPlants: count,
-            
+            totalPages: Math.ceil(count / limit),
+            currentPage: page,
         };
+
         res.json({ data: plants, metadata });
     } catch (error) {
-        console.error('Error fetching plants from the database:', error);
-        res.status(500).json({ error: "An error occurred while fetching plants from the database" });
+        console.error('Error fetching plants with pagination:', error);
+        res.status(500).json({ error: "An error occurred while fetching plants with pagination" });
     }
 });
+
+
 
 // Route for fetching a specific plant by the external API's ID from the db
 router.get('/:id', async (req, res) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
+        return res.status(400).json({ error: 'Invalid ID format' });
     }
-  
+
     try {
-      const plant = await plantService.getPlantByApiId(id);
-      if (plant) {
-        res.json(plant);
-      } else {
-        res.status(404).json({ error: 'Plant not found' });
-      }
+        const plant = await plantService.getPlantByApiId(id);
+        if (plant) {
+            res.json(plant);
+        } else {
+            res.status(404).json({ error: 'Plant not found' });
+        }
     } catch (error) {
-      console.error(`Error fetching plant with API ID ${id}:`, error);
-      res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
+        console.error(`Error fetching plant with API ID ${id}:`, error);
+        res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
     }
 });
 

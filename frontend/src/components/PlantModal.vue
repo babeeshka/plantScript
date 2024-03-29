@@ -29,7 +29,7 @@
           }}</div>
         <!-- You can add more detail items here -->
       </div>
-
+      <slot name="actions"></slot>
       <!-- Close Button -->
       <button class="close-btn" @click="$emit('close')">&times;</button>
     </div>

@@ -23,7 +23,7 @@ export const findPlantByApiId = async (id: number): Promise<PlantDetails | null>
 export const createPlant = async (plantData: PlantDetails): Promise<PlantDetails> => {
   const validatedData = {
     ...validatePlant(plantData),
-    dateAdded: new Date(),  
+    dateAdded: new Date(),
   };
   return plantsCollection.insert(validatedData);
 };
@@ -32,7 +32,7 @@ export const createPlant = async (plantData: PlantDetails): Promise<PlantDetails
 export const updatePlantByApiId = async (id: number, updateData: Partial<PlantDetails>): Promise<PlantDetails | null> => {
   const updateWithMetadata = {
     ...updateData,
-    lastEditedAt: new Date(), 
+    lastEditedAt: new Date(),
   };
   return plantsCollection.findOneAndUpdate({ id }, { $set: updateWithMetadata }, { returnNewDocument: true });
 };
@@ -41,6 +41,10 @@ export const deletePlantByApiId = async (id: number): Promise<PlantDetails | nul
   return plantsCollection.findOneAndDelete({ id });
 };
 
-export const findAllPlants = async (): Promise<PlantDetails[]> => {
-  return plantsCollection.find({});
+export const countAllPlants = async (): Promise<number> => {
+  return plantsCollection.count();
+};
+
+export const findPlantsWithPagination = async (limit: number, offset: number): Promise<PlantDetails[]> => {
+  return plantsCollection.find({}, { limit: limit, skip: offset });
 };

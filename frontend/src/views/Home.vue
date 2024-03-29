@@ -1,6 +1,13 @@
 <template>
   <div class="home-container">
     <h3>Here's a random plant...</h3>
+
+    <!-- Gallery Container --> 
+    <GalleryContainer
+      v-if="randomPlant"
+      :plants="[randomPlant]"
+      @showPlantDetails="showPlantDetails" />
+
     <!-- Plant Card -->
     <PlantCard
       v-if="randomPlant"

@@ -20,18 +20,27 @@ router.get('/', async (req, res) => {
     }
 });
 
-// route for searching plants by name
+// Route for searching plants by name with filters
 router.get('/search', async (req, res) => {
     try {
         const query = req.query.q as string;
-        const data = await plantService.searchPlantByName(query);
+        // Collect filter parameters from req.query
+        const filters = {
+            // Assuming your API accepts these filters, adapt as necessary
+            edible: req.query.edible,
+            poisonous: req.query.poisonous,
+            cycle: req.query.cycle,
+            watering: req.query.watering,
+            sunlight: req.query.sunlight,
+            indoor: req.query.indoor,
+            hardiness: req.query.hardiness,
+        };
+
+        const data = await plantService.searchPlantByName(query, filters);
         res.json(data);
     } catch (error) {
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: "An unknown error occurred" });
-        }
+        console.error(`Error searching plants:`, error);
+        res.status(500).json({ error: error instanceof Error ? error.message : "An unknown error occurred" });
     }
 });
 

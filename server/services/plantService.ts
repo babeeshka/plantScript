@@ -21,6 +21,7 @@ class PlantService {
     return value;
   }
 
+  // api plant methods
   // Fetch species list with pagination
   public async fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
     const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
@@ -29,12 +30,10 @@ class PlantService {
     return data;
   }
 
-  // Search plants by name
-  public async searchPlantByName(query: string): Promise<ApiResponse<PlantSummary>> {
-    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
-      params: { key: API_KEY, q: query },
-    });
-    console.log(`Search results for "${query}":`, data);
+  // Search plants by name with filters
+  public async searchPlantByName(query: string, filters: any = {}): Promise<ApiResponse<PlantSummary>> {
+    const params = { key: API_KEY, q: query, ...filters }; // Include filters in the request parameters
+    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, { params });
     return data;
   }
 
@@ -47,13 +46,20 @@ class PlantService {
   }
 
   // database plant methods
+  // Add a new plant to the database
   public async createPlantInDb(plantData: PlantDetails): Promise<PlantDetails> {
     return plantModel.createPlant(plantData);
   }
 
-  // Fetch all plants from database
-  public async findAllPlantsFromDb(): Promise<PlantDetails[]> {
-    return plantModel.findAllPlants();
+  // Fetch all plants from the database with pagination
+  public async findAllPlantsWithPagination(limit: number, offset: number): Promise<{ plants: PlantDetails[], count: number }> {
+    // Assuming that your plantModel has a method to count all plants
+    const count = await plantModel.countAllPlants();
+
+    // Assuming that your plantModel has a method to find plants with pagination
+    const plants = await plantModel.findPlantsWithPagination(limit, offset);
+
+    return { plants, count };
   }
 
   // Fetch plant by API ID from database
@@ -94,4 +100,4 @@ class PlantService {
   }
 }
 
-  export const plantService = new PlantService();
+export const plantService = new PlantService();
