@@ -1,10 +1,10 @@
 <template>
   <div class="plant-card" @click="handleClick">
     <img v-if="plant.default_image" :src="plant.default_image.thumbnail" alt="Plant image" class="plant-image" />
-    <h2>{{ plant.common_name }}</h2>
-    <p>Scientific Name: {{ plant.scientific_name.join(', ') }}</p>
-    <p v-if="plant.family">Family: {{ plant.family }}</p>
-    <p>Type: {{ plant.type }}</p>
+    <div class="plant-info">
+      <h3>{{ plant.common_name }}</h3>
+      <p><strong>Scientific Name:</strong> {{ plant.scientific_name.join(', ') }}</p>
+    </div>
   </div>
 </template>
 
@@ -13,57 +13,46 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   props: {
-    plant : {
+    plant: {
       type: Object,
       required: true
     }
   },
   methods: {
     handleClick() {
-      console.log("Plant clicked:", this.plant);
-      this.$emit('clicked', this.plant);
+      this.$emit('showPlantDetails', this.plant);
     }
   }
 });
 </script>
 
 <style scoped>
-/* Plant card styles */
 .plant-card {
-  border: 1px solid #ccc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s, transform 0.3s;
+  background-color: white;
   border-radius: 8px;
-  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  width: 250px; /* Fixed width */
-  height: 350px; /* Fixed height, adjust as necessary */
+  overflow: hidden;
+  transition: box-shadow 0.3s, transform 0.3s;
+  width: 100%;
 }
 
-.plant-thumbnail {
-  width: 100%;
-  height: 200px; /* Adjust the height as necessary */
-  object-fit: cover; /* This will cover the area without stretching the image */
+.plant-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
 }
 
-.plant-card img {
+.plant-image {
   width: 100%;
-  height: 60%; /* Adjust based on how much of the card should be the image */
-  object-fit: cover; /* Ensures the image covers the area without losing aspect ratio */
+  height: 200px;
+  object-fit: cover;
 }
 
 .plant-info {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1em;
-  text-align: center;
-  flex: 1;
+  padding: 1rem;
 }
 
-.plant-card h2, .plant-card p {
-  margin: 0.5em;
+.plant-info h3 {
+  margin-top: 0;
 }
-
 </style>

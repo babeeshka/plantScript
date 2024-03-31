@@ -1,27 +1,32 @@
 <template>
   <div class="gallery-container">
     <PlantCard
-      v-for="plant in plants"
-      :key="plant.id"
-      :plant="plant"
-      @click.native="$emit('plant-clicked', plant)"
-      class="plant-card"
+    v-for="plant in plants"
+    :key="plant.id"
+    :plant="plant"
+    @showPlantDetails="$emit('showPlantDetails', plant.id)"
     />
   </div>
 </template>
 
-
 <script lang="ts">
 import PlantCard from './PlantCard.vue';
+import { PlantSummary } from '@rootTypes/plantInterfaces';
 
 export default {
   components: { PlantCard },
-  props: ['plants'],
-  methods: {
-    handleCardClick(plant) {
-      this.$emit('showPlantDetails', plant);
+  props: {
+    plants: {
+      type: Array as () => PlantSummary[],
+      required: true,
     },
-  }
+  },
+  methods: {
+    handleCardClick(plant: PlantSummary) {
+      console.log('Clicked plant:', plant); 
+      this.$emit('showPlantDetails', plant.id);
+    },
+  },
 };
 </script>
 

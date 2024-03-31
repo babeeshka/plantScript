@@ -1,23 +1,19 @@
 <template>
-    <div class="filter-container" v-if="showFilters" ref="filterContainer">
-        <!-- filter options -->
-        <div class="filter-options">
-            <label><input type="checkbox" v-model="filters.droughtTolerant"> Drought Tolerant</label>
-            <label><input type="checkbox" v-model="filters.saltTolerant"> Salt Tolerant</label>
-            <label><input type="checkbox" v-model="filters.thorny"> Thorny</label>
-            <label><input type="checkbox" v-model="filters.invasive"> Invasive</label>
-            <label><input type="checkbox" v-model="filters.tropical"> Tropical</label>
-            <label><input type="checkbox" v-model="filters.indoor"> Indoor</label>
-            <label><input type="checkbox" v-model="filters.flowers"> Flowers</label>
-            <label><input type="checkbox" v-model="filters.fruits"> Fruits</label>
-            <label><input type="checkbox" v-model="filters.cones"> Cones</label>
-            <label><input type="checkbox" v-model="filters.leaf"> Leaf</label>
-            <label><input type="checkbox" v-model="filters.poisonous_to_humans"> Poisonous to Humans</label>
-            <label><input type="checkbox" v-model="filters.poisonous_to_animals"> Poisonous to Animals</label>
-        </div>
-        <div class="filter-buttons">
-            <button @click="applyFilters">Apply Filters</button>
-            <button @click="resetFilters">Reset</button>
+    <div class="filter-container">
+        <button @click="toggleFilters" class="filter-toggle">{{ showFilters ? 'Hide Filters' : 'Show Filters'
+            }}</button>
+        <div v-if="showFilters" class="filter-options-container">
+            <!-- Filter options -->
+            <div class="filter-options">
+                <div v-for="(value, key) in filters" :key="key" class="filter-option">
+                    <input type="checkbox" :id="key" v-model="filters[key]">
+                    <label :for="key">{{ key }}</label>
+                </div>
+            </div>
+            <div class="filter-buttons">
+                <button @click="applyFilters" class="button-primary">Apply Filters</button>
+                <button @click="resetFilters" class="button-primary">Reset</button>
+            </div>
         </div>
     </div>
 </template>
@@ -38,40 +34,22 @@ export default {
                 cones: false,
                 leaf: false,
                 poisonous_to_humans: false,
-                poisonous_to_animals: false
-            },
+                poisonous_to_animals: false,
+            } as Record<string, boolean>,
             showFilters: false,
         };
     },
     methods: {
         toggleFilters() {
             this.showFilters = !this.showFilters;
-            this.$nextTick(() => {
-                const displayStyle = window.getComputedStyle(this.$refs.filterContainer).display;
-                console.log("Current display style:", displayStyle);
-            });
         },
         applyFilters() {
-            this.$emit('filter', this.filters);
+            this.$emit('apply-filters', this.filters);
         },
         resetFilters() {
-            this.filters = {
-                droughtTolerant: false,
-                saltTolerant: false,
-                thorny: false,
-                invasive: false,
-                tropical: false,
-                indoor: false,
-                flowers: false,
-                fruits: false,
-                cones: false,
-                leaf: false,
-                poisonous_to_humans: false,
-                poisonous_to_animals: false
-            };
-        },
-        updateFilters(selectedFilters) {
-            this.selectedFilters = selectedFilters;
+            Object.keys(this.filters).forEach(key => {
+                this.filters[key] = false;
+            });
             this.applyFilters();
         },
     },
@@ -79,36 +57,57 @@ export default {
 </script>
 
 
+
 <style scoped>
-/* Hide the filter container by default */
 .filter-container {
-    background-color: white;
-    padding: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    margin: auto;
-    margin-bottom: 10px;
+  position: relative;
+  margin-left: 10px;
 }
 
-.show-filters+.filter-container-placeholder {
-    height: --filter-container-height;
+.filter-toggle {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--link-color);
+  color: white;
+  cursor: pointer;
 }
 
-/* When showFilters is true, set display to block to show the container */
-.show-filters .filter-container {
-    display: block;
+.filter-options-container {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 10;
+  background-color: var(--card-bg-color);
+  padding: 1rem;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .filter-options {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 5px;
-    margin-bottom: 15px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--bg-color);
 }
 
 .filter-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 </style>

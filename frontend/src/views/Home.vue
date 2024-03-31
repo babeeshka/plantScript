@@ -2,20 +2,11 @@
   <div class="home-container">
     <h3>Here's a random plant...</h3>
 
-    <!-- Gallery Container --> 
+    <!-- Only use GalleryContainer to display the random plant -->
     <GalleryContainer
       v-if="randomPlant"
       :plants="[randomPlant]"
       @showPlantDetails="showPlantDetails" />
-
-    <!-- Plant Card -->
-    <PlantCard
-      v-if="randomPlant"
-      :plant="randomPlant"
-      :key="randomPlant.id"
-      @clicked="showPlantDetails(randomPlant)"
-      class="plant-card"
-    />
 
     <!-- Fetch Random Plant Button -->
     <div class="button-container">
@@ -34,23 +25,22 @@
   </div>
 </template>
 
-
 <script lang="ts">
 import axios from 'axios';
-import PlantCard from '@/components/PlantCard.vue';
+import GalleryContainer from '@/components/GalleryContainer.vue';
 import PlantModal from '@/components/PlantModal.vue';
 import { PlantDetails } from '@rootTypes/plantInterfaces';
 
 export default {
   components: {
-    PlantCard,
+    GalleryContainer,
     PlantModal,
   },
   data() {
     return {
-      randomPlant: undefined as PlantDetails | undefined,
+      randomPlant: null as PlantDetails | null,
       isDialogOpen: false,
-      selectedPlant: undefined as PlantDetails | undefined,
+      selectedPlant: null as PlantDetails | null,
     };
   },
   methods: {
@@ -63,9 +53,9 @@ export default {
         console.error('Failed to fetch a random plant:', error);
       }
     },
-    showPlantDetails(plant: PlantDetails) {
-      console.log("Plant details should show now", plant);
-      this.selectedPlant = plant;
+    showPlantDetails(plantId: number) {
+      console.log("Plant details should show now for plant ID:", plantId);
+      this.selectedPlant = this.randomPlant;
       this.isDialogOpen = true;
     },
     closeModal() {
@@ -90,11 +80,16 @@ export default {
   padding: 1em;
 }
 
+.gallery-container {
+  display: grid;
+  gap: 1em;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  justify-content: center;
+  padding: 10px;
+}
+
 .button-container {
   text-align: center;
   margin-top: 2em; 
 }
-
 </style>
-
-

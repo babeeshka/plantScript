@@ -1,29 +1,26 @@
 <template>
-  <div class="top-container">
-    <!-- Search bar -->
-    <SearchBar :dynamic="true" @search="dynamicFilterPlants" />
-    <!-- Filter Container -->
-    <FilterContainer @apply-filters="applyFilters" />
+  <div class="plant-gallery">
+    <div class="top-container">
+      <div class="search-filter-container">
+        <SearchBar :dynamic="true" @search="dynamicFilterPlants" />
+        <FilterContainer @apply-filters="applyFilters" />
+      </div>
+    </div>
+    <div class="results-container">
+      <GalleryContainer :plants="filteredPlants" @showPlantDetails="showPlantDetails" />
+
+      <!-- Pagination and No Results Handling -->
+      <button v-if="hasMore" @click="loadMorePlants" class="button-primary">Load More</button>
+      <p v-if="searchExecuted && filteredPlants.length === 0">No results found.</p>
+    </div>
+    <PlantModal v-if="isDialogOpen" :plantDetails="selectedPlant" :isDialogOpen.sync="isDialogOpen"
+      @close="closeModal" />
   </div>
-
-  <!-- Plant Gallery with dynamic filtering -->
-  <GalleryContainer :plants="filteredPlants" @showPlantDetails="showPlantDetails" />
-
-  <!-- Plant Details Modal -->
-  <PlantModal
-      v-if="isDialogOpen"
-      :plantDetails="selectedPlant"
-      :isDialogOpen.sync="isDialogOpen"
-      @close="closeModal"
-  />
-
-  <!-- Pagination and No Results Handling -->
-  <button v-if="hasMore" @click="loadMorePlants">Load More</button>
-  <p v-if="searchExecuted && filteredPlants.length === 0">No results found.</p>
 </template>
 
 <script lang="ts">
 import axios from 'axios';
+import { PlantSummary, PlantDetails } from '@rootTypes/plantInterfaces';
 import SearchBar from '@/components/SearchBar.vue';
 import GalleryContainer from '@/components/GalleryContainer.vue';
 import FilterContainer from '@/components/FilterContainer.vue';
@@ -41,7 +38,7 @@ export default {
       searchTerm: '',
       plants: [],
       isDialogOpen: false,
-      selectedPlant: null,
+      selectedPlant: undefined as PlantDetails | undefined,
       filters: {
         droughtTolerant: false,
         saltTolerant: false,
@@ -54,8 +51,8 @@ export default {
         cones: false,
         leaf: false,
         poisonous_to_humans: false,
-        poisonous_to_animals: false
-      },
+        poisonous_to_animals: false,
+      } as Record<string, boolean>,
       showFilters: false,
       selectedFilters: {},
       searchExecuted: false,
@@ -69,26 +66,11 @@ export default {
   },
   computed: {
     filteredPlants() {
-      return this.plants.filter((plant) => {
-        if (this.searchTerm && !plant.common_name.toLowerCase().includes(this.searchTerm.toLowerCase()) && !plant.scientific_name.some(name => name.toLowerCase().includes(this.searchTerm.toLowerCase()))) {
-          return false;
-        }
-        // Check each filter
-        if (this.filters.droughtTolerant && !plant.drought_tolerant) return false;
-        if (this.filters.saltTolerant && !plant.salt_tolerant) return false;
-        if (this.filters.thorny && !plant.thorny) return false;
-        if (this.filters.invasive && !plant.invasive) return false;
-        if (this.filters.tropical && !plant.tropical) return false;
-        if (this.filters.indoor && !plant.indoor) return false;
-        if (this.filters.flowers && !plant.flowers) return false;
-        if (this.filters.fruits && !plant.fruits) return false;
-        if (this.filters.cones && !plant.cones) return false;
-        if (this.filters.leaf && !plant.leaf) return false;
-        if (this.filters.poisonous_to_humans && plant.poisonous_to_humans === 0) return false;
-        if (this.filters.poisonous_to_animals && plant.poisonous_to_animals === 0) return false;
-
-        // If none of the conditions matched, keep the plant
-        return true;
+      return this.plants.filter(plant => {
+        // Apply filter conditions based on the selected filters
+        return Object.keys(this.filters).every(key => {
+          return !this.filters[key] || plant[key];
+        });
       });
     },
   },
@@ -105,27 +87,33 @@ export default {
         console.error("Error fetching plants:", error);
       }
     },
-    filterPlants(query) {
+    filterPlants(query: string) {
       this.offset = 0;
       this.fetchPlants();
     },
     dynamicFilterPlants() {
       this.searchExecuted = true;
     },
-    handlePlantClicked(plant) {
+    handlePlantClicked(plant: PlantDetails) {
       this.selectedPlant = plant;
       this.isDialogOpen = true;
     },
-    showPlantDetails(plant) {
-      this.selectedPlant = plant;
-      this.isDialogOpen = true;
+    async showPlantDetails(plantId: number) {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
+        this.selectedPlant = response.data;
+        this.isDialogOpen = true;
+      } catch (error) {
+        console.error('Error fetching plant details:', error);
+        // Handle error (e.g., show an error message)
+      }
     },
     closeModal() {
       this.isDialogOpen = false;
     },
-    applyFilters(filters) {
-      // Implement logic to either fetch new data with filters or apply filters locally
-      this.fetchPlants(filters); // Example: Pass filters to fetchPlants method if it supports filtering
+    applyFilters(filters: Record<string, boolean>) {
+      this.filters = filters;
     },
     loadMorePlants() {
       this.offset += this.limit;
@@ -136,5 +124,22 @@ export default {
 </script>
 
 <style scoped>
-/* Scoped styles for PlantGallery */
+.plant-gallery {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.top-container {
+  position: sticky;
+  top: var(--navbar-height); /*TODO update top spacing based on nav bar */
+  z-index: 100;
+  background-color: var(--bg-color);
+  padding: 1rem 0;
+}
+
+.results-container {
+  flex-grow: 1;
+  padding: 1rem 0;
+}
 </style>
