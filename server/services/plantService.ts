@@ -12,11 +12,25 @@ const API_BASE_URL = 'https://perenual.com/api';
 const API_KEY = process.env.PERENUAL_API_KEY;
 
 class PlantService {
+  // Helper function to get nested value from an object using a path string
+  private getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+  }
+  
   // validation
   private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema<T>): T {
     const { value, error } = schema.validate(data);
     if (error) {
-      throw new Error(`Validation error: ${error.details.map(d => d.message).join(', ')}`);
+      // Constructing an enhanced error message that includes the problematic value
+      const errorMessage = error.details.map((d) => {
+        // Accessing the problematic value using the path in the error detail
+        const errorValuePath = d.path.join('.');
+        const errorValue = this.getNestedValue(data, errorValuePath);
+  
+        return `${d.message}, received: "${errorValuePath}": ${JSON.stringify(errorValue)}`;
+      }).join(', ');
+  
+      throw new Error(`Validation error: ${errorMessage}`);
     }
     return value;
   }

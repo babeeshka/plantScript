@@ -1,11 +1,9 @@
 <template>
+  <div class="search-filter-container">
+    <SearchBar :dynamic="true" @search="dynamicFilterPlants" />
+    <FilterContainer @apply-filters="applyFilters" />
+  </div>
   <div class="plant-gallery">
-    <div class="top-container">
-      <div class="search-filter-container">
-        <SearchBar :dynamic="true" @search="dynamicFilterPlants" />
-        <FilterContainer @apply-filters="applyFilters" />
-      </div>
-    </div>
     <div class="results-container">
       <GalleryContainer :plants="filteredPlants" @showPlantDetails="showPlantDetails" />
 
@@ -13,8 +11,8 @@
       <button v-if="hasMore" @click="loadMorePlants" class="button-primary">Load More</button>
       <p v-if="searchExecuted && filteredPlants.length === 0">No results found.</p>
     </div>
-    <PlantModal v-if="isDialogOpen" :plantDetails="selectedPlant" :isDialogOpen.sync="isDialogOpen"
-      @close="closeModal" />
+    <PlantModal v-if="isDialogOpen" :key="selectedPlant.id" :plantDetails="selectedPlant"
+      :isDialogOpen.sync="isDialogOpen" @close="closeModal" />
   </div>
 </template>
 
@@ -38,7 +36,7 @@ export default {
       searchTerm: '',
       plants: [],
       isDialogOpen: false,
-      selectedPlant: undefined as PlantDetails | undefined,
+      selectedPlant: {} as PlantDetails,
       filters: {
         droughtTolerant: false,
         saltTolerant: false,
@@ -103,10 +101,10 @@ export default {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const response = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
         this.selectedPlant = response.data;
+        console.log('Selected Plant:', this.selectedPlant);
         this.isDialogOpen = true;
       } catch (error) {
         console.error('Error fetching plant details:', error);
-        // Handle error (e.g., show an error message)
       }
     },
     closeModal() {
@@ -126,20 +124,12 @@ export default {
 <style scoped>
 .plant-gallery {
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.top-container {
-  position: sticky;
-  top: var(--navbar-height); /*TODO update top spacing based on nav bar */
-  z-index: 100;
-  background-color: var(--bg-color);
-  padding: 1rem 0;
+  justify-content: center;
 }
 
 .results-container {
   flex-grow: 1;
   padding: 1rem 0;
 }
+
 </style>

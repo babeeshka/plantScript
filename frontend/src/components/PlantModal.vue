@@ -3,69 +3,90 @@
     <div class="plant-modal" @click.stop>
       <!-- Close Button -->
       <button class="close-btn" @click="closeModal">&times;</button>
+
       <!-- Image -->
-      <img v-if="plantDetails.default_image" :src="plantDetails.default_image.medium_url" alt="Plant image"
-        class="modal-plant-image" @click="openFullImage" />
+      <div class="modal-plant-image-container">
+        <img v-if="plantDetails.default_image"
+          :src="plantDetails.default_image.medium_url || plantDetails.default_image.original_url" alt="Plant image"
+          class="modal-plant-image" @click="openFullImage" />
+        <div v-else class="placeholder-container">
+          <PlaceholderImage />
+        </div>
+      </div>
 
-      <!-- Names -->
-      <div class="plant-names">
+      <!-- Manage Plant Button -->
+      <button class="manage-plant-btn" @click="redirectToManagePlant">Manage Plant</button>
+
+      <!-- Plant Details -->
+      <div class="plant-details">
         <h2>{{ plantDetails?.common_name ?? 'Common name not available' }}</h2>
-        <p><strong>Scientific Name:</strong> {{ plantDetails?.scientific_name?.join(', ') ?? 'Scientific name not available' }}</p>
-      </div>
-
-      <!-- Details Grid -->
-      <div class="details-grid">
-        <div class="detail-item"><strong>Family:</strong> {{ plantDetails?.family || 'N/A' }}</div>
-        <div class="detail-item"><strong>Type:</strong> {{ plantDetails?.type || 'N/A' }}</div>
-        <div class="detail-item"><strong>Cycle:</strong> {{ plantDetails?.cycle || 'N/A' }}</div>
-        <div class="detail-item"><strong>Watering:</strong> {{ plantDetails?.watering || 'N/A' }}</div>
-        <div class="detail-item"><strong>Sunlight:</strong> {{ plantDetails?.sunlight?.join(', ') || 'N/A' }}</div>
-        <div v-if="plantDetails?.hardiness" class="detail-item"><strong>Hardiness:</strong> {{
+        <p><strong>Scientific Name:</strong> {{ plantDetails?.scientific_name?.join(', ') ?? 'not found' }}</p>
+        <div class="details-grid">
+          <div class="detail-item"><strong>Family:</strong> {{ plantDetails?.family || 'N/A' }}</div>
+          <div class="detail-item"><strong>Type:</strong> {{ plantDetails?.type || 'N/A' }}</div>
+          <div class="detail-item"><strong>Cycle:</strong> {{ plantDetails?.cycle || 'N/A' }}</div>
+          <div class="detail-item"><strong>Watering:</strong> {{ plantDetails?.watering || 'N/A' }}</div>
+          <div class="detail-item"><strong>Sunlight:</strong> {{ plantDetails?.sunlight?.join(', ') || 'N/A' }}</div>
+          <div v-if="plantDetails?.hardiness" class="detail-item"><strong>Hardiness:</strong> {{
     plantDetails.hardiness.min }} to {{ plantDetails.hardiness.max }}</div>
-        <div class="detail-item"><strong>Growth Rate:</strong> {{ plantDetails?.growth_rate || 'N/A' }}</div>
-        <div class="detail-item"><strong>Maintenance:</strong> {{ plantDetails?.maintenance || 'N/A' }}</div>
-        <div class="detail-item"><strong>Soil:</strong> {{ plantDetails?.soil?.join(', ') || 'N/A' }}</div>
-        <div class="detail-item"><strong>Attracts:</strong> {{ plantDetails?.attracts?.join(', ') || 'N/A' }}</div>
-      </div>
+          <div class="detail-item"><strong>Growth Rate:</strong> {{ plantDetails?.growth_rate || 'N/A' }}</div>
+          <div class="detail-item"><strong>Maintenance:</strong> {{ plantDetails?.maintenance || 'N/A' }}</div>
+          <div class="detail-item"><strong>Soil:</strong> {{ plantDetails?.soil?.join(', ') || 'N/A' }}</div>
+          <div class="detail-item"><strong>Attracts:</strong> {{ plantDetails?.attracts?.join(', ') || 'N/A' }}</div>
+        </div>
 
-      <!-- Description -->
-      <div class="plant-description">
-        <h3>Description</h3>
-        <p>{{ showFullDescription ? (plantDetails?.description ?? 'No description available') :
+        <!-- Description -->
+        <div class="plant-description">
+          <h3>Description</h3>
+          <p>{{ showFullDescription ? (plantDetails?.description ?? 'No description available') :
     (plantDetails?.description ?? 'No description available').slice(0, 200) + '...' }}</p>
-        <button class="see-more-button" @click="toggleFullDescription">
-          {{ showFullDescription ? 'Read less' : 'Read more' }}
-        </button>
+          <button class="see-more-button" @click="toggleFullDescription">
+            {{ showFullDescription ? 'Read less' : 'Read more' }}
+          </button>
+        </div>
       </div>
 
-      <slot name="actions"></slot>
-
-      <!-- Close Button -->
-      <button class="close-btn" @click="$emit('close')">&times;</button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 import { PlantDetails } from '@rootTypes/plantInterfaces';
+import { useRouter } from 'vue-router';
+import PlaceholderImage from '@/components/PlaceholderImage.vue';
 
 export default defineComponent({
+  components: {
+    PlaceholderImage,
+  },
+  setup(props) {
+    const router = useRouter();
+
+    const redirectToManagePlant = () => {
+      router.push({ name: 'ManagePlant', params: { id: props.plantDetails?.id } });
+    };
+
+    return {
+      redirectToManagePlant,
+    };
+  },
+  props: {
+    plantDetails: {
+      type: Object as PropType<PlantDetails | null>,
+      default: () => null,
+    },
+    isDialogOpen: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       showFullDescription: false,
     };
   },
-  props: {
-    plantDetails: {
-      type: Object as () => PlantDetails | null,
-      default: () => null,
-    },
-    isDialogOpen: {
-      type: Boolean,
-      default: false
-    }
-  },
+  emits: ['close', 'manage'],
   watch: {
     plantDetails(newValue, oldValue) {
       console.log('plantDetails changed:', newValue);
@@ -81,7 +102,7 @@ export default defineComponent({
       }
     },
     closeModal() {
-      this.$emit('update:isDialogOpen', false);
+      this.$emit('close', false);
     },
   },
 });
@@ -110,30 +131,49 @@ export default defineComponent({
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  padding: 40px 40px 20px;
+  padding: 40px;
   position: relative;
 }
 
-.modal-plant-image {
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-plant-image-container {
   width: 100%;
   max-height: 400px;
-  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 5px;
   margin-bottom: 20px;
   cursor: pointer;
   transition: opacity 0.3s ease-in-out;
 }
 
+.modal-plant-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
 .modal-plant-image:hover {
   opacity: 0.9;
 }
 
-.plant-names {
-  margin-bottom: 1rem;
+.manage-plant-btn {
+  margin-bottom: 20px;
+  margin-top: 35px;
 }
 
-.plant-names h2 {
-  margin-top: 0;
+.plant-details {
+  text-align: left;
 }
 
 .details-grid {
@@ -144,25 +184,6 @@ export default defineComponent({
 }
 
 .plant-description {
-  margin-bottom: 1rem;
-}
-
-.plant-description h3 {
-  margin-top: 0;
-}
-
-.see-more-button {
-  margin-top: 0.5rem;
-}
-
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 24px;
-  background: none;
-  border: none;
-  cursor: pointer;
+  margin-top: 1rem;
 }
 </style>

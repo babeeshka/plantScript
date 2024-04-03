@@ -1,4 +1,7 @@
 :root {
+  /* navbar height */
+  --navbar-height: 60px;
+
   /* base font properties */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -10,21 +13,20 @@
   --link-color: #646cff;
   --link-hover-color: #535bf2;
   --card-bg-color: #ffffff;
-  --navbar-height: 60px; 
+  
 }
 
 body {
-  margin: 0;
-  padding: 2rem;
   min-height: 100vh;
   color: var(--text-color);
   background-color: var(--bg-color);
   font-family: var(--font-family);
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
+
 
 a {
   font-weight: 500;
@@ -59,28 +61,26 @@ a:hover {
 }
 
 .top-container {
-  position: sticky;
-  top: var(--navbar-height);
-  z-index: 100;
+  margin-top: calc(var(--navbar-height) + 2.5rem);
   background-color: var(--bg-color);
   padding: 1rem 0;
+  transition: all 0.3s ease;
 }
 
-/* TODO update the styles for the navbar and search bar */
 .page-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh; /* Make sure the container takes at least full viewport height */
 }
 
-.nav-and-search-container {
+.search-filter-container {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   width: 100%;
+  margin: 0 auto;
   position: sticky;
-  top: 0; /* This will make sure it sticks to the top */
-  z-index: 10; /* Adjust z-index to make sure it's above other content */
-  background-color: #fff; /* Set background color to match your navbar */
 }
 
 /* Reserved space for the filter container even when it's not visible */
@@ -94,16 +94,25 @@ a:hover {
 button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
+  background-color: #1976d8;
+  color: rgb(249, 247, 252); 
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin-left: 15px;
 }
 
-.button-primary {
-  background-color: var(--link-color);
-  color: white;
+.close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background-color: transparent;
+  color: #333;
+  border: none;
+  cursor: pointer;
 }
 
-.button-primary:hover {
-  background-color: var(--link-hover-color);
+/* Button hover effect */
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
 }

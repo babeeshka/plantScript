@@ -1,12 +1,11 @@
 <template>
   <div class="plant-search-page">
-    <div class="top-container" :class="{ 'fixed-top': searchResults.length > 0 }">
-      <div class="search-filter-container">
-        <SearchBar @search="searchPlants" />
-        <FilterContainer @apply-filters="applyFilters" />
-      </div>
+    <div class="search-container"
+      :class="{ 'search-filter-container': searchExecuted && searchResults.length > 0, 'center': !searchExecuted }">
+      <SearchBar @search="searchPlants" />
+      <FilterContainer @apply-filters="applyFilters" />
     </div>
-    <div class="results-container" v-if="searchResults.length > 0">
+    <div v-if="searchExecuted" class="results-container">
       <GalleryContainer :plants="searchResults" @showPlantDetails="showPlantDetails" />
 
       <!-- Pagination Controls -->
@@ -20,7 +19,6 @@
       @close="closeModal" />
   </div>
 </template>
-
 
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
@@ -78,11 +76,10 @@ export default defineComponent({
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const response = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
         console.log('Plant details response:', response.data);
-        selectedPlant.value = response.data; // Make sure this matches the structure expected by PlantModal
+        selectedPlant.value = response.data;
         isDialogOpen.value = true;
       } catch (error) {
         console.error('Error fetching plant details:', error);
-        // Handle error (e.g., show an error message)
       }
     };
 
@@ -100,11 +97,6 @@ export default defineComponent({
       isDialogOpen.value = false;
     };
 
-    const redirectToManagePlant = (plantId: number) => {
-      closeModal();
-      router.push({ name: 'ManagePlant', params: { plantId } });
-    };
-
     return {
       searchQuery,
       searchResults,
@@ -119,7 +111,6 @@ export default defineComponent({
       applyFilters,
       changePage,
       closeModal,
-      redirectToManagePlant,
     };
   },
 });
@@ -130,23 +121,36 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  margin-top: var(--navbar-height);
 }
 
-.top-container {
-  position: sticky;
+.search-page-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: calc(100vh - var(--navbar-height));
+}
+
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding-top: calc(var(--navbar-height) + 50px);
+  width: 75%;
+}
+
+.search-container.fixed-top {
+  position: fixed;
   top: var(--navbar-height);
+  left: 0;
+  right: 0;
   z-index: 100;
   background-color: var(--bg-color);
   padding: 1rem 0;
-}
-
-.search-filter-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .results-container {

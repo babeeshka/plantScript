@@ -10,7 +10,7 @@
 
     <!-- Fetch Random Plant Button -->
     <div class="button-container">
-      <button class="button-primary" @click="fetchRandomPlant">
+      <button @click="fetchRandomPlant">
         Fetch another random plant
       </button>
     </div>
@@ -74,22 +74,23 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - var(--navbar-height));
+  height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   padding: 1em;
 }
 
+/* Gallery container responsive grid */
 .gallery-container {
+  margin: 0 auto; 
+  margin-top: 2.5rem; 
+  width: 100%;
   display: grid;
-  gap: 1em;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  justify-content: center;
-  padding: 10px;
+  grid-template-columns: auto; 
 }
 
 .button-container {
   text-align: center;
-  margin-top: 2em; 
+  margin-top: 2em;
 }
 </style>

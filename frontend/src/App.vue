@@ -1,10 +1,13 @@
 <template>
   <NavBar />
-  <router-view />
+  <div class="main-content">
+    <router-view />
+  </div>
 </template>
 
 <script lang="ts">
 import NavBar from '@/components/NavBar.vue';
+
 export default {
   name: 'App',
   components: {
@@ -13,8 +16,9 @@ export default {
 };
 </script>
 
-<style>
-.app-container {
-  margin-top: var(--navbar-height);
+<style scoped>
+.main-content {
+  margin-top: calc(var(--navbar-height) + 1rem);
+  width: 100%;
 }
 </style>

@@ -2,7 +2,9 @@
   <div class="search-bar-container">
     <div class="search-bar">
       <input type="text" v-model="searchTerm" @input="handleInput" placeholder="Search plants...">
-      <button class="button-primary" v-if="!dynamic" @click="emitSearch">Search</button>
+    </div>
+    <div class="search-button-container">
+    <button v-if="!dynamic" @click="emitSearch">Search</button>
     </div>
   </div>
 </template>
@@ -32,7 +34,7 @@ export default {
 .search-bar-container {
   display: flex;
   justify-content: center;
-  width: 100%;
+  width: 75%;
   background-color: var(--bg-color);
   padding: 1rem 0;
 }
@@ -41,8 +43,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 100%;
-  max-width: 600px;
+  width: 60%;
+  max-width: 450px;
 }
 
 .search-bar input[type="text"] {
@@ -52,12 +54,9 @@ export default {
   border-radius: 4px;
 }
 
-.search-bar button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background-color: var(--link-color);
-  color: white;
-  cursor: pointer;
+.search-button-container {
+  display: flex;
+  gap: 10px;
+  margin-left: 25px;
 }
 </style>
