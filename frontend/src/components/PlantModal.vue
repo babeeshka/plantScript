@@ -17,29 +17,115 @@
       <!-- Manage Plant Button -->
       <button class="manage-plant-btn" @click="redirectToManagePlant">Manage Plant</button>
 
-      <!-- Plant Details -->
       <div class="plant-details">
-        <h2>{{ plantDetails?.common_name ?? 'Common name not available' }}</h2>
-        <p><strong>Scientific Name:</strong> {{ plantDetails?.scientific_name?.join(', ') ?? 'not found' }}</p>
-        <div class="details-grid">
-          <div class="detail-item"><strong>Family:</strong> {{ plantDetails?.family || 'N/A' }}</div>
-          <div class="detail-item"><strong>Type:</strong> {{ plantDetails?.type || 'N/A' }}</div>
-          <div class="detail-item"><strong>Cycle:</strong> {{ plantDetails?.cycle || 'N/A' }}</div>
-          <div class="detail-item"><strong>Watering:</strong> {{ plantDetails?.watering || 'N/A' }}</div>
-          <div class="detail-item"><strong>Sunlight:</strong> {{ plantDetails?.sunlight?.join(', ') || 'N/A' }}</div>
-          <div v-if="plantDetails?.hardiness" class="detail-item"><strong>Hardiness:</strong> {{
-    plantDetails.hardiness.min }} to {{ plantDetails.hardiness.max }}</div>
-          <div class="detail-item"><strong>Growth Rate:</strong> {{ plantDetails?.growth_rate || 'N/A' }}</div>
-          <div class="detail-item"><strong>Maintenance:</strong> {{ plantDetails?.maintenance || 'N/A' }}</div>
-          <div class="detail-item"><strong>Soil:</strong> {{ plantDetails?.soil?.join(', ') || 'N/A' }}</div>
-          <div class="detail-item"><strong>Attracts:</strong> {{ plantDetails?.attracts?.join(', ') || 'N/A' }}</div>
+        <h2>{{ plantDetails?.common_name || 'Common name not available' }}</h2>
+        <div class="plant-info">
+          <div class="info-section">
+            <h3>Basic Info</h3>
+            <p><strong>Scientific Name:</strong> {{ plantDetails?.scientific_name?.join(', ') || 'Not found' }}</p>
+            <p><strong>Other Names:</strong> {{ plantDetails?.other_name?.join(', ') || 'N/A' }}</p>
+            <p><strong>Family:</strong> {{ plantDetails?.family || 'N/A' }}</p>
+            <p><strong>Origin:</strong> {{ plantDetails?.origin?.join(', ') || 'N/A' }}</p>
+            <p><strong>Type:</strong> {{ plantDetails?.type || 'N/A' }}</p>
+            <p><strong>Dimensions:</strong> {{ plantDetails?.dimension || 'N/A' }}</p>
+            <p><strong>Cycle:</strong> {{ plantDetails?.cycle || 'N/A' }}</p>
+          </div>
+
+          <div class="info-section">
+            <h3>Care Info</h3>
+            <p><strong>Watering:</strong> {{ plantDetails?.watering || 'N/A' }}</p>
+            <p><strong>Sunlight:</strong> {{ plantDetails?.sunlight?.join(', ') || 'N/A' }}</p>
+            <p v-if="plantDetails?.hardiness"><strong>Hardiness:</strong> {{ plantDetails.hardiness.min }} to {{
+    plantDetails.hardiness.max }}</p>
+            <p><strong>Pruning Months:</strong> {{ plantDetails?.pruning_month?.join(', ') || 'N/A' }}</p>
+            <p><strong>Maintenance:</strong> {{ plantDetails?.maintenance || 'N/A' }}</p>
+            <p><strong>Growth Rate:</strong> {{ plantDetails?.growth_rate || 'N/A' }}</p>
+            <p><strong>Care Level:</strong> {{ plantDetails?.care_level || 'N/A' }}</p>
+          </div>
+
+          <div class="info-section features">
+            <h3>Features</h3>
+            <div class="feature-grid">
+              <div class="feature-item">
+                <span class="feature-label">Drought Tolerant:</span>
+                <span class="feature-icon" v-if="plantDetails?.drought_tolerant">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Salt Tolerant:</span>
+                <span class="feature-icon" v-if="plantDetails?.salt_tolerant">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Thorny:</span>
+                <span class="feature-icon" v-if="plantDetails?.thorny">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Invasive:</span>
+                <span class="feature-icon" v-if="plantDetails?.invasive">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Tropical:</span>
+                <span class="feature-icon" v-if="plantDetails?.tropical">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Indoor:</span>
+                <span class="feature-icon" v-if="plantDetails?.indoor">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Flowers:</span>
+                <span class="feature-icon" v-if="plantDetails?.flowers">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+              <div class="feature-item">
+                <span class="feature-label">Fruits:</span>
+                <span class="feature-icon" v-if="plantDetails?.fruits">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span class="feature-icon" v-else>
+                  <i class="fas fa-times"></i>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Description -->
         <div class="plant-description">
           <h3>Description</h3>
-          <p>{{ showFullDescription ? (plantDetails?.description ?? 'No description available') :
-    (plantDetails?.description ?? 'No description available').slice(0, 200) + '...' }}</p>
+          <p>{{ showFullDescription ? (plantDetails?.description || 'No description available') :
+    (plantDetails?.description || 'No description available').slice(0, 200) + '...' }}</p>
           <button class="see-more-button" @click="toggleFullDescription">
             {{ showFullDescription ? 'Read less' : 'Read more' }}
           </button>
@@ -147,9 +233,10 @@ export default defineComponent({
 
 .modal-plant-image-container {
   width: 100%;
-  max-height: 400px;
+  max-height: 100%;
   display: flex;
   justify-content: center;
+  justify-items: center;
   align-items: center;
   border-radius: 5px;
   margin-bottom: 20px;
@@ -158,6 +245,7 @@ export default defineComponent({
 }
 
 .modal-plant-image {
+  border-radius: 8px;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
@@ -168,22 +256,86 @@ export default defineComponent({
 }
 
 .manage-plant-btn {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   margin-top: 35px;
+  max-width: 20%;
+  margin: auto;
 }
 
-.plant-details {
-  text-align: left;
+.plant-info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
-.details-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+.info-section {
+  flex: 1 1 300px;
+  background-color: #f8f8f8;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-section h3 {
+  margin-top: 0;
   margin-bottom: 1rem;
+  color: #333;
+}
+
+.info-section p {
+  margin: 0.5rem 0;
 }
 
 .plant-description {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.plant-description h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.see-more-button {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
   margin-top: 1rem;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-label {
+  font-weight: bold;
+}
+
+.feature-icon {
+  color: #4caf50;
+}
+
+.feature-icon .fa-times {
+  color: #f44336;
 }
 </style>

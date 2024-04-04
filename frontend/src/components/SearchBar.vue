@@ -34,7 +34,7 @@ export default {
 .search-bar-container {
   display: flex;
   justify-content: center;
-  width: 75%;
+  width: 100%;
   background-color: var(--bg-color);
   padding: 1rem 0;
 }
@@ -43,8 +43,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 60%;
-  max-width: 450px;
+  width: 100%;
 }
 
 .search-bar input[type="text"] {

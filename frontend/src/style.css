@@ -74,13 +74,14 @@ a:hover {
 }
 
 .search-filter-container {
-  display: flex;
+  display: grid;
   justify-content: center;
   align-items: center;
   gap: 10px;
   width: 100%;
   margin: 0 auto;
-  position: sticky;
+  grid-gap: 1rem;
+  grid-template-columns: auto auto;
 }
 
 /* Reserved space for the filter container even when it's not visible */
