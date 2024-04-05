@@ -14,7 +14,10 @@
       "@rootTypes/*": [
         "../types/*"
       ]
-    }
+    },
+    "types": [
+      "@mdi/font"
+    ]
   },
   "include": [
     "./src/**/*.ts",

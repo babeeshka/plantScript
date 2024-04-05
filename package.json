@@ -14,6 +14,7 @@
     "start": "concurrently \"npm run start-server\" \"npm run serve-frontend\""
   },
   "devDependencies": {
+    "@mdi/font": "^7.4.47",
     "@types/axios": "^0.14.0",
     "@types/hapi__joi": "^17.1.14",
     "@types/jest": "^29.5.12",
@@ -35,7 +36,6 @@
     "vuex": "^4.0.2"
   },
   "dependencies": {
-    "@mdi/font": "^7.4.47",
     "@vue/test-utils": "^2.4.4",
     "axios": "^1.6.7",
     "mongodb": "^6.3.0",

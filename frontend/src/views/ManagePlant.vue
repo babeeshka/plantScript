@@ -3,15 +3,18 @@
     <h1>Manage Plant</h1>
     <div v-if="plant">
       <div class="form-container">
-        <PlantForm :plant.sync="plant" @save="updatePlant" @cancel="goBack" />
+        <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" />
       </div>
       <div class="form-button-container">
-        <v-btn @click="deletePlant" color="error" class="mt-4">Delete Plant</v-btn>
+        <v-btn v-if="plantId" @click="deletePlant" color="error" class="mt-4">Delete Plant</v-btn>
       </div>
     </div>
     <div v-else>
       <p>Loading plant details...</p>
     </div>
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
+      {{ snackbar.message }}
+    </v-snackbar>
   </div>
 </template>
 
@@ -29,11 +32,18 @@ export default defineComponent({
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const plantId = ref<string | null>(route.params.id as string);
     const plant = ref<PlantDetails | null>(null);
+    const snackbar = ref({
+      show: false,
+      message: '',
+      color: '',
+    });
 
     onMounted(async () => {
-      const plantId = route.params.id as string;
-      await fetchPlantDetails(plantId);
+      if (plantId.value) {
+        await fetchPlantDetails(plantId.value);
+      }
     });
 
     const fetchPlantDetails = async (plantId: string) => {
@@ -45,31 +55,46 @@ export default defineComponent({
         console.log(plant.value);
       } catch (error) {
         console.error('Error fetching plant details:', error);
-        // Handle error (e.g., show an error message)
+        showSnackbar('Error fetching plant details', 'error');
       }
     };
 
-    const updatePlant = async (updatedPlant: PlantDetails) => {
+    const createPlant = async (newPlant: PlantDetails) => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.post(`${apiUrl}/api/plants`, newPlant);
+        plant.value = response.data;
+        showSnackbar('Plant created successfully', 'success');
+        router.push(`/plants/${plant.value.id}/manage`);
+      } catch (error) {
+        console.error('Error creating plant:', error);
+        showSnackbar('Error creating plant', 'error');
+      }
+    };
+
+    const savePlant = async (updatedPlant: PlantDetails) => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         await axios.put(`${apiUrl}/api/plants/${updatedPlant.id}`, updatedPlant);
-        // Show success message or navigate back to the plant list
+        showSnackbar('Plant updated successfully', 'success');
         goBack();
       } catch (error) {
         console.error('Error updating plant:', error);
-        // Handle error (e.g., show an error message)
+        showSnackbar('Error updating plant', 'error');
       }
     };
 
     const deletePlant = async () => {
+      if (!plant.value) return;
+
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        await axios.delete(`${apiUrl}/api/plants/${plant.value!.id}`);
-        // Navigate back to the plant list or show a success message
+        await axios.delete(`${apiUrl}/api/plants/${plant.value.id}`);
+        showSnackbar('Plant deleted successfully', 'success');
         goBack();
       } catch (error) {
         console.error('Error deleting plant:', error);
-        // Handle error (e.g., show an error message)
+        showSnackbar('Error deleting plant', 'error');
       }
     };
 
@@ -77,11 +102,21 @@ export default defineComponent({
       router.go(-1);
     };
 
+    const showSnackbar = (message: string, color: string) => {
+      snackbar.value.message = message;
+      snackbar.value.color = color;
+      snackbar.value.show = true;
+    };
+
     return {
+      plantId,
       plant,
-      updatePlant,
+      createPlant,
+      savePlant,
       deletePlant,
       goBack,
+      snackbar,
+      showSnackbar,
     };
   },
 });

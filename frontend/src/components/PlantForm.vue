@@ -53,10 +53,12 @@
         </v-row>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.hardiness.min" label="Hardiness Min" />
+            <!-- Use optional chaining and nullish coalescing for hardiness.min -->
+            <v-text-field v-model="hardinessMin" label="Hardiness Min" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.hardiness.max" label="Hardiness Max" />
+            <!-- Use optional chaining and nullish coalescing for hardiness.max -->
+            <v-text-field v-model="hardinessMax" label="Hardiness Max" />
           </v-col>
         </v-row>
         <v-row>
@@ -150,8 +152,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { PlantDetails } from '@rootTypes/plantInterfaces';
+import axios from 'axios';
+import { defineComponent, PropType, computed } from 'vue';
+import { PlantDetails, DefaultImage, PlantAnatomy, PruningCount } from '@rootTypes/plantInterfaces';
 
 export default defineComponent({
   props: {
@@ -169,16 +172,75 @@ export default defineComponent({
         this.$emit('update:plant', value);
       },
     },
+    defaultImage: {
+      get(): DefaultImage | undefined {
+        return this.localPlant.default_image ?? undefined;
+      },
+      set(value: DefaultImage | undefined) {
+        this.localPlant.default_image = value;
+      },
+    },
+    plantAnatomy: {
+      get(): PlantAnatomy[] {
+        return this.localPlant.plant_anatomy || [];
+      },
+      set(value: PlantAnatomy[]) {
+        this.localPlant.plant_anatomy = value;
+      },
+    },
+    pruningCount: {
+      get(): PruningCount | undefined {
+        return this.localPlant.pruning_count ?? undefined;
+      },
+      set(value: PruningCount | undefined) {
+        this.localPlant.pruning_count = value;
+      },
+    },
+    hardinessMin: {
+      get() {
+        return this.localPlant.hardiness?.min ?? '';
+      },
+      set(value: string) {
+        if (this.localPlant.hardiness) {
+          this.localPlant.hardiness.min = value;
+        } else {
+          this.localPlant.hardiness = { min: value, max: '' };
+        }
+      }
+    },
+    hardinessMax: {
+      get() {
+        return this.localPlant.hardiness?.max ?? '';
+      },
+      set(value: string) {
+        if (this.localPlant.hardiness) {
+          this.localPlant.hardiness.max = value;
+        } else {
+          this.localPlant.hardiness = { min: '', max: value };
+        }
+      }
+    }
   },
   methods: {
+    async submitForm() {
+      try {
+        const response = await axios.post('/api/plants', this.localPlant);
+        console.log('Plant created:', response.data);
+        // Reset form or navigate to another page
+      } catch (error) {
+        console.error('Error creating plant:', error);
+        // Handle error and display message to the user
+      }
+    },
     save() {
       this.$emit('save', this.localPlant);
     },
     cancel() {
       this.$emit('cancel');
     },
-  },
+  }
 });
+
 </script>
 
 <style scoped>
