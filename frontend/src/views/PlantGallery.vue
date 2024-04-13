@@ -34,7 +34,7 @@ export default {
   data() {
     return {
       searchTerm: '',
-      plants: [],
+      plants: [] as PlantSummary[],
       isDialogOpen: false,
       selectedPlant: {} as PlantDetails,
       filters: {
@@ -52,7 +52,7 @@ export default {
         poisonous_to_animals: false,
       } as Record<string, boolean>,
       showFilters: false,
-      selectedFilters: {},
+      selectedFilters: {} as Record<string, boolean>,
       searchExecuted: false,
       // Pagination state
       hasMore: true,
@@ -76,21 +76,31 @@ export default {
     async fetchPlants() {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       try {
-        const response = await axios.get(`${apiUrl}/db/plants`, {
-          params: { limit: this.limit, offset: this.offset }
-        });
+        const params = {
+          limit: this.limit,
+          offset: this.offset,
+          ...this.selectedFilters, // Include selected filters as query parameters
+          searchTerm: this.searchTerm // Assume the API can handle a 'searchTerm' query
+        };
+        const response = await axios.get(`${apiUrl}/db/plants`, { params });
         this.plants = response.data.data;
-        this.hasMore = this.plants.length === this.limit;
+        this.hasMore = response.data.data.length === this.limit;
+        this.searchExecuted = true; // Indicate a search was executed
       } catch (error) {
         console.error("Error fetching plants:", error);
       }
     },
-    filterPlants(query: string) {
-      this.offset = 0;
+
+    dynamicFilterPlants(searchTerm: string) {
+      this.searchTerm = searchTerm;
+      this.offset = 0; // Reset pagination
       this.fetchPlants();
     },
-    dynamicFilterPlants() {
-      this.searchExecuted = true;
+
+    applyFilters(filters: Record<string, boolean>) {
+      this.selectedFilters = filters;
+      this.offset = 0; // Reset pagination
+      this.fetchPlants();
     },
     handlePlantClicked(plant: PlantDetails) {
       this.selectedPlant = plant;
@@ -99,7 +109,7 @@ export default {
     async showPlantDetails(plantId: number) {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        const response = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
+        const response = await axios.get(`${apiUrl}/db/plants/${plantId}`);
         this.selectedPlant = response.data;
         console.log('Selected Plant:', this.selectedPlant);
         this.isDialogOpen = true;
@@ -110,12 +120,18 @@ export default {
     closeModal() {
       this.isDialogOpen = false;
     },
-    applyFilters(filters: Record<string, boolean>) {
-      this.filters = filters;
-    },
-    loadMorePlants() {
+    async loadMorePlants() {
       this.offset += this.limit;
-      this.fetchPlants();
+      const apiUrl = import.meta.env.VITE_API_BASE_URL;
+      try {
+        const response = await axios.get(`${apiUrl}/db/plants`, {
+          params: { limit: this.limit, offset: this.offset }
+        });
+        this.plants = [...this.plants, ...response.data.data]; // Append new plants
+        this.hasMore = response.data.data.length === this.limit;
+      } catch (error) {
+        console.error("Error fetching more plants:", error);
+      }
     },
   },
 };
@@ -132,4 +148,11 @@ export default {
   padding: 1rem 0;
 }
 
+.search-filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  /* Adjust space between SearchBar and FilterContainer */
+}
 </style>

@@ -2,9 +2,7 @@
   <div class="manage-plant">
     <h1>Manage Plant</h1>
     <div v-if="plant">
-      <div class="form-container">
-        <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" />
-      </div>
+      <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" />
       <div class="form-button-container">
         <v-btn v-if="plantId" @click="deletePlant" color="error" class="mt-4">Delete Plant</v-btn>
       </div>
@@ -49,47 +47,58 @@ export default defineComponent({
     const fetchPlantDetails = async (plantId: string) => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        const response = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
-        console.log('Fetched plant details:', response.data);
-        plant.value = response.data;
-        console.log(plant.value);
+
+        // Attempt to fetch from the local database first
+        try {
+          const dbResponse = await axios.get(`${apiUrl}/db/plants/${plantId}`);
+          // If successful, use the plant details from the database
+          console.log('Fetched plant details from the database:', dbResponse.data);
+          plant.value = dbResponse.data;
+        } catch (dbError: any) {
+          // If there's an error (e.g., 404 not found), fetch from the external API
+          if (dbError.response && dbError.response.status === 404) {
+            const apiResponse = await axios.get(`${apiUrl}/api/plants/${plantId}/details`);
+            console.log('Fetched plant details from the external API:', apiResponse.data);
+            plant.value = apiResponse.data;
+          } else {
+            // Handle other errors (not 404)
+            throw dbError;
+          }
+        }
       } catch (error) {
         console.error('Error fetching plant details:', error);
         showSnackbar('Error fetching plant details', 'error');
       }
     };
 
-    const createPlant = async (newPlant: PlantDetails) => {
-      try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        const response = await axios.post(`${apiUrl}/api/plants`, newPlant);
-        plant.value = response.data;
-        showSnackbar('Plant created successfully', 'success');
-        router.push(`/plants/${plant.value.id}/manage`);
-      } catch (error) {
-        console.error('Error creating plant:', error);
-        showSnackbar('Error creating plant', 'error');
-      }
-    };
 
     const savePlant = async (updatedPlant: PlantDetails) => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        await axios.put(`${apiUrl}/api/plants/${updatedPlant.id}`, updatedPlant);
-        showSnackbar('Plant updated successfully', 'success');
-        goBack();
+        if (plant.value && plant.value._id) {
+          // If the plant has an _id, it exists in the database. Update it.
+          await axios.put(`${apiUrl}/db/plants/${plant.value._id}`, updatedPlant);
+          showSnackbar('Plant updated successfully', 'success');
+        } else {
+          // If the plant doesn't have an _id, it's new. Create it.
+          const response = await axios.post(`${apiUrl}/db/plants`, updatedPlant);
+          plant.value = response.data; // Assuming the new plant data is returned
+          showSnackbar('Plant created successfully', 'success');
+          router.push(`/plants/${plant.value?.id}/manage`);
+        }
       } catch (error) {
-        console.error('Error updating plant:', error);
-        showSnackbar('Error updating plant', 'error');
+        console.error('Error saving plant:', error);
+        showSnackbar('Error saving plant', 'error');
       }
     };
 
+
+
     const deletePlant = async () => {
       if (!plant.value) return;
-
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        await axios.delete(`${apiUrl}/api/plants/${plant.value.id}`);
+        await axios.delete(`${apiUrl}/db/plants/${plant.value.id}`);
         showSnackbar('Plant deleted successfully', 'success');
         goBack();
       } catch (error) {
@@ -111,7 +120,6 @@ export default defineComponent({
     return {
       plantId,
       plant,
-      createPlant,
       savePlant,
       deletePlant,
       goBack,
