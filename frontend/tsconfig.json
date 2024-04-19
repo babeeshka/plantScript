@@ -15,16 +15,14 @@
         "../types/*"
       ]
     },
-    "types": [
-      "@mdi/font"
-    ]
   },
   "include": [
     "./src/**/*.ts",
     "./src/**/*.tsx",
     "./src/**/*.vue",
     "./src/*.ts",
-    "./src/assets/*"
+    "./src/assets/*",
+    "./src/assets/icons/*.svg"
   ],
   "exclude": [
     "node_modules"

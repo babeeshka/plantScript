@@ -24,9 +24,8 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
     try {
         const query = req.query.q as string;
-        // Collect filter parameters from req.query
+        const page = parseInt(req.query.page as string) || 1; // Default to page 1 if not specified
         const filters = {
-            // Assuming your API accepts these filters, adapt as necessary
             edible: req.query.edible,
             poisonous: req.query.poisonous,
             cycle: req.query.cycle,
@@ -36,7 +35,7 @@ router.get('/search', async (req, res) => {
             hardiness: req.query.hardiness,
         };
 
-        const data = await plantService.searchPlantByName(query, filters);
+        const data = await plantService.searchPlantByName(query, filters, page);
         res.json(data);
     } catch (error) {
         console.error(`Error searching plants:`, error);

@@ -1,31 +1,43 @@
 import express from 'express';
 import { plantService } from '../services/plantService';
+import { PlantFilterKeys } from '@rootTypes/plantInterfaces';
 
 const router = express.Router();
 
-// Route for fetching plants with pagination
+// Route for fetching plants with pagination using page numbers
 router.get('/', async (req, res) => {
     try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
+        const searchTerm = req.query.searchTerm?.toString() || '';
+
+        const filters: Record<string, boolean> = Object.keys(req.query)
+            .filter(key => !['page', 'limit', 'searchTerm'].includes(key))
+            .reduce<Record<string, boolean>>((acc, key) => {
+                const value = req.query[key];
+                if (value === 'true') { // Only add to filters if value is 'true'
+                    acc[key] = true;
+                }
+                return acc;
+            }, {});
+
+        console.log('Parsed search and filters:', { searchTerm, filters });
+
         const offset = (page - 1) * limit;
 
-        const { plants, count } = await plantService.findAllPlantsWithPagination(limit, offset);
+        const { plants, count } = await plantService.findAllPlantsWithPagination({
+            limit,
+            offset: (page - 1) * limit,
+            searchTerm,
+            filters
+        });
 
-        const metadata = {
-            totalPlants: count,
-            totalPages: Math.ceil(count / limit),
-            currentPage: page,
-        };
-
-        res.json({ data: plants, metadata });
+        res.json({ data: plants, metadata: { totalPlants: count, totalPages: Math.ceil(count / limit), currentPage: page } });
     } catch (error) {
         console.error('Error fetching plants with pagination:', error);
         res.status(500).json({ error: "An error occurred while fetching plants with pagination" });
     }
 });
-
-
 
 // Route for fetching a specific plant by the external API's ID from the db
 router.get('/:id', async (req, res) => {

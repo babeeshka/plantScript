@@ -1,19 +1,19 @@
+/* Global Styles */
 :root {
-  /* navbar height */
+  /* Navbar height */
   --navbar-height: 60px;
 
-  /* base font properties */
+  /* Base font properties */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* color variables for theme management */
+  /* Color variables for theme management */
   --text-color: #333;
   --bg-color: #f0f0f0;
   --link-color: #646cff;
   --link-hover-color: #535bf2;
   --card-bg-color: #ffffff;
-  
 }
 
 body {
@@ -27,7 +27,6 @@ body {
   text-align: center;
 }
 
-
 a {
   font-weight: 500;
   color: var(--link-color);
@@ -38,7 +37,7 @@ a:hover {
   color: var(--link-hover-color);
 }
 
-/* Responsive grid for plant cards */
+/* Media Queries */
 @media (min-width: 768px) {
   .gallery-container {
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -51,7 +50,7 @@ a:hover {
   }
 }
 
-/* style for cards or containers */
+/* Utility Classes */
 .card {
   background-color: var(--card-bg-color);
   padding: 2em;
@@ -70,37 +69,27 @@ a:hover {
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Make sure the container takes at least full viewport height */
+  min-height: 100vh;
 }
 
-.search-filter-container {
-  display: grid;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  margin: 0 auto;
-  grid-gap: 1rem;
-  grid-template-columns: auto auto;
+.results-container {
+  padding-bottom: 1rem;
 }
 
-/* Reserved space for the filter container even when it's not visible */
-.search-bar + .filter-container-placeholder {
-  height: 0;
-  overflow: hidden;
-  transition: height 0.3s ease;
-}
-
-/* Consistent button styling */
+/* Button Styles */
 button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   background-color: #1976d8;
-  color: rgb(249, 247, 252); 
+  color: rgb(249, 247, 252);
   border: none;
   cursor: pointer;
   transition: background-color 0.3s;
   margin-left: 15px;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .close-btn {
@@ -113,7 +102,124 @@ button {
   cursor: pointer;
 }
 
-/* Button hover effect */
-button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
+.apply-btn {
+  background-color: #1976d2;
+  color: white;
+}
+
+.reset-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.load-more {
+  margin-bottom: 1rem;
+}
+
+/* Overlay Styles */
+.global-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s;
+}
+
+.global-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Filter Icon Styles */
+.filter-icon {
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.filter-icon:hover {
+  color: #51b911;
+}
+
+/* Filter Styles */
+.filter-container {
+  position: relative;
+}
+
+.filter-toggle {
+  padding: 0.75rem;
+  border: none;
+  background-color: #51b911;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filter-toggle:hover {
+  background-color: #408e0a;
+}
+
+.filter-group {
+  margin-bottom: 1rem;
+}
+
+.filter-group h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.filter-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.5rem;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.filter-option label {
+  margin-left: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.filter-buttons button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-left: 0.5rem;
 }

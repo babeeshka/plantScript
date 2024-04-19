@@ -1,16 +1,17 @@
 <template>
   <div class="manage-plant">
-    <h1>Manage Plant</h1>
-    <div v-if="plant">
-      <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" />
-      <div class="form-button-container">
-        <v-btn v-if="plantId" @click="deletePlant" color="error" class="mt-4">Delete Plant</v-btn>
-      </div>
-    </div>
-    <div v-else>
-      <p>Loading plant details...</p>
-    </div>
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000">
+    <v-row justify="center" v-if="!plant">
+      <v-col cols="12" class="text-center">
+        <p>Loading plant details...</p>
+      </v-col>
+    </v-row>
+    <v-row v-else>
+      <v-col>
+        <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" class="mb-4" />
+        <v-btn v-if="plant" @click="deletePlant" color="error" outlined class="ml-auto d-block">Delete Plant</v-btn>
+      </v-col>
+    </v-row>
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom right>
       {{ snackbar.message }}
     </v-snackbar>
   </div>
@@ -92,20 +93,18 @@ export default defineComponent({
       }
     };
 
-
-
-    const deletePlant = async () => {
-      if (!plant.value) return;
+  const deletePlant = async () => {
+    if (!plant.value) return;
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         await axios.delete(`${apiUrl}/db/plants/${plant.value.id}`);
         showSnackbar('Plant deleted successfully', 'success');
-        goBack();
+        router.push({ name: 'plant-gallery' });
       } catch (error) {
         console.error('Error deleting plant:', error);
         showSnackbar('Error deleting plant', 'error');
       }
-    };
+  };
 
     const goBack = () => {
       router.go(-1);
@@ -132,9 +131,8 @@ export default defineComponent({
 
 <style scoped>
 .manage-plant {
-  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .form-container {
@@ -142,7 +140,7 @@ export default defineComponent({
   background-color: #f5f5f5;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .form-button-container {

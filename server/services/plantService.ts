@@ -1,7 +1,7 @@
 // /services/plantService.ts
 import dotenv from 'dotenv';
 import * as plantModel from '../models/plant';
-import { ApiResponse, PlantSummary, PlantDetails } from '@rootTypes/plantInterfaces';
+import { ApiResponse, PlantSummary, PlantDetails, PaginationParams } from '@rootTypes/plantInterfaces';
 import Joi, { ValidationErrorItem } from 'joi';
 import axios from 'axios';
 import plantSchema from '../schemas/plantSchema';
@@ -16,7 +16,7 @@ class PlantService {
   private getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
   }
-  
+
   // validation
   private validateApiResponse<T>(data: any, schema: Joi.ObjectSchema<T>): T {
     const { value, error } = schema.validate(data);
@@ -26,10 +26,10 @@ class PlantService {
         // Accessing the problematic value using the path in the error detail
         const errorValuePath = d.path.join('.');
         const errorValue = this.getNestedValue(data, errorValuePath);
-  
+
         return `${d.message}, received: "${errorValuePath}": ${JSON.stringify(errorValue)}`;
       }).join(', ');
-  
+
       throw new Error(`Validation error: ${errorMessage}`);
     }
     return value;
@@ -37,16 +37,25 @@ class PlantService {
 
   // api plant methods
   // Fetch species list with pagination
-  public async fetchSpeciesList(page: number = 1): Promise<ApiResponse<PlantSummary>> {
-    const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
-      params: { key: API_KEY, page },
-    });
-    return data;
+  public async fetchSpeciesList(page: number): Promise<ApiResponse<PlantSummary>> {
+    try {
+      console.log(`Fetching species list for page: ${page}`);
+      const params = { key: API_KEY, page };
+      console.log(`API request parameters: `, params);
+      const response = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, {
+        params: params,
+      });
+      console.log(`API response received: `, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching species list for page ${page}: `, error);
+      throw error; // Rethrow or handle as needed
+    }
   }
 
-  // Search plants by name with filters
-  public async searchPlantByName(query: string, filters: any = {}): Promise<ApiResponse<PlantSummary>> {
-    const params = { key: API_KEY, q: query, ...filters }; // Include filters in the request parameters
+  // Search plants by name with filters and pagination
+  public async searchPlantByName(query: string, filters: any = {}, page: number = 1): Promise<ApiResponse<PlantSummary>> {
+    const params = { key: API_KEY, q: query, ...filters, page };
     const { data } = await axios.get<ApiResponse<PlantSummary>>(`${API_BASE_URL}/species-list`, { params });
     return data;
   }
@@ -66,12 +75,33 @@ class PlantService {
   }
 
   // Fetch all plants from the database with pagination
-  public async findAllPlantsWithPagination(limit: number, offset: number): Promise<{ plants: PlantDetails[], count: number }> {
-    // Assuming that your plantModel has a method to count all plants
-    const count = await plantModel.countAllPlants();
+  public async findAllPlantsWithPagination(params: PaginationParams): Promise<{ plants: PlantDetails[], count: number }> {
+    const { limit, offset, searchTerm, filters = {} } = params;
+    const query: any = {};
 
-    // Assuming that your plantModel has a method to find plants with pagination
-    const plants = await plantModel.findPlantsWithPagination(limit, offset);
+    if (searchTerm) {
+      // Assuming a text index exists for fields you want to search
+      query.$text = { $search: searchTerm };
+    }
+
+    // Apply each filter only if it's true since MongoDB will filter by the boolean value true
+    Object.entries(filters).forEach(([key, value]) => {
+      if (typeof value === 'boolean') {
+        if (value === false) {
+          // Ensure only documents where the field is explicitly false are matched
+          query[key] = { $eq: false };
+        } else {
+          // Field is true
+          query[key] = true;
+        }
+      }
+    });
+
+    console.log('Query:', query);
+
+    // Retrieve the filtered and paginated results
+    const plants = await plantModel.findPlantsWithPagination(query, limit, offset);
+    const count = await plantModel.plantsCollection.count(query);  // Count after filters are applied
 
     return { plants, count };
   }

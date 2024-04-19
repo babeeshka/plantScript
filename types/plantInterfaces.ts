@@ -111,7 +111,6 @@ export interface PlantDetails extends PlantSummary {
   description: string | null;
   default_image?: DefaultImage | null;
   other_images?: any;
-  [key: string]: any;
 }
 
 // type for fetchSpeciesList from perenual API
@@ -124,3 +123,36 @@ export interface ApiResponse<T> {
   last_page: number;
   total: number;
 }
+
+// Extract only boolean keys from PlantDetails
+// Extract only non-optional boolean keys from PlantDetails
+type BooleanKeysOf<T> = {
+  [K in keyof T]-?: T[K] extends boolean ? K : never
+}[keyof T];
+
+
+export type PlantFilterKeys = BooleanKeysOf<PlantDetails>;
+
+export interface PaginationParams {
+  limit: number;
+  offset: number;
+  searchTerm?: string;
+  filters?: Record<PlantFilterKeys, boolean>;
+}
+
+export interface FeatureIcons {
+  [key: string]: string;
+  edible: string;
+  poisonous: string;
+  perennial: string;
+  annual: string;
+  biennial: string;
+  frequent_watering: string;
+  average_watering: string;
+  minimum_watering: string;
+  no_watering: string;
+  full_shade: string;
+  part_shade: string;
+  part_sun_shade: string;
+  full_sun: string;
+};

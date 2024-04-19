@@ -9,8 +9,9 @@
       <GalleryContainer :plants="searchResults" @showPlantDetails="showPlantDetails" />
 
       <!-- Pagination Controls -->
-      <PaginationControls v-if="searchResults.length > 0 && lastPage > 1" :currentPage="currentPage"
-        :lastPage="lastPage" @change="changePage" />
+      <div class="pagination-controls">
+        <PaginationControls :currentPage="currentPage" :totalPages="lastPage" @change="changePage" />
+      </div>
 
       <!-- No Results Found Message -->
       <p v-if="searchExecuted && searchResults.length === 0">No results found.</p>
@@ -29,6 +30,8 @@ import SearchBar from '@/components/SearchBar.vue';
 import GalleryContainer from '@/components/GalleryContainer.vue';
 import FilterContainer from '@/components/FilterContainer.vue';
 import PlantModal from '@/components/PlantModal.vue';
+import PaginationControls from '@/components/PaginationControls.vue';
+import { onMounted } from 'vue';
 
 export default defineComponent({
   components: {
@@ -36,8 +39,8 @@ export default defineComponent({
     FilterContainer,
     SearchBar,
     PlantModal,
+    PaginationControls,
   },
-
   setup() {
     const router = useRouter();
     const searchQuery = ref('');
@@ -50,25 +53,40 @@ export default defineComponent({
     const isDialogOpen = ref(false);
     const filters = ref({});
 
-    const searchPlants = async (query: string) => {
+    const searchPlants = async (query: string, page = 1) => {
       searchExecuted.value = true;
       searchQuery.value = query;
-      await fetchPlants();
+      await fetchPlants(page);
     };
 
-    const fetchPlants = async () => {
+    const fetchPlants = async (page: number) => {
+      console.log('Fetching plants for page:', page);
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const params = { q: searchQuery.value, page, ...filters.value };
+        console.log('Preparing to call API with params:', params); // Log all parameters being sent
+
         const response = await axios.get(`${apiUrl}/api/plants/search`, {
-          params: { q: searchQuery.value, page: currentPage.value, ...filters.value },
+          params: params,
         });
+
+        console.log('API called with params:', response.config.params); // This logs the parameters as received by Axios
+        console.log('API response:', response); // This logs the full response object
+
+        if (currentPage.value !== page) {
+          console.log('Page mismatch: expected', page, 'but currentPage is', currentPage.value);
+        }
+
         searchResults.value = response.data.data;
         currentPage.value = response.data.current_page;
         lastPage.value = response.data.last_page;
+
+        console.log('Updated currentPage to:', currentPage.value);
       } catch (error) {
         console.error('Error fetching search results:', error);
       }
     };
+
 
     const showPlantDetails = async (plantId: number) => {
       console.log('Received plantId in showPlantDetails:', plantId);
@@ -85,12 +103,21 @@ export default defineComponent({
 
     const applyFilters = async (filters: any) => {
       filters.value = filters;
-      await fetchPlants();
+      await fetchPlants(currentPage.value);
     };
 
     const changePage = (page: number) => {
+      console.log('Requested change to page:', page);
       currentPage.value = page;
-      fetchPlants();
+      console.log('currentPage set to:', currentPage.value);
+      fetchPlants(page).then(() => {
+        router.push({ path: '/search', query: { page: page.toString() } });
+        window.scrollTo({
+          top: 0,
+          left: 0,
+          behavior: 'smooth'
+        });
+      });
     };
 
     const closeModal = () => {
@@ -117,6 +144,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.search-filter-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
 .plant-search-page {
   display: flex;
   flex-direction: column;

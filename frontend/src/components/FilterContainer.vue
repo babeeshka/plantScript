@@ -1,127 +1,124 @@
 <template>
   <div class="filter-container">
-    <button @click="toggleFilters" class="filter-toggle">
+    <button class="filter-toggle" @click="toggleFilters">
       <i class="fas fa-filter"></i>
-      {{ showFilters ? "Hide Filters" : "Filters" }}
     </button>
-    <div v-if="showFilters" class="filter-options-container">
-      <!-- Filter options -->
-      <div class="filter-options">
-        <div v-for="(value, key) in filters" :key="key" class="filter-option">
-          <input type="checkbox" :id="key" v-model="filters[key]" />
-          <label :for="key">{{ key.replace(/_/g, " ") }}</label>
+    <div class="overlay" :class="{ 'active': showFilters }" @click.self="toggleFilters">
+      <div class="modal">
+        <!-- Filter options grouped by data -->
+        <div class="filter-group" v-for="group in filterGroups" :key="group.name">
+          <h4>{{ group.name }}</h4>
+          <div class="filter-options">
+            <div v-for="filter in group.filters" :key="filter.key" class="filter-option">
+              <input type="checkbox" :id="filter.key" v-model="filters[filter.key]" />
+              <label :for="filter.key">{{ filter.label }}</label>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="filter-buttons">
-        <button @click="applyFilters" class="apply-btn">Apply</button>
-        <button @click="resetFilters" class="reset-btn">Reset</button>
-        <button @click="toggleFilters" class="cancel-btn">Cancel</button>
+        <div class="filter-buttons">
+          <button @click="applyFilters" class="apply-btn">Apply</button>
+          <button @click="resetFilters" class="reset-btn">Reset</button>
+          <button @click="toggleFilters" class="cancel-btn">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import { PlantFilterKeys } from '@rootTypes/plantInterfaces';
+
 export default {
   data() {
     return {
       filters: {
-        droughtTolerant: false,
-        saltTolerant: false,
+        drought_tolerant: false,
+        salt_tolerant: false,
         thorny: false,
         invasive: false,
         tropical: false,
         indoor: false,
         flowers: false,
-        fruits: false,
         cones: false,
+        fruits: false,
+        edible_fruit: false,
         leaf: false,
-        poisonous_to_humans: false,
-        poisonous_to_animals: false,
-      } as Record<string, boolean>,
+        edible_leaf: false,
+        cuisine: false,
+        medicinal: false
+      } as Record<PlantFilterKeys, boolean>,
       showFilters: false,
+      filterGroups: [
+        {
+          name: 'Tolerance',
+          filters: [
+            { key: 'drought_tolerant', label: 'Drought Tolerant' },
+            { key: 'salt_tolerant', label: 'Salt Tolerant' },
+            { key: 'thorny', label: 'Thorny' },
+            { key: 'invasive', label: 'Invasive' },
+            { key: 'tropical', label: 'Tropical' },
+            { key: 'indoor', label: 'Indoor' }
+          ]
+        },
+        {
+          name: 'Features',
+          filters: [
+            { key: 'flowers', label: 'Flowers' },
+            { key: 'cones', label: 'Cones' },
+            { key: 'fruits', label: 'Fruits' },
+            { key: 'edible_fruit', label: 'Edible Fruit' },
+            { key: 'leaf', label: 'Leaf' },
+            { key: 'edible_leaf', label: 'Edible Leaf' },
+            { key: 'cuisine', label: 'Cuisine' },
+            { key: 'medicinal', label: 'Medicinal' }
+          ]
+        }
+      ]
     };
+  },
+  props: {
+    isVisible: Boolean,
   },
   methods: {
     toggleFilters() {
       this.showFilters = !this.showFilters;
     },
     applyFilters() {
-      this.$emit("apply-filters", this.filters);
+      const activeFilters = Object.entries(this.filters).reduce<Record<string, boolean>>((acc, [key, value]) => {
+        if (value) acc[key as keyof typeof acc] = true;
+        return acc;
+      }, {});
+      this.$emit("apply-filters", activeFilters);
       this.showFilters = false;
     },
     resetFilters() {
       Object.keys(this.filters).forEach((key) => {
-        this.filters[key] = false;
+        this.filters[key as keyof typeof this.filters] = false;
       });
       this.applyFilters();
-    },
-  },
+    }
+  }
 };
 </script>
 
 <style scoped>
-.filter-container {
-  position: relative;
-}
-
-.filter-toggle {
-  display: flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
-  background-color: #51b911;
-  color: white;
-  cursor: pointer;
-  margin-left: 15px;
-}
-
-.filter-toggle i {
-  margin-right: 0.5rem;
-}
-
-.filter-options-container {
-  position: absolute;
-  top: calc(100% + 0.5rem);
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   right: 0;
-  z-index: 10;
-  background-color: var(--card-bg-color);
-  padding: 1rem;
-  border-radius: 4px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  min-width: 200px;
-}
-
-.filter-options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 10px;
-  margin-bottom: 1rem;
-}
-
-.filter-option {
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 5px;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.5s;
 }
 
-.filter-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.apply-btn {
-  background-color: var(--primary-color);
-}
-
-.reset-btn {
-  background-color: #f44336;
-}
-
-.cancel-btn {
-  background-color: #ccc;
-  color: #333;
+.overlay.active {
+  visibility: visible;
+  opacity: 1;
 }
 </style>

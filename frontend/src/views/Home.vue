@@ -74,7 +74,7 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  max-width: 1200px;
+  max-width: 66%; /* TODO come back to improve consistent home page card / gallery size */
   margin: 0 auto;
   padding: 1em;
 }
@@ -82,10 +82,10 @@ export default {
 /* Gallery container responsive grid */
 .gallery-container {
   margin: 0 auto; 
-  margin-top: 2.5rem; 
-  width: 100%;
+  margin-top: 1rem; 
   display: grid;
-  grid-template-columns: auto; 
+  grid-template-columns: auto;
+  height: 50%;
 }
 
 .button-container {

@@ -3,7 +3,7 @@ import { PlantDetails } from '@rootTypes/plantInterfaces';
 import Joi from 'joi';
 import plantSchema from '../schemas/plantSchema';
 
-const plantsCollection = db.get('plants');
+export const plantsCollection = db.get('plants');
 
 // Helper function for validation
 const validatePlant = (plantData: any) => {
@@ -45,6 +45,10 @@ export const countAllPlants = async (): Promise<number> => {
   return plantsCollection.count();
 };
 
-export const findPlantsWithPagination = async (limit: number, offset: number): Promise<PlantDetails[]> => {
-  return plantsCollection.find({}, { limit: limit, skip: offset });
+export const findPlantsWithPagination = async (query: any, limit: number, offset: number): Promise<PlantDetails[]> => {
+  const options = { 
+    limit: limit, 
+    skip: offset 
+  };
+  return plantsCollection.find(query, options);
 };
