@@ -72,13 +72,12 @@ export default defineComponent({
       }
     };
 
-
     const savePlant = async (updatedPlant: PlantDetails) => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         if (plant.value && plant.value._id) {
           // If the plant has an _id, it exists in the database. Update it.
-          await axios.put(`${apiUrl}/db/plants/${plant.value._id}`, updatedPlant);
+          await axios.put(`${apiUrl}/db/plants/${plant.value.id}`, updatedPlant);
           showSnackbar('Plant updated successfully', 'success');
         } else {
           // If the plant doesn't have an _id, it's new. Create it.
@@ -131,22 +130,33 @@ export default defineComponent({
 
 <style scoped>
 .manage-plant {
-  margin: 0 auto;
+  max-width: 960px;
+  width: 90%; /* Makes the width responsive */
+  margin: 2rem auto;
   padding: 1rem;
-}
-
-.form-container {
-  height: auto;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-}
-
-.form-button-container {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-  z-index: 999999;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Improved Loading Indicator */
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px; /* Provide enough space for the loading */
+}
+
+/* Snackbar Style */
+.snackbar {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 10;
+  border-radius: 5px;
+  padding: 0.75rem 1.5rem;
+  color: white;
+  font-size: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
 }
 </style>
