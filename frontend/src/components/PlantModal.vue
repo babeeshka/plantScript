@@ -17,6 +17,10 @@
       <!-- Manage Plant Button -->
       <button class="manage-plant-btn" @click="redirectToManagePlant">Manage Plant</button>
 
+      <!-- Plant Info Page Button -->
+      <button class="info-page-btn" @click="redirectToPlantInfoPage">View Plant Info</button>
+
+      <!-- Plant Details -->
       <div class="plant-details">
         <h2>{{ plantDetails?.common_name || 'Common name not available' }}</h2>
         <div class="plant-info">
@@ -153,8 +157,13 @@ export default defineComponent({
       router.push({ name: 'ManagePlant', params: { id: props.plantDetails?.id } });
     };
 
+    const redirectToPlantInfoPage = () => {
+      router.push({ name: 'PlantInfoPage', params: { id: props.plantDetails?.id } });
+    };
+
     return {
       redirectToManagePlant,
+      redirectToPlantInfoPage,
     };
   },
   props: {
@@ -260,6 +269,15 @@ export default defineComponent({
   margin-top: 35px;
   max-width: 20%;
   margin: auto;
+  margin-bottom: 10px;
+}
+
+.info-page-btn {
+  margin-bottom: 25px;
+  margin-top: 35px;
+  max-width: 20%;
+  margin: auto;
+  margin-bottom: 10px;
 }
 
 .plant-info {

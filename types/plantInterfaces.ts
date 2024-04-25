@@ -130,9 +130,10 @@ type BooleanKeysOf<T> = {
   [K in keyof T]-?: T[K] extends boolean ? K : never
 }[keyof T];
 
-
+// Extract only optional boolean keys from PlantDetails
 export type PlantFilterKeys = BooleanKeysOf<PlantDetails>;
 
+// type for fetchSpeciesList from perenual API
 export interface PaginationParams {
   limit: number;
   offset: number;
@@ -140,6 +141,7 @@ export interface PaginationParams {
   filters?: Record<PlantFilterKeys, boolean>;
 }
 
+// type for feature icons
 export interface FeatureIcons {
   [key: string]: string;
   edible: string;
@@ -156,3 +158,29 @@ export interface FeatureIcons {
   part_sun_shade: string;
   full_sun: string;
 };
+
+// type for  plant diseases
+export interface PlantDisease {
+  id: number;
+  name: string;
+  description: string;
+  treatment: string;
+  prevention: string;
+  symptoms: string[];
+  species_ids: number[];
+  image_url: string;
+}
+
+export interface PlantGuideSection {
+  id: number;
+  type: string;
+  description: string;
+}
+
+export interface PlantGuide {
+  id: number;
+  species_id: number;
+  common_name: string;
+  scientific_name: string[];
+  section: PlantGuideSection[];
+}

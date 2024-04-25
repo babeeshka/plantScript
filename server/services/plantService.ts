@@ -1,7 +1,7 @@
 // /services/plantService.ts
 import dotenv from 'dotenv';
 import * as plantModel from '../models/plant';
-import { ApiResponse, PlantSummary, PlantDetails, PaginationParams } from '@rootTypes/plantInterfaces';
+import { ApiResponse, PlantSummary, PlantDetails, PaginationParams, PlantDisease, PlantGuide } from '@rootTypes/plantInterfaces';
 import Joi, { ValidationErrorItem } from 'joi';
 import axios from 'axios';
 import plantSchema from '../schemas/plantSchema';
@@ -66,6 +66,26 @@ class PlantService {
       params: { key: API_KEY },
     });
     return this.validateApiResponse<PlantDetails>(response.data, plantSchema);
+  }
+
+  // Fetch plant diseases by species ID
+  public async fetchPlantDiseases(speciesId: number): Promise<PlantDisease[]> {
+    const response = await axios.get(`${API_BASE_URL}/pest-disease-list`, {
+      params: { key: API_KEY, id: speciesId },
+    });
+    return response.data.data;
+  }
+
+  // Fetch plant guides by species ID and type
+  public async fetchPlantGuides(speciesId: number, type?: string): Promise<PlantGuide[]> {
+    const params: any = { key: API_KEY, species_id: speciesId };
+    if (type) {
+      params.type = type;
+    }
+    const response = await axios.get(`${API_BASE_URL}/species-care-guide-list`, {
+      params,
+    });
+    return response.data.data;
   }
 
   // database plant methods

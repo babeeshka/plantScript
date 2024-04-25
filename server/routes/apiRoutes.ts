@@ -70,4 +70,31 @@ router.get('/random', async (req, res) => {
     }
 });
 
+// Route for fetching plant diseases by species ID
+router.get('/:id/diseases', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).send('Invalid ID format.');
+
+        const data = await plantService.fetchPlantDiseases(id);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+    }
+});
+
+// Route for fetching plant guides by species ID and type
+router.get('/:id/guides', async (req, res) => {
+    try {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) return res.status(400).send('Invalid ID format.');
+
+        const type = req.query.type as string | undefined;
+        const data = await plantService.fetchPlantGuides(id, type);
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ error: error instanceof Error ? error.message : 'An unknown error occurred' });
+    }
+});
+
 export default router;

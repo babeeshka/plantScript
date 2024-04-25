@@ -5,15 +5,21 @@ import Home from '@/views/Home.vue';
 const PlantGallery = () => import('@/views/PlantGallery.vue');
 const PlantSearchPage = defineAsyncComponent(() => import('@/views/PlantSearchPage.vue'));
 const ManagePlant = () => import('@/views/ManagePlant.vue');
+const PlantInfoPage = () => import('@/views/PlantInfoPage.vue');
 
 const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: Home },
-  { path: '/search', name: 'plant-search', component: PlantSearchPage},
+  { path: '/search', name: 'plant-search', component: PlantSearchPage },
   { path: '/gallery', name: 'plant-gallery', component: PlantGallery },
   {
     path: '/plants/:id/manage',
     name: 'ManagePlant',
     component: ManagePlant,
+  },
+  {
+    path: '/plants/:id/info',
+    name: 'PlantInfoPage',
+    component: PlantInfoPage,
   },
 ];
 
