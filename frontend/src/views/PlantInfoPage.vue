@@ -37,18 +37,15 @@
             <v-row>
                 <v-col cols="12">
                     <div class="plant-details">
-                        <h2 class="section-title">Plant Details</h2>
-                        <div class="detail-sections">
-                            <div v-for="(section, index) in plantSections" :key="index" class="detail-section">
-                                <h3>{{ section.title }}</h3>
-                                <table>
-                                    <tr v-for="(value, key) in section.data" :key="key">
-                                        <td class="detail-label">{{ key }}:</td>
-                                        <td class="detail-value">{{ Array.isArray(value) ? value.join(', ') : value }}
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                        <div v-for="(section, index) in plantSections" :key="index" class="detail-section">
+
+                            <h3>{{ section.title }}</h3>
+                            <table>
+                                <tr v-for="(value, key) in section.data" :key="key">
+                                    <td class="detail-label">{{ key }}:</td>
+                                    <td class="detail-value">{{ Array.isArray(value) ? value.join(', ') : value }}</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </v-col>
@@ -62,14 +59,10 @@
                             <p><strong>Min Zone:</strong> {{ plant.hardiness?.min || 'N/A' }}</p>
                             <p><strong>Max Zone:</strong> {{ plant.hardiness?.max || 'N/A' }}</p>
                         </div>
-                    </div>
-                </v-col>
-            </v-row>
-            <v-row v-if="plant.hardiness_location && plant.hardiness_location.full_iframe">
-                <v-col cols="12">
-                    <div class="hardiness-map">
-                        <h3>Hardiness Map</h3>
-                        <div v-html="plant.hardiness_location.full_iframe" class="hardiness-iframe"></div>
+                        <div v-if="plant.hardiness_location && plant.hardiness_location.full_iframe"
+                            class="hardiness-map">
+                            <div v-html="plant.hardiness_location.full_iframe" class="hardiness-iframe"></div>
+                        </div>
                     </div>
                 </v-col>
             </v-row>
@@ -77,14 +70,24 @@
             <v-row v-if="careGuide.length > 0">
                 <v-col cols="12">
                     <div class="care-guide">
-                        <h2 class="section-title">Care Guide</h2>
-                        <v-expansion-panels>
+                        <h2 class="section-title">
+                            Care Guide
+                            <v-btn text small color="primary" @click="expandAll = !expandAll">
+                                {{ expandAll ? 'Collapse All' : 'Expand All' }}
+                            </v-btn>
+                        </h2>
+                        <v-expansion-panels v-model="expandAll" multiple>
                             <v-expansion-panel v-for="(guideSection, index) in careGuide[0].section" :key="index">
-                                <v-expansion-panel-header class="care-guide-header">
-                                    <h3>{{ titleCase(guideSection.type) }}</h3>
+                                <v-expansion-panel-header>
+                                    <div class="care-guide-header">
+                                        <v-icon class="care-guide-icon">mdi-chevron-right</v-icon>
+                                        <h3 class="care-guide-title">{{ titleCase(guideSection.type) }}</h3>
+                                    </div>
                                 </v-expansion-panel-header>
-                                <v-expansion-panel-content class="care-guide-content">
-                                    <p class="care-guide-description">{{ guideSection.description }}</p>
+                                <v-expansion-panel-content>
+                                    <div class="care-guide-content">
+                                        <p class="care-guide-description" v-html="guideSection.description"></p>
+                                    </div>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
                         </v-expansion-panels>
@@ -286,9 +289,11 @@ export default defineComponent({
     line-height: 1.6;
 }
 
-.plant-details,
-.care-guide {
+.plant-details {
     margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
 }
 
 .section-title {
@@ -312,23 +317,37 @@ export default defineComponent({
 .detail-section h3 {
     margin-top: 0;
     margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.detail-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-section td {
+    padding: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: #666;
+}
+
+.detail-value {
+    color: #333;
 }
 
 table {
     width: 100%;
 }
 
-.detail-label {
-    font-weight: bold;
-    padding-right: 1rem;
-}
-
 /* Hardiness Map styles */
 .hardiness-map {
-    margin-top: 2rem;
-    background-color: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 8px;
+    max-width: 100%;
+    overflow: hidden;
 }
 
 .hardiness-map h3 {
@@ -340,7 +359,7 @@ table {
 
 .hardiness-iframe {
     width: 100%;
-    height: 50%;
+    height: 400px;
     border: none;
 }
 
@@ -349,9 +368,7 @@ table {
 }
 
 .hardiness-info {
-    background-color: #f9f9f9;
-    padding: 1.5rem;
-    border-radius: 8px;
+    margin-bottom: 1.5rem;
 }
 
 .hardiness-info p {
@@ -364,44 +381,39 @@ table {
 }
 
 .care-guide-header {
-    background-color: #f1f1f1;
-    padding: 1rem;
-    border-radius: 8px 8px 0 0;
+    display: flex;
+    align-items: center;
 }
 
 .care-guide-header h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: bold;
     color: #333;
 }
 
+.care-guide-icon {
+    margin-right: 0.5rem;
+}
+
+.care-guide-title {
+    margin: 0;
+}
+
+
 .care-guide-content {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 0 0 8px 8px;
+    padding: 1rem;
 }
 
 .care-guide-description {
     margin: 0;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #666;
-    padding: 1rem;
-}
-
-.care-guide-content p {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #666;
 }
 
 /* Expansion panel styles */
 .v-expansion-panel {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
 
@@ -414,11 +426,13 @@ table {
 }
 
 .v-expansion-panel-content {
-    font-size: 1rem;
+    padding: 1.5rem;
     background-color: #fff;
-    padding: 1rem;
-    line-height: 1.6;
     border-top: 1px solid #ccc;
     border-radius: 0 0 8px 8px;
+}
+
+.v-expansion-panel__shadow {
+    display: none;
 }
 </style>
