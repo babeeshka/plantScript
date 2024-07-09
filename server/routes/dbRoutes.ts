@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
             .filter(key => !['page', 'limit', 'searchTerm'].includes(key))
             .reduce<Record<string, boolean>>((acc, key) => {
                 const value = req.query[key];
-                if (value === 'true') { // Only add to filters if value is 'true'
+                if (value === 'true') {
                     acc[key] = true;
                 }
                 return acc;

@@ -60,7 +60,7 @@ export default {
       // Pagination state
       currentPage: 1,
       hasMore: true,
-      limit: 10,
+      limit: 12,
       offset: 0,
     };
   }, mounted() {
@@ -70,8 +70,8 @@ export default {
     filteredPlants() {
       return this.plants.filter(plant => {
         return Object.keys(this.filters).every(key => {
-          const filterKey = key as keyof typeof this.filters; // Ensuring 'key' is treated as a valid key
-          return !this.filters[filterKey] || plant[filterKey as keyof typeof plant]; // Use 'filterKey' for accessing properties
+          const filterKey = key as keyof typeof this.filters;
+          return !this.filters[filterKey] || plant[filterKey as keyof typeof plant];
         });
       });
     },
@@ -96,16 +96,16 @@ export default {
     },
 
     dynamicFilterPlants(searchTerm: string) {
-      console.log('Search Term:', searchTerm); // Check what's being searched
+      console.log('Search Term:', searchTerm);
       this.searchTerm = searchTerm;
-      this.currentPage = 1; // Reset pagination to the first page
+      this.currentPage = 1;
       this.fetchPlants();
     },
 
     applyFilters(filters: Record<PlantFilterKeys, boolean>) {
-      console.log('Filters applied:', filters); // Check applied filters
+      console.log('Filters applied:', filters);
       this.selectedFilters = filters;
-      this.currentPage = 1; // Reset pagination to the first page
+      this.currentPage = 1;
       this.fetchPlants();
     },
 

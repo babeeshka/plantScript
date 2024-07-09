@@ -12,9 +12,10 @@ const routes: RouteRecordRaw[] = [
   { path: '/search', name: 'plant-search', component: PlantSearchPage },
   { path: '/gallery', name: 'plant-gallery', component: PlantGallery },
   {
-    path: '/plants/:id/manage',
+    path: '/plants/:id?/manage',
     name: 'ManagePlant',
     component: ManagePlant,
+    props: (route) => ({ id: route.params.id, manualEntry: route.query.manualEntry }),
   },
   {
     path: '/plants/:id/info',

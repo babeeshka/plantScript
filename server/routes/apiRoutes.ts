@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
     try {
         const query = req.query.q as string;
-        const page = parseInt(req.query.page as string) || 1; // Default to page 1 if not specified
+        const page = parseInt(req.query.page as string) || 1;
         const filters = {
             edible: req.query.edible,
             poisonous: req.query.poisonous,

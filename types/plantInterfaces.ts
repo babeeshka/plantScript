@@ -124,7 +124,6 @@ export interface ApiResponse<T> {
   total: number;
 }
 
-// Extract only boolean keys from PlantDetails
 // Extract only non-optional boolean keys from PlantDetails
 type BooleanKeysOf<T> = {
   [K in keyof T]-?: T[K] extends boolean ? K : never

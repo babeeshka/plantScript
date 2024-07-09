@@ -28,7 +28,22 @@ export default defineComponent({
   components: {
     PlantForm,
   },
-  setup() {
+  data() {
+    return {
+      plant: null,
+    };
+  },
+  props: {
+    id: {
+      type: String,
+      required: false
+    },
+    manualEntry: {
+      type: Boolean,
+      default: false
+    }
+  },
+  setup(props) {
     const route = useRoute();
     const router = useRouter();
     const plantId = ref<string | null>(route.params.id as string);
@@ -40,9 +55,86 @@ export default defineComponent({
     });
 
     onMounted(async () => {
-      if (plantId.value) {
-        await fetchPlantDetails(plantId.value);
+      if (props.id && !props.manualEntry) {
+        await fetchPlantDetails(props.id);
+      } else {
+        plant.value = getEmptyPlantObject();
       }
+    });
+
+    const getEmptyPlantObject = (): PlantDetails => ({
+      _id: '',
+      common_name: '',
+      scientific_name: [],
+      other_name: [],
+      family: '',
+      origin: [],
+      type: '',
+      dimension: '',
+      dimensions: {
+        min_value: null,
+        max_value: null,
+        unit: ''
+      },
+      cycle: '',
+      watering: '',
+      watering_general_benchmark: {
+        value: null,
+        unit: ''
+      },
+      sunlight: [],
+      hardiness: {
+        min: '',
+        max: ''
+      },
+      pruning_month: [],
+      pruning_count: {
+        amount: 0,
+        interval: ''
+      },
+      seed_distribution: '',
+      seeds: 0,
+      propagation: [],
+      growth_rate: '',
+      maintenance: '',
+      care_level: '',
+      flowers: false,
+      flowering_season: '',
+      flower_color: '',
+      cones: false,
+      fruits: false,
+      edible_fruit: false,
+      fruit_color: [],
+      harvest_season: '',
+      leaf: false,
+      leaf_color: [],
+      edible_leaf: false,
+      cuisine: false,
+      medicinal: false,
+      drought_tolerant: false,
+      salt_tolerant: false,
+      thorny: false,
+      invasive: false,
+      tropical: false,
+      indoor: false,
+      care_guide: '',
+      pest_susceptibility: [],
+      pest_resistant: false,
+      attracts: [],
+      poisonous_to_humans: 0,
+      poisonous_to_pets: 0,
+      description: '',
+      default_image: {
+        license: 0,
+        license_name: '',
+        license_url: '',
+        original_url: '',
+        regular_url: '',
+        medium_url: '',
+        small_url: '',
+        thumbnail: ''
+      },
+      other_images: []
     });
 
     const fetchPlantDetails = async (plantId: string) => {
@@ -92,8 +184,8 @@ export default defineComponent({
       }
     };
 
-  const deletePlant = async () => {
-    if (!plant.value) return;
+    const deletePlant = async () => {
+      if (!plant.value) return;
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         await axios.delete(`${apiUrl}/db/plants/${plant.value.id}`);
@@ -103,7 +195,7 @@ export default defineComponent({
         console.error('Error deleting plant:', error);
         showSnackbar('Error deleting plant', 'error');
       }
-  };
+    };
 
     const goBack = () => {
       router.go(-1);
@@ -131,7 +223,7 @@ export default defineComponent({
 <style scoped>
 .manage-plant {
   max-width: 960px;
-  width: 90%; /* Makes the width responsive */
+  width: 90%;
   margin: 2rem auto;
   padding: 1rem;
   display: flex;
@@ -139,12 +231,11 @@ export default defineComponent({
   align-items: center;
 }
 
-/* Improved Loading Indicator */
 .loading-indicator {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px; /* Provide enough space for the loading */
+  min-height: 300px;
 }
 
 /* Snackbar Style */
@@ -157,6 +248,6 @@ export default defineComponent({
   padding: 0.75rem 1.5rem;
   color: white;
   font-size: 1rem;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 </style>

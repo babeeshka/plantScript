@@ -34,14 +34,13 @@ export default {
 <style scoped>
 /* Gallery container responsive grid */
 .gallery-container {
-  margin: 0 auto; /* Centers the container */
+  margin: 0 auto;
   width: 90%;
-  box-sizing: border-box; /* Ensures padding doesn't affect width */
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(auto, minmax(200px, max-content)); /* This creates a responsive grid */
-  grid-gap: 1rem; /* Adjust the gap to your liking */
-  justify-items: center; /* This centers the items on the grid line */
-  justify-content: center; /* Horizontally centers content for flex container */
+  grid-template-columns: repeat(auto, minmax(200px, max-content));
+  grid-gap: 1rem;
+  justify-items: center;
+  justify-content: center;
 }
-
 </style>

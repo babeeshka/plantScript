@@ -8,7 +8,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
-      - PERENUAL_API_KEY=${PERENUAL_API_KEY} # reference the api key from the .env file
+      - PERENUAL_API_KEY=${PERENUAL_API_KEY}
       - DATABASE_URI=${MONGODB_URI}
 
     depends_on:

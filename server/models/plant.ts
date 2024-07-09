@@ -16,7 +16,6 @@ const validatePlant = (plantData: any) => {
 
 export const findPlantByApiId = async (id: number): Promise<PlantDetails | null> => {
   const plant = await plantsCollection.findOne({ id });
-  // Optionally, you can validate the found plant against the schema
   return plant ? validatePlant(plant) : null;
 };
 

@@ -13,7 +13,7 @@ RUN npm install
 # Copy the rest of your application's code
 COPY . .
 
-# If you're compiling TypeScript to JavaScript, run the compilation here
+# for TypeScript to JavaScript
 # RUN npm run build
 
 # Command to run your app, using ts-node if directly running TypeScript

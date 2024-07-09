@@ -72,18 +72,17 @@
                     <div class="care-guide">
                         <h2 class="section-title">
                             Care Guide
-                            <v-btn text small color="primary" @click="expandAll = !expandAll">
+                            <v-btn small color="primary" @click="expandAllSections">
                                 {{ expandAll ? 'Collapse All' : 'Expand All' }}
                             </v-btn>
                         </h2>
-                        <v-expansion-panels v-model="expandAll" multiple>
+                        <v-expansion-panels v-model="expandedPanels" multiple>
                             <v-expansion-panel v-for="(guideSection, index) in careGuide[0].section" :key="index">
-                                <v-expansion-panel-header>
+                                <template v-slot:header>
                                     <div class="care-guide-header">
-                                        <v-icon class="care-guide-icon">mdi-chevron-right</v-icon>
                                         <h3 class="care-guide-title">{{ titleCase(guideSection.type) }}</h3>
                                     </div>
-                                </v-expansion-panel-header>
+                                </template>
                                 <v-expansion-panel-content>
                                     <div class="care-guide-content">
                                         <p class="care-guide-description" v-html="guideSection.description"></p>
@@ -97,6 +96,7 @@
         </v-container>
     </div>
 </template>
+
 
 <script lang="ts">
 import { defineComponent } from 'vue';
@@ -113,6 +113,8 @@ export default defineComponent({
             plant: null as PlantDetails | null,
             careGuide: [] as PlantGuide[],
             showFullDescription: false,
+            expandAll: false,
+            expandedPanels: [] as number[],
         };
     },
     computed: {
@@ -216,6 +218,23 @@ export default defineComponent({
         titleCase(str: string): string {
             return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         },
+        expandAllSections() {
+            this.expandAll = !this.expandAll;
+            if (this.expandAll) {
+                this.expandedPanels = this.careGuide[0].section.map((_, index) => index);
+            } else {
+                this.expandedPanels = [];
+            }
+        },
+    },
+    watch: {
+        expandAll(newVal) {
+            if (newVal) {
+                this.expandedPanels = this.careGuide[0].section.map((_, index) => index);
+            } else {
+                this.expandedPanels = [];
+            }
+        },
     },
     mounted() {
         const plantId = this.$route.params.id as string;
@@ -224,6 +243,7 @@ export default defineComponent({
     },
 });
 </script>
+
 
 <style scoped>
 /* Plant Info Page styles */
@@ -380,6 +400,14 @@ table {
     margin-top: 2rem;
 }
 
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
 .care-guide-header {
     display: flex;
     align-items: center;
@@ -392,14 +420,9 @@ table {
     color: #333;
 }
 
-.care-guide-icon {
-    margin-right: 0.5rem;
-}
-
 .care-guide-title {
     margin: 0;
 }
-
 
 .care-guide-content {
     padding: 1rem;
@@ -411,7 +434,7 @@ table {
 
 /* Expansion panel styles */
 .v-expansion-panel {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -419,20 +442,5 @@ table {
 
 .v-expansion-panel-header {
     font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
-    background-color: #e2e2e2;
-    padding: 1rem;
-}
-
-.v-expansion-panel-content {
-    padding: 1.5rem;
-    background-color: #fff;
-    border-top: 1px solid #ccc;
-    border-radius: 0 0 8px 8px;
-}
-
-.v-expansion-panel__shadow {
-    display: none;
 }
 </style>

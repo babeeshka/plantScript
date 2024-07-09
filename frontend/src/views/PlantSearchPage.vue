@@ -13,11 +13,15 @@
         <PaginationControls :currentPage="currentPage" :totalPages="lastPage" @change="changePage" />
       </div>
 
-      <!-- No Results Found Message -->
-      <p v-if="searchExecuted && searchResults.length === 0">No results found.</p>
+      <!-- No Results Found Message and Manual Entry Button -->
+      <div v-if="!plantFound" class="no-results">
+        <p>No results found.</p>
+        <p>Not seeing the plant you're after?</p>
+        <button @click="goToManualEntry" class="manual-entry-btn">Click here to manually enter</button>
+      </div>
+      <PlantModal v-if="isDialogOpen" :plantDetails="selectedPlant" :isDialogOpen.sync="isDialogOpen"
+        @close="closeModal" />
     </div>
-    <PlantModal v-if="isDialogOpen" :plantDetails="selectedPlant" :isDialogOpen.sync="isDialogOpen"
-      @close="closeModal" />
   </div>
 </template>
 
@@ -52,6 +56,7 @@ export default defineComponent({
     const searchExecuted = ref(false);
     const isDialogOpen = ref(false);
     const filters = ref({});
+    const plantFound = ref(true);
 
     const searchPlants = async (query: string, page = 1) => {
       searchExecuted.value = true;
@@ -64,14 +69,16 @@ export default defineComponent({
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const params = { q: searchQuery.value, page, ...filters.value };
-        console.log('Preparing to call API with params:', params); // Log all parameters being sent
+        //console.log('Preparing to call API with params:', params);
 
         const response = await axios.get(`${apiUrl}/api/plants/search`, {
           params: params,
         });
 
-        console.log('API called with params:', response.config.params); // This logs the parameters as received by Axios
-        console.log('API response:', response); // This logs the full response object
+        /*
+        console.log('API called with params:', response.config.params);
+        console.log('API response:', response);
+        */
 
         if (currentPage.value !== page) {
           console.log('Page mismatch: expected', page, 'but currentPage is', currentPage.value);
@@ -81,9 +88,13 @@ export default defineComponent({
         currentPage.value = response.data.current_page;
         lastPage.value = response.data.last_page;
 
+        // Set plantFound based on search results
+        plantFound.value = searchResults.value.length > 0;
+
         console.log('Updated currentPage to:', currentPage.value);
       } catch (error) {
         console.error('Error fetching search results:', error);
+        plantFound.value = false;
       }
     };
 
@@ -124,6 +135,10 @@ export default defineComponent({
       isDialogOpen.value = false;
     };
 
+    const goToManualEntry = () => {
+      router.push({ name: 'ManagePlant', query: { manualEntry: 'true' } });
+    };
+
     return {
       searchQuery,
       searchResults,
@@ -138,6 +153,8 @@ export default defineComponent({
       applyFilters,
       changePage,
       closeModal,
+      goToManualEntry,
+      plantFound
     };
   },
 });
@@ -192,5 +209,24 @@ export default defineComponent({
 .results-container {
   flex-grow: 1;
   padding: 1rem 0;
+}
+
+.no-results {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.manual-entry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.manual-entry-btn:hover {
+  background-color: #45a049;
 }
 </style>

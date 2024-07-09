@@ -486,10 +486,8 @@ export default defineComponent({
       try {
         const response = await axios.post('/api/plants', this.localPlant);
         console.log('Plant created:', response.data);
-        // Reset form or navigate to another page
       } catch (error) {
         console.error('Error creating plant:', error);
-        // Handle error and display message to the user
       }
     },
     save() {
