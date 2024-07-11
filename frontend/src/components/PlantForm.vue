@@ -30,7 +30,7 @@
       </v-card-text>
     </v-card>
 
-    <!-- Dimensions -->
+    <!-- Dimensions section -->
     <v-card class="mb-6" outlined>
       <v-card-title class="text-h5">Dimensions</v-card-title>
       <v-card-text>
@@ -44,7 +44,7 @@
               label="Unit" outlined />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model.number="localPlant.dimensions.min_value" label="Min Value" type="number" outlined />
+            <v-text-field v-model="localPlant.dimensions.min_value" label="Min Value" type="number" outlined />
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field v-model.number="localPlant.dimensions.max_value" label="Max Value" type="number" outlined />
@@ -53,6 +53,38 @@
       </v-card-text>
     </v-card>
 
+    <!-- Hardiness -->
+    <v-card class="mb-6" outlined>
+      <v-card-title class="text-h5">Hardiness</v-card-title>
+      <v-card-text>
+        <v-row>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="localPlant.hardiness.min" label="Minimum Hardiness Zone" outlined />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="localPlant.hardiness.max" label="Maximum Hardiness Zone" outlined />
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+
+    <!-- Plant Anatomy -->
+    <v-card class="mb-6" outlined>
+      <v-card-title class="text-h5">Plant Anatomy</v-card-title>
+      <v-card-text>
+        <v-row v-for="(anatomy, index) in localPlant.plant_anatomy" :key="index">
+          <v-col cols="12" md="6">
+            <v-select v-model="anatomy.part" :items="['leaves', 'stems', 'flowers', 'fruits', 'roots', 'bark']"
+              label="Plant Part" outlined required />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-combobox v-model="anatomy.color" label="Color" multiple outlined chips small-chips
+              :items="['green', 'red', 'yellow', 'blue', 'purple', 'white', 'brown']" />
+          </v-col>
+        </v-row>
+        <v-btn @click="addAnatomyEntry" color="primary" text>Add Plant Part</v-btn>
+      </v-card-text>
+    </v-card>
 
     <!-- Life Cycle and Reproduction -->
     <v-card class="mb-6" outlined>
@@ -142,23 +174,6 @@
       </v-card-text>
     </v-card>
 
-    <!-- Plant Anatomy -->
-    <v-card class="mb-6" outlined>
-      <v-card-title class="text-h5">Plant Anatomy</v-card-title>
-      <v-card-text>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-select v-model="localPlant.plant_anatomy[0].part"
-              :items="['leaves', 'stems', 'flowers', 'fruits', 'roots', 'bark']" label="Plant Part" outlined required />
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-combobox v-model="localPlant.plant_anatomy[0].color" label="Color" multiple outlined chips small-chips
-              :items="['green', 'red', 'yellow', 'blue', 'purple', 'white', 'brown']" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
-
     <!-- Characteristics -->
     <v-card class="mb-6" outlined>
       <v-card-title class="text-h5">Characteristics</v-card-title>
@@ -183,10 +198,10 @@
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
-            <v-switch v-model="localPlant.poisonous_to_humans" label="Poisonous to Humans" color="primary" />
+            <v-switch v-model="poisonousToHumans" label="Poisonous to Humans" color="primary" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-switch v-model="localPlant.poisonous_to_pets" label="Poisonous to Pets" color="primary" />
+            <v-switch v-model="poisonousToPets" label="Poisonous to Pets" color="primary" />
           </v-col>
         </v-row>
       </v-card-text>
@@ -251,177 +266,135 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, ref, computed, onMounted } from 'vue';
 import { PlantDetails, DefaultImage, PlantAnatomy, PruningCount } from '@rootTypes/plantInterfaces';
 
 export default defineComponent({
-  data() {
-    return {
-      panel: [],
-      showMoreImages: false,
-      localPlant: { ...this.plant } as PlantDetails,
-      plantParts: ['leaves', 'stems', 'flowers', 'fruits', 'roots', 'bark'],
-    };
-  },
   props: {
     plant: {
       type: Object as PropType<PlantDetails>,
       required: true,
     },
-  },
-  computed: {
-    localPlant(): PlantDetails {
-      return this.plant;
+    manualEntry: {
+      type: Boolean,
+      default: false,
     },
-    defaultImage(): DefaultImage {
-      return this.localPlant.default_image ?? {
-        license: 0,
-        license_name: '',
-        license_url: '',
-        original_url: '',
-        regular_url: '',
-        medium_url: '',
-        small_url: '',
-        thumbnail: '',
+  },
+  setup(props, { emit }) {
+    const localPlant = ref<PlantDetails>(initializeLocalPlant(props.plant, props.manualEntry));
+
+    function initializeLocalPlant(plantData: PlantDetails, isManualEntry: boolean): PlantDetails {
+      if (isManualEntry) {
+        return getEmptyPlantObject();
+      }
+
+      return {
+        ...plantData,
+        hardiness: plantData.hardiness || { min: '', max: '' },
+        plant_anatomy: plantData.plant_anatomy && plantData.plant_anatomy.length > 0
+          ? plantData.plant_anatomy
+          : [{ part: '', color: [] }],
       };
-    },
-    defaultImageRegularUrl: {
-      get(): string {
-        return this.localPlant.default_image?.regular_url || '';
+    }
+
+    function getEmptyPlantObject(): Partial<PlantDetails> {
+      return {
+        common_name: '',
+        scientific_name: [],
+        other_name: [],
+        family: null,
+        origin: [],
+        type: '',
+        dimension: null,
+        dimensions: { type: null, min_value: null, max_value: null, unit: '' },
+        cycle: null,
+        attracts: [],
+        propagation: [],
+        hardiness: { min: '', max: '' },
+        hardiness_location: null,
+        watering: '',
+        depth_water_requirement: [],
+        volume_water_requirement: [],
+        watering_period: null,
+        watering_general_benchmark: { value: null, unit: null },
+        plant_anatomy: [{ part: '', color: [] }],
+        sunlight: [],
+        pruning_month: null,
+        pruning_count: null,
+        seeds: null,
+        maintenance: null,
+        soil: [],
+        growth_rate: '',
+        drought_tolerant: false,
+        salt_tolerant: false,
+        thorny: false,
+        invasive: false,
+        tropical: false,
+        indoor: false,
+        care_level: null,
+        pest_susceptibility: null,
+        pest_susceptibility_api: null,
+        flowers: false,
+        flowering_season: null,
+        flower_color: '',
+        cones: false,
+        fruits: false,
+        edible_fruit: false,
+        edible_fruit_taste_profile: null,
+        fruit_nutritional_value: null,
+        fruit_color: [],
+        harvest_season: null,
+        leaf: false,
+        leaf_color: [],
+        edible_leaf: false,
+        cuisine: false,
+        medicinal: false,
+        poisonous_to_humans: 0,
+        poisonous_to_pets: 0,
+        description: null,
+        default_image: null,
+        other_images: undefined,
+      };
+    }
+
+    const poisonousToHumans = computed({
+      get: () => localPlant.value.poisonous_to_humans === 1,
+      set: (value: boolean) => {
+        localPlant.value.poisonous_to_humans = value ? 1 : 0;
       },
-      set(value: string) {
-        if (this.localPlant.default_image) {
-          this.localPlant.default_image.regular_url = value;
-        }
+    });
+
+    const poisonousToPets = computed({
+      get: () => localPlant.value.poisonous_to_pets === 1,
+      set: (value: boolean) => {
+        localPlant.value.poisonous_to_pets = value ? 1 : 0;
       },
-    },
-    defaultImageMediumUrl: {
-      get(): string {
-        return this.localPlant.default_image?.medium_url || '';
-      },
-      set(value: string) {
-        if (this.localPlant.default_image) {
-          this.localPlant.default_image.medium_url = value;
-        }
-      },
-    },
-    defaultImageSmallUrl: {
-      get(): string {
-        return this.localPlant.default_image?.small_url || '';
-      },
-      set(value: string) {
-        if (this.localPlant.default_image) {
-          this.localPlant.default_image.small_url = value;
-        }
-      },
-    },
-    defaultImageThumbnail: {
-      get(): string {
-        return this.localPlant.default_image?.thumbnail || '';
-      },
-      set(value: string) {
-        if (this.localPlant.default_image) {
-          this.localPlant.default_image.thumbnail = value;
-        }
-      },
-    },
-    plantAnatomy(): PlantAnatomy[] {
-      return this.localPlant.plant_anatomy || [];
-    },
-    pruningCount(): PruningCount | undefined {
-      return this.localPlant.pruning_count ?? undefined;
-    },
-    hardinessMin: {
-      get(): number {
-        return parseInt(this.localPlant.hardiness?.min || '0', 10);
-      },
-      set(value: number) {
-        if (!this.localPlant.hardiness) {
-          this.localPlant.hardiness = { min: '0', max: '0' };
-        }
-        this.localPlant.hardiness.min = String(value);
-        this.$emit('update:plant', this.localPlant);
-      }
-    },
-    hardinessMax: {
-      get(): number {
-        return parseInt(this.localPlant.hardiness?.max || '0', 10);
-      },
-      set(value: number) {
-        if (!this.localPlant.hardiness) {
-          this.localPlant.hardiness = { min: '0', max: '0' };
-        }
-        this.localPlant.hardiness.max = String(value);
-        this.$emit('update:plant', this.localPlant);
-      }
-    },
-    dimensionsMinValue: {
-      get(): number | undefined {
-        return !Array.isArray(this.localPlant.dimensions) ? this.localPlant.dimensions?.min_value : undefined;
-      },
-      set(value: number | undefined) {
-        if (!Array.isArray(this.localPlant.dimensions) && this.localPlant.dimensions) {
-          this.localPlant.dimensions.min_value = value;
-        }
-      },
-    },
-    dimensionsMaxValue: {
-      get(): number | undefined {
-        return !Array.isArray(this.localPlant.dimensions) ? this.localPlant.dimensions?.max_value : undefined;
-      },
-      set(value: number | undefined) {
-        if (!Array.isArray(this.localPlant.dimensions) && this.localPlant.dimensions) {
-          this.localPlant.dimensions.max_value = value;
-        }
-      },
-    },
-    dimensionsUnit: {
-      get(): string | undefined {
-        return !Array.isArray(this.localPlant.dimensions) ? this.localPlant.dimensions?.unit : undefined;
-      },
-      set(value: string | undefined) {
-        if (!Array.isArray(this.localPlant.dimensions) && this.localPlant.dimensions) {
-          this.localPlant.dimensions.unit = value;
-        }
-      },
-    },
-    wateringBenchmarkValue: {
-      get(): string | null | undefined {
-        return this.localPlant.watering_general_benchmark?.value;
-      },
-      set(value: string | null | undefined) {
-        if (this.localPlant.watering_general_benchmark) {
-          this.localPlant.watering_general_benchmark.value = value;
-        }
-      },
-    },
-    wateringBenchmarkUnit: {
-      get(): string | null | undefined {
-        return this.localPlant.watering_general_benchmark?.unit;
-      },
-      set(value: string | null | undefined) {
-        if (this.localPlant.watering_general_benchmark) {
-          this.localPlant.watering_general_benchmark.unit = value;
-        }
-      },
-    },
-  },
-  methods: {
-    async submitForm() {
-      try {
-        const response = await axios.post('/api/plants', this.localPlant);
-        console.log('Plant created:', response.data);
-      } catch (error) {
-        console.error('Error creating plant:', error);
-      }
-    },
-    save() {
-      this.$emit('save', this.localPlant);
-    },
-    cancel() {
-      this.$emit('cancel');
-    },
+    });
+
+    function addAnatomyEntry() {
+      localPlant.value.plant_anatomy.push({ part: '', color: [] });
+    }
+
+    function save() {
+      emit('save', localPlant.value);
+    }
+
+    function cancel() {
+      emit('cancel');
+    }
+
+    onMounted(() => {
+      console.log('PlantForm mounted, localPlant:', localPlant.value);
+    });
+
+    return {
+      localPlant,
+      poisonousToHumans,
+      poisonousToPets,
+      save,
+      cancel,
+      addAnatomyEntry,
+    };
   },
 });
 </script>

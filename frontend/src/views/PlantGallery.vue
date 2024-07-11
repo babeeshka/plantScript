@@ -87,7 +87,10 @@ export default {
           searchTerm: this.searchTerm
         };
         const response = await axios.get(`${apiUrl}/db/plants`, { params });
-        this.plants = response.data.data;
+        this.plants = response.data.data.map((plant: PlantSummary) => ({
+          ...plant,
+          id: plant.id
+        }));
         this.hasMore = response.data.data.length === this.limit;
         this.searchExecuted = true;
       } catch (error) {
@@ -113,11 +116,14 @@ export default {
       this.selectedPlant = plant;
       this.isDialogOpen = true;
     },
-    async showPlantDetails(plantId: number) {
+    async showPlantDetails(plantId: number | string) {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
         const response = await axios.get(`${apiUrl}/db/plants/${plantId}`);
-        this.selectedPlant = response.data;
+        this.selectedPlant = {
+          ...response.data,
+          id: response.data.id || response.data._id // Use _id as fallback if id is not present
+        };
         console.log('Selected Plant:', this.selectedPlant);
         this.isDialogOpen = true;
       } catch (error) {
@@ -158,5 +164,4 @@ export default {
   max-width: 800px;
   margin: 2rem auto;
 }
-
 </style>

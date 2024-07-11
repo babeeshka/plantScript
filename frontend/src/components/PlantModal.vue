@@ -154,11 +154,13 @@ export default defineComponent({
     const router = useRouter();
 
     const redirectToManagePlant = () => {
-      router.push({ name: 'ManagePlant', params: { id: props.plantDetails?.id } });
+      const id = props.plantDetails?.id || props.plantDetails?._id;
+      router.push({ name: 'ManagePlant', params: { id: id?.toString() } });
     };
 
     const redirectToPlantInfoPage = () => {
-      router.push({ name: 'PlantInfoPage', params: { id: props.plantDetails?.id } });
+      const id = props.plantDetails?.id || props.plantDetails?._id;
+      router.push({ name: 'PlantInfoPage', params: { id: id?.toString() } });
     };
 
     return {

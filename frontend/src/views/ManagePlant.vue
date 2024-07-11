@@ -7,8 +7,8 @@
     </v-row>
     <v-row v-else>
       <v-col>
-        <PlantForm :plant.sync="plant" @save="savePlant" @cancel="goBack" class="mb-4" />
-        <v-btn v-if="plant" @click="deletePlant" color="error" outlined class="ml-auto d-block">Delete Plant</v-btn>
+        <PlantForm :plant="plant" :manualEntry="manualEntry" @save="savePlant" @cancel="goBack" class="mb-4" /> <v-btn
+          v-if="plant" @click="deletePlant" color="error" outlined class="ml-auto d-block">Delete Plant</v-btn>
       </v-col>
     </v-row>
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="3000" bottom right>
@@ -35,7 +35,7 @@ export default defineComponent({
   },
   props: {
     id: {
-      type: String,
+      type: Number,
       required: false
     },
     manualEntry: {
@@ -63,78 +63,72 @@ export default defineComponent({
     });
 
     const getEmptyPlantObject = (): PlantDetails => ({
+      id: null,
       _id: '',
       common_name: '',
       scientific_name: [],
       other_name: [],
-      family: '',
-      origin: [],
+      family: null,
+      origin: null,
       type: '',
-      dimension: '',
+      dimension: null,
       dimensions: {
+        type: null,
         min_value: null,
         max_value: null,
         unit: ''
       },
-      cycle: '',
+      cycle: null,
+      attracts: [],
+      propagation: [],
+      hardiness: null,
+      hardiness_location: null,
       watering: '',
+      depth_water_requirement: [],
+      volume_water_requirement: [],
+      watering_period: null,
       watering_general_benchmark: {
         value: null,
-        unit: ''
+        unit: null
       },
+      plant_anatomy: [],
       sunlight: [],
-      hardiness: {
-        min: '',
-        max: ''
-      },
-      pruning_month: [],
-      pruning_count: {
-        amount: 0,
-        interval: ''
-      },
-      seed_distribution: '',
-      seeds: 0,
-      propagation: [],
+      pruning_month: null,
+      pruning_count: null,
+      seeds: null,
+      maintenance: null,
+      care_guides: '',
+      soil: [],
       growth_rate: '',
-      maintenance: '',
-      care_level: '',
-      flowers: false,
-      flowering_season: '',
-      flower_color: '',
-      cones: false,
-      fruits: false,
-      edible_fruit: false,
-      fruit_color: [],
-      harvest_season: '',
-      leaf: false,
-      leaf_color: [],
-      edible_leaf: false,
-      cuisine: false,
-      medicinal: false,
       drought_tolerant: false,
       salt_tolerant: false,
       thorny: false,
       invasive: false,
       tropical: false,
       indoor: false,
-      care_guide: '',
-      pest_susceptibility: [],
-      pest_resistant: false,
-      attracts: [],
+      care_level: null,
+      pest_susceptibility: null,
+      pest_susceptibility_api: null,
+      flowers: false,
+      flowering_season: null,
+      flower_color: '',
+      cones: false,
+      fruits: false,
+      edible_fruit: false,
+      edible_fruit_taste_profile: null,
+      fruit_nutritional_value: null,
+      fruit_color: [],
+      harvest_season: null,
+      leaf: false,
+      leaf_color: [],
+      edible_leaf: false,
+      cuisine: false,
+      medicinal: false,
       poisonous_to_humans: 0,
       poisonous_to_pets: 0,
-      description: '',
-      default_image: {
-        license: 0,
-        license_name: '',
-        license_url: '',
-        original_url: '',
-        regular_url: '',
-        medium_url: '',
-        small_url: '',
-        thumbnail: ''
-      },
-      other_images: []
+      description: null,
+      default_image: null,
+      other_images: undefined
     });
 
     const fetchPlantDetails = async (plantId: string) => {
@@ -167,14 +161,23 @@ export default defineComponent({
     const savePlant = async (updatedPlant: PlantDetails) => {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        if (plant.value && plant.value._id) {
-          // If the plant has an _id, it exists in the database. Update it.
+        if (props.manualEntry) {
+
+          // For manual entry, always create a new plant
+          const response = await axios.post(`${apiUrl}/db/plants`, updatedPlant);
+          plant.value = response.data;
+          showSnackbar('Plant created successfully', 'success');
+          router.push(`/plants/${plant.value?.id}/manage`);
+        } else if (plant.value && plant.value._id) {
+
+          // Update existing plant
           await axios.put(`${apiUrl}/db/plants/${plant.value.id}`, updatedPlant);
           showSnackbar('Plant updated successfully', 'success');
         } else {
-          // If the plant doesn't have an _id, it's new. Create it.
+          
+          // Create new plant from API data
           const response = await axios.post(`${apiUrl}/db/plants`, updatedPlant);
-          plant.value = response.data; // Assuming the new plant data is returned
+          plant.value = response.data;
           showSnackbar('Plant created successfully', 'success');
           router.push(`/plants/${plant.value?.id}/manage`);
         }

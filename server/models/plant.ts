@@ -24,7 +24,7 @@ export const createPlant = async (plantData: Partial<PlantDetails>): Promise<Pla
   if (plantData.id === undefined) {
     // This is a manually entered plant
     const lowestId = await plantsCollection.findOne({}, { sort: { id: 1 } });
-    const newId = lowestId ? Math.min(lowestId.id - 1, -1) : -1;
+    const newId = lowestId ? Math.min(Number(lowestId.id) - 1, -1) : -1;
     validatedData = validatePlant({ ...plantData, id: newId });
   } else {
     // This is an API-sourced plant
@@ -37,7 +37,21 @@ export const createPlant = async (plantData: Partial<PlantDetails>): Promise<Pla
     isManualEntry: plantData.id === undefined
   };
 
-  return plantsCollection.insert(plantToInsert);
+  // Remove _id if it exists to let MongoDB generate it
+  delete plantToInsert._id;
+
+  const insertedPlant = await plantsCollection.insert(plantToInsert);
+
+  // If this is a manual entry, update the document with the generated _id as the id
+  if (plantData.id === undefined) {
+    await plantsCollection.findOneAndUpdate(
+      { _id: insertedPlant._id },
+      { $set: { id: insertedPlant._id.toString() } }
+    );
+    insertedPlant.id = insertedPlant._id.toString();
+  }
+
+  return insertedPlant;
 };
 
 
@@ -58,9 +72,9 @@ export const countAllPlants = async (): Promise<number> => {
 };
 
 export const findPlantsWithPagination = async (query: any, limit: number, offset: number): Promise<PlantDetails[]> => {
-  const options = { 
-    limit: limit, 
-    skip: offset 
+  const options = {
+    limit: limit,
+    skip: offset
   };
   return plantsCollection.find(query, options);
 };

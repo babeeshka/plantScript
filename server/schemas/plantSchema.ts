@@ -25,7 +25,7 @@ const pruningCountSchema = Joi.alternatives().try(
 ).optional();
 
 const plantSchema = Joi.object({
-    id: Joi.number().required(),
+    id: Joi.alternatives().try(Joi.number(), Joi.string()).optional(),
     common_name: Joi.string().required(),
     scientific_name: Joi.array().items(Joi.string()).required(),
     other_name: Joi.array().items(Joi.string()).allow(null).optional(),
