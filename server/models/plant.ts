@@ -19,12 +19,25 @@ export const findPlantByApiId = async (id: number): Promise<PlantDetails | null>
   return plant ? validatePlant(plant) : null;
 };
 
-export const createPlant = async (plantData: PlantDetails): Promise<PlantDetails> => {
-  const validatedData = {
-    ...validatePlant(plantData),
+export const createPlant = async (plantData: Partial<PlantDetails>): Promise<PlantDetails> => {
+  let validatedData;
+  if (plantData.id === undefined) {
+    // This is a manually entered plant
+    const lowestId = await plantsCollection.findOne({}, { sort: { id: 1 } });
+    const newId = lowestId ? Math.min(lowestId.id - 1, -1) : -1;
+    validatedData = validatePlant({ ...plantData, id: newId });
+  } else {
+    // This is an API-sourced plant
+    validatedData = validatePlant(plantData);
+  }
+
+  const plantToInsert = {
+    ...validatedData,
     dateAdded: new Date(),
+    isManualEntry: plantData.id === undefined
   };
-  return plantsCollection.insert(validatedData);
+
+  return plantsCollection.insert(plantToInsert);
 };
 
 

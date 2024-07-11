@@ -1,17 +1,20 @@
 <template>
   <div class="filter-container">
-    <button class="filter-toggle" @click="toggleFilters">
+    <button class="filter-toggle" @click="toggleFilters" title="Filter">
       <i class="fas fa-filter"></i>
     </button>
     <div class="overlay" :class="{ 'active': showFilters }" @click.self="toggleFilters">
       <div class="modal">
-        <!-- Filter options grouped by data -->
-        <div class="filter-group" v-for="group in filterGroups" :key="group.name">
-          <h4>{{ group.name }}</h4>
-          <div class="filter-options">
-            <div v-for="filter in group.filters" :key="filter.key" class="filter-option">
-              <input type="checkbox" :id="filter.key" v-model="filters[filter.key]" />
-              <label :for="filter.key">{{ filter.label }}</label>
+        <button class="close-btn" @click="toggleFilters">&times;</button>
+        <h3>Filters</h3>
+        <div class="filter-groups">
+          <div class="filter-group" v-for="group in filterGroups" :key="group.name">
+            <h4>{{ group.name }}</h4>
+            <div class="filter-options">
+              <label v-for="filter in group.filters" :key="filter.key" class="filter-option">
+                <input type="checkbox" :id="filter.key" v-model="filters[filter.key]" />
+                <span>{{ filter.label }}</span>
+              </label>
             </div>
           </div>
         </div>
@@ -102,6 +105,29 @@ export default {
 </script>
 
 <style scoped>
+.filter-container {
+  display: inline-block;
+  position: relative;
+}
+
+.filter-toggle {
+  background-color: #51b911;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.filter-toggle:hover {
+  background-color: #408e0a;
+}
+
 .overlay {
   position: fixed;
   top: 0;
@@ -114,11 +140,92 @@ export default {
   align-items: center;
   visibility: hidden;
   opacity: 0;
-  transition: visibility 0s, opacity 0.5s;
+  transition: visibility 0s, opacity 0.3s;
+  z-index: 1000;
 }
 
 .overlay.active {
   visibility: visible;
   opacity: 1;
+}
+
+.modal {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.filter-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.filter-group h4 {
+  margin-bottom: 10px;
+}
+
+.filter-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.filter-option input {
+  margin-right: 10px;
+}
+
+.filter-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.filter-buttons button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.apply-btn {
+  background-color: #51b911;
+  color: white;
+}
+
+.reset-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #ccc;
 }
 </style>

@@ -30,7 +30,10 @@ const plantSchema = Joi.object({
     scientific_name: Joi.array().items(Joi.string()).required(),
     other_name: Joi.array().items(Joi.string()).allow(null).optional(),
     family: Joi.string().allow(null).optional(),
-    origin: Joi.array().items(Joi.string()).allow(null).optional(),
+    origin: Joi.alternatives().try(
+        Joi.array().items(Joi.string()),
+        Joi.string()
+    ).allow(null).optional(),
     type: Joi.string().required(),
     dimension: Joi.string().allow(null, "").optional(),
     dimensions: Joi.alternatives().try(

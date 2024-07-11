@@ -1,9 +1,10 @@
 <template>
   <div class="plant-search-page">
-    <div class="search-container"
-      :class="{ 'search-filter-container': searchExecuted && searchResults.length > 0, 'center': !searchExecuted }">
-      <SearchBar @search="searchPlants" />
-      <FilterContainer @apply-filters="applyFilters" />
+    <div class="search-container">
+      <div class="search-bar-wrapper">
+        <SearchBar @search="searchPlants" />
+        <FilterContainer @apply-filters="applyFilters" />
+      </div>
     </div>
     <div v-if="searchExecuted" class="results-container">
       <GalleryContainer :plants="searchResults" @showPlantDetails="showPlantDetails" />
@@ -173,8 +174,9 @@ export default defineComponent({
 .plant-search-page {
   display: flex;
   flex-direction: column;
+  align-items: center;
   min-height: 100vh;
-  margin-top: var(--navbar-height);
+  padding-top: var(--navbar-height);
 }
 
 .search-page-center {
@@ -189,11 +191,18 @@ export default defineComponent({
 
 .search-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  min-height: 200px;
-  padding-top: calc(var(--navbar-height) + 50px);
-  width: 75%;
+  padding-top: calc(var(--navbar-height) + 20px);
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.search-bar-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
 .search-container.fixed-top {

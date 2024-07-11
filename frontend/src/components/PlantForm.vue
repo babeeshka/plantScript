@@ -1,33 +1,30 @@
 <template>
   <v-form @submit.prevent="save" class="plant-form">
-    <h2 class="form-header">{{ plant._id ? 'Edit Plant' : 'Create New Plant' }}</h2>
+    <h2 class="text-h4 mb-6">{{ localPlant._id ? 'Edit Plant' : 'Create New Plant' }}</h2>
 
     <!-- General Information -->
     <v-card class="mb-6" outlined>
-      <v-card-title>General Information</v-card-title>
+      <v-card-title class="text-h5">General Information</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.common_name" label="Common Name" outlined dense />
+            <v-text-field v-model="localPlant.common_name" label="Common Name" outlined />
           </v-col>
           <v-col cols="12" md="6">
-            <v-combobox v-model="localPlant.scientific_name" label="Scientific Name" multiple outlined dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-combobox v-model="localPlant.other_name" label="Other Names" multiple outlined dense />
+            <v-combobox v-model="localPlant.scientific_name" label="Scientific Name" multiple outlined chips
+              small-chips />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.family" label="Family" outlined dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.origin" label="Origin" multiple outlined dense />
+            <v-combobox v-model="localPlant.other_name" label="Other Names" multiple outlined chips small-chips />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.type" label="Type" outlined dense />
+            <v-text-field v-model="localPlant.family" label="Family" outlined />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-combobox v-model="localPlant.origin" label="Origin" multiple outlined chips small-chips />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model="localPlant.type" label="Type" outlined />
           </v-col>
         </v-row>
       </v-card-text>
@@ -35,176 +32,128 @@
 
     <!-- Dimensions -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Dimensions</v-card-title>
+      <v-card-title class="text-h5">Dimensions</v-card-title>
       <v-card-text>
-        <v-text-field v-model="localPlant.dimension" label="Dimension" outlined dense />
         <v-row>
-          <v-col cols="12" md="4">
-            <v-text-field v-model="dimensionsMinValue" :disabled="Array.isArray(localPlant.dimensions)"
-              label="Min Value" type="number" outlined dense />
+          <v-col cols="12" md="6">
+            <v-select v-model="localPlant.dimensions.type" :items="['Height', 'Width', 'Spread']" label="Dimension Type"
+              outlined />
           </v-col>
-          <v-col cols="12" md="4">
-            <v-text-field v-model="dimensionsMaxValue" :disabled="Array.isArray(localPlant.dimensions)"
-              label="Max Value" type="number" outlined dense />
+          <v-col cols="12" md="6">
+            <v-select v-model="localPlant.dimensions.unit" :items="['feet', 'inches', 'centimeters', 'meters']"
+              label="Unit" outlined />
           </v-col>
-          <v-col cols="12" md="4">
-            <v-text-field v-model="dimensionsUnit" :disabled="Array.isArray(localPlant.dimensions)" label="Unit"
-              outlined dense />
+          <v-col cols="12" md="6">
+            <v-text-field v-model.number="localPlant.dimensions.min_value" label="Min Value" type="number" outlined />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field v-model.number="localPlant.dimensions.max_value" label="Max Value" type="number" outlined />
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
 
+
     <!-- Life Cycle and Reproduction -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Life Cycle and Reproduction</v-card-title>
+      <v-card-title class="text-h5">Life Cycle and Reproduction</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
             <v-select v-model="localPlant.cycle" label="Cycle" :items="['Perennial', 'Annual', 'Biennial', 'Biannual']"
-              outlined dense />
+              outlined />
           </v-col>
           <v-col cols="12" md="6">
-            <v-combobox v-model="localPlant.propagation" label="Propagation" multiple outlined dense />
+            <v-combobox v-model="localPlant.propagation" label="Propagation" multiple outlined chips small-chips
+              :items="['Seeds', 'Cuttings', 'Division', 'Layering', 'Grafting']" />
           </v-col>
         </v-row>
 
-        <v-subheader>Flowers</v-subheader>
+        <v-subheader class="pl-0 text-h6">Flowers</v-subheader>
         <v-row>
           <v-col cols="12" md="4">
             <v-switch v-model="localPlant.flowers" label="Flowers" color="primary" />
           </v-col>
-          <v-col cols="12" md="4">
-            <v-select v-if="localPlant.flowers" v-model="localPlant.flowering_season" label="Flowering Season"
-              :items="['Spring', 'Summer', 'Fall', 'Winter']" outlined dense />
+          <v-col cols="12" md="4" v-if="localPlant.flowers">
+            <v-select v-model="localPlant.flowering_season" label="Flowering Season"
+              :items="['Spring', 'Summer', 'Fall', 'Winter']" outlined />
           </v-col>
-          <v-col cols="12" md="4">
-            <v-text-field v-if="localPlant.flowers" v-model="localPlant.flower_color" label="Flower Color" outlined
-              dense />
+          <v-col cols="12" md="4" v-if="localPlant.flowers">
+            <v-text-field v-model="localPlant.flower_color" label="Flower Color" outlined />
           </v-col>
         </v-row>
 
-        <v-divider></v-divider>
-
-        <v-subheader>Fruits</v-subheader>
+        <v-subheader class="pl-0 text-h6">Fruits</v-subheader>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="4">
             <v-switch v-model="localPlant.fruits" label="Fruits" color="primary" />
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="4" v-if="localPlant.fruits">
             <v-switch v-model="localPlant.edible_fruit" label="Edible Fruit" color="primary" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="localPlant.fruits && localPlant.edible_fruit">
           <v-col cols="12" md="6">
-            <v-combobox v-if="localPlant.edible_fruit" v-model="localPlant.fruit_color" label="Fruit Color" multiple
-              outlined dense />
+            <v-combobox v-model="localPlant.fruit_color" label="Fruit Color" multiple outlined chips small-chips />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-if="localPlant.edible_fruit" v-model="localPlant.harvest_season" label="Harvest Season"
-              outlined dense />
+            <v-select v-model="localPlant.harvest_season" label="Harvest Season"
+              :items="['Spring', 'Summer', 'Fall', 'Winter']" outlined />
           </v-col>
         </v-row>
 
-        <v-divider></v-divider>
-
-        <v-subheader>Leaves</v-subheader>
+        <v-subheader class="pl-0 text-h6">Leaves</v-subheader>
         <v-row>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="4">
             <v-switch v-model="localPlant.leaf" label="Leaf" color="primary" />
           </v-col>
-          <v-col cols="12" md="6">
+          <v-col cols="12" md="4" v-if="localPlant.leaf">
             <v-switch v-model="localPlant.edible_leaf" label="Edible Leaf" color="primary" />
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="localPlant.leaf">
           <v-col cols="12">
-            <v-combobox v-if="localPlant.leaf" v-model="localPlant.leaf_color" label="Leaf Color" multiple outlined
-              dense />
+            <v-combobox v-model="localPlant.leaf_color" label="Leaf Color" multiple outlined chips small-chips />
           </v-col>
         </v-row>
 
-        <v-divider></v-divider>
+        <!-- ... other fields ... -->
+      </v-card-text>
+    </v-card>
 
+    <!-- Watering -->
+    <v-card class="mb-6" outlined>
+      <v-card-title class="text-h5">Watering</v-card-title>
+      <v-card-text>
         <v-row>
           <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.cones" label="Cones" color="primary" />
+            <v-select v-model="localPlant.watering" :items="['Frequent', 'Average', 'Minimum', 'None']" label="Watering"
+              outlined />
           </v-col>
           <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.cuisine" label="Cuisine" color="primary" />
+            <v-text-field v-model="localPlant.watering_general_benchmark.value" label="Watering Interval" outlined
+              hint="e.g., '7-10' for a range" persistent-hint />
           </v-col>
           <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.medicinal" label="Medicinal" color="primary" />
-          </v-col>
-        </v-row>
-
-        <v-row>
-          <v-col cols="12">
-            <v-text-field v-model.number="localPlant.seeds" label="Seeds" type="number" outlined dense />
+            <v-select v-model="localPlant.watering_general_benchmark.unit" :items="['days', 'weeks']"
+              label="Interval Unit" outlined />
           </v-col>
         </v-row>
       </v-card-text>
     </v-card>
 
-    <!-- Care Requirements -->
+    <!-- Plant Anatomy -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Care Requirements</v-card-title>
+      <v-card-title class="text-h5">Plant Anatomy</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
-            <v-select v-model="localPlant.watering" label="Watering" :items="['Frequent', 'Average', 'Minimum', 'None']"
-              outlined dense />
+            <v-select v-model="localPlant.plant_anatomy[0].part"
+              :items="['leaves', 'stems', 'flowers', 'fruits', 'roots', 'bark']" label="Plant Part" outlined required />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="wateringBenchmarkValue" label="Watering Benchmark" outlined dense />
-            <v-text-field v-model="wateringBenchmarkUnit" label="Benchmark Unit" outlined dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox v-model="localPlant.sunlight" label="Sunlight" multiple outlined dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" sm="6">
-            <v-select v-model="hardinessMin" label="Hardiness Min" :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]"
-              outlined dense>
-              <template v-slot:append>
-                <v-tooltip right>
-                  <template v-slot:activator="{ props }">
-                    <v-icon v-bind="props">mdi-help-circle-outline</v-icon>
-                  </template>
-                  <span>Minimum USDA Hardiness Zone</span>
-                </v-tooltip>
-              </template>
-            </v-select>
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-select v-model="hardinessMax" label="Hardiness Max" :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]"
-              outlined dense>
-              <template v-slot:append>
-                <v-tooltip right>
-                  <template v-slot:activator="{ props }">
-                    <v-icon v-bind="props">mdi-help-circle-outline</v-icon>
-                  </template>
-                  <span>Maximum USDA Hardiness Zone</span>
-                </v-tooltip>
-              </template>
-            </v-select>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-combobox v-model="localPlant.soil" label="Soil" multiple outlined dense />
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-select v-model="localPlant.care_level" label="Care Level" :items="['Low', 'Medium', 'High']" outlined
-              dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox v-model="localPlant.pruning_month" label="Pruning Month" multiple outlined dense />
+            <v-combobox v-model="localPlant.plant_anatomy[0].color" label="Color" multiple outlined chips small-chips
+              :items="['green', 'red', 'yellow', 'blue', 'purple', 'white', 'brown']" />
           </v-col>
         </v-row>
       </v-card-text>
@@ -212,55 +161,25 @@
 
     <!-- Characteristics -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Characteristics</v-card-title>
+      <v-card-title class="text-h5">Characteristics</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
             <v-select v-model="localPlant.growth_rate" label="Growth Rate" :items="['Slow', 'Moderate', 'Fast']"
-              outlined dense />
+              outlined />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field v-model="localPlant.maintenance" label="Maintenance" outlined dense />
+            <v-select v-model="localPlant.maintenance" label="Maintenance" :items="['Low', 'Medium', 'High']"
+              outlined />
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.drought_tolerant" label="Drought Tolerant" color="primary" />
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.salt_tolerant" label="Salt Tolerant" color="primary" />
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.thorny" label="Thorny" color="primary" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.invasive" label="Invasive" color="primary" />
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.tropical" label="Tropical" color="primary" />
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-switch v-model="localPlant.indoor" label="Indoor" color="primary" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox v-model="localPlant.attracts" label="Attracts" multiple outlined dense />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-combobox v-model="localPlant.pest_susceptibility" label="Pest Susceptibility" multiple outlined dense />
-          </v-col>
-        </v-row>
+        <!-- ... other characteristics ... -->
       </v-card-text>
     </v-card>
 
     <!-- Toxicity -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Toxicity</v-card-title>
+      <v-card-title class="text-h5">Toxicity</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12" md="6">
@@ -275,56 +194,61 @@
 
     <!-- Description -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Description</v-card-title>
+      <v-card-title class="text-h5">Description</v-card-title>
       <v-card-text>
-        <v-textarea v-model="localPlant.description" label="Description" outlined dense />
+        <v-textarea v-model="localPlant.description" label="Description" outlined auto-grow />
       </v-card-text>
     </v-card>
 
     <!-- Images -->
     <v-card class="mb-6" outlined>
-      <v-card-title>Images</v-card-title>
+      <v-card-title class="text-h5">Images</v-card-title>
       <v-card-text>
         <v-row>
           <v-col cols="12">
             <v-img v-if="localPlant.default_image" :src="localPlant.default_image?.original_url"
-              alt="Default Original Image" class="plant-image" />
+              alt="Default Original Image" class="plant-image" contain max-height="300" />
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12">
-            <v-text-field v-if="localPlant.default_image" :value="localPlant.default_image?.original_url"
-              label="Original Image URL" />
+            <v-text-field v-if="localPlant.default_image" v-model="localPlant.default_image.original_url"
+              label="Original Image URL" outlined />
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="12">
-            <v-expansion-panels>
-              <v-expansion-panel>
-                <v-expansion-panel-header>Other URLs</v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-text-field v-model="defaultImageRegularUrl" label="Regular URL" outlined dense />
-                  <v-text-field v-model="defaultImageMediumUrl" label="Medium URL" outlined dense />
-                  <v-text-field v-model="defaultImageSmallUrl" label="Small URL" outlined dense />
-                  <v-text-field v-model="defaultImageThumbnail" label="Thumbnail URL" outlined dense />
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-col>
-        </v-row>
+        <v-expansion-panels>
+          <v-expansion-panel>
+            <v-expansion-panel-header>Other URLs</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <v-row>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="defaultImageRegularUrl" label="Regular URL" outlined />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="defaultImageMediumUrl" label="Medium URL" outlined />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="defaultImageSmallUrl" label="Small URL" outlined />
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="defaultImageThumbnail" label="Thumbnail URL" outlined />
+                </v-col>
+              </v-row>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-card-text>
     </v-card>
 
     <!-- Actions -->
-    <v-card-actions class="pt-0">
+    <v-card-actions>
       <v-spacer></v-spacer>
-      <v-btn @click="cancel" color="secondary" text="true">Cancel</v-btn>
-      <v-btn type="submit" color="primary" class="ml-4" large>Save</v-btn>
+      <v-btn @click="cancel" color="secondary" text>Cancel</v-btn>
+      <v-btn type="submit" color="primary" class="ml-4">Save</v-btn>
     </v-card-actions>
 
   </v-form>
 </template>
-
 
 <script lang="ts">
 import axios from 'axios';
@@ -336,6 +260,8 @@ export default defineComponent({
     return {
       panel: [],
       showMoreImages: false,
+      localPlant: { ...this.plant } as PlantDetails,
+      plantParts: ['leaves', 'stems', 'flowers', 'fruits', 'roots', 'bark'],
     };
   },
   props: {
@@ -506,89 +432,26 @@ export default defineComponent({
   width: 100%;
   margin: auto;
   padding: 2rem;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.05);
 }
 
-.form-section {
+.v-card {
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: #f8f8f8;
-  border-radius: 8px;
-  box-shadow: inset 0px 0px 10px rgba(0, 0, 0, 0.05);
 }
 
-.form-section h3 {
-  margin-bottom: 1rem;
-  color: #333;
-  font-size: 1.25rem;
+.v-card__title {
+  background-color: #f5f5f5;
 }
 
-.form-row {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.form-col {
-  flex: 1;
-  padding: 0 0.5rem;
-}
-
-.form-col label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.form-col input,
-.form-col select,
-.form-col textarea {
-  width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-.form-col input[type="checkbox"],
-.form-col input[type="radio"] {
-  display: inline-block;
-  width: auto;
-  margin-right: 0.5rem;
+.v-card__text {
+  padding-top: 20px;
 }
 
 .plant-image {
-  max-width: 100%;
-  height: auto;
   border-radius: 4px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.image-container {
-  margin-bottom: 1rem;
-}
-
-.image-url {
-  margin-top: 0.5rem;
-}
-
-.other-urls {
-  margin-top: 1rem;
-}
-
-.form-actions {
-  margin-top: 2rem;
-  text-align: right;
-}
-
-.form-actions button {
-  margin-left: 1rem;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 960px) {
   .plant-form {
     padding: 1rem;
   }

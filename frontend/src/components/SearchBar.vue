@@ -30,15 +30,14 @@ export default {
 
 <style scoped>
 .search-bar-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  width: 100%;
 }
 
 .search-bar {
   display: flex;
   width: 100%;
-  align-items: center;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 .search-bar input[type="text"] {

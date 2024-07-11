@@ -1,5 +1,3 @@
-// /types/plantInterfaces.ts
-
 // type for Default Image which is present in both fetchSpeciesList and fetchPlantDetails
 export interface DefaultImage {
   license: number;
@@ -22,6 +20,7 @@ export interface PlantSummary {
   watering?: string;
   sunlight?: string[];
   default_image?: DefaultImage | null;
+  isManualEntry?: boolean;
 }
 
 // type for PlantAnatomy which is present in fetchPlantDetails
