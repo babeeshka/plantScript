@@ -1,5 +1,6 @@
 import db from '../database/database';
 import { PlantDetails } from '@rootTypes/plantInterfaces';
+import { ObjectId } from 'mongodb';
 import Joi from 'joi';
 import plantSchema from '../schemas/plantSchema';
 
@@ -14,18 +15,36 @@ const validatePlant = (plantData: any) => {
   return value;
 };
 
-export const findPlantByApiId = async (id: number): Promise<PlantDetails | null> => {
-  const plant = await plantsCollection.findOne({ id });
-  return plant ? validatePlant(plant) : null;
+export const findPlantByAnyId = async (id: number | string): Promise<PlantDetails | null> => {
+  console.log(`Searching for plant with id: ${id}`);
+  let plant;
+
+  if (typeof id === 'string') {
+    if (ObjectId.isValid(id)) {
+      console.log('Searching by MongoDB ObjectId');
+      plant = await plantsCollection.findOne({ _id: new ObjectId(id) });
+    }
+    if (!plant) {
+      console.log('Searching by customId');
+      plant = await plantsCollection.findOne({ customId: id });
+    }
+  }
+
+  if (!plant) {
+    console.log('Searching by numeric id');
+    plant = await plantsCollection.findOne({ id: Number(id) });
+  }
+
+  console.log('Found plant:', plant);
+  return plant;
 };
 
 export const createPlant = async (plantData: Partial<PlantDetails>): Promise<PlantDetails> => {
   let validatedData;
   if (plantData.id === undefined) {
     // This is a manually entered plant
-    const lowestId = await plantsCollection.findOne({}, { sort: { id: 1 } });
-    const newId = lowestId ? Math.min(Number(lowestId.id) - 1, -1) : -1;
-    validatedData = validatePlant({ ...plantData, id: newId });
+    const customId = `MANUAL_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+    validatedData = validatePlant({ ...plantData, customId, id: -1 }); // Use -1 or any other placeholder for id
   } else {
     // This is an API-sourced plant
     validatedData = validatePlant(plantData);
@@ -37,23 +56,13 @@ export const createPlant = async (plantData: Partial<PlantDetails>): Promise<Pla
     isManualEntry: plantData.id === undefined
   };
 
-  // Remove _id if it exists to let MongoDB generate it
-  delete plantToInsert._id;
-
   const insertedPlant = await plantsCollection.insert(plantToInsert);
 
-  // If this is a manual entry, update the document with the generated _id as the id
-  if (plantData.id === undefined) {
-    await plantsCollection.findOneAndUpdate(
-      { _id: insertedPlant._id },
-      { $set: { id: insertedPlant._id.toString() } }
-    );
-    insertedPlant.id = insertedPlant._id.toString();
-  }
-
-  return insertedPlant;
+  return {
+    ...insertedPlant,
+    _id: insertedPlant._id.toString() // Convert ObjectId to string
+  };
 };
-
 
 export const updatePlantByApiId = async (id: number, updateData: Partial<PlantDetails>): Promise<PlantDetails | null> => {
   const updateWithMetadata = {

@@ -127,8 +127,11 @@ class PlantService {
   }
 
   // Fetch plant by API ID from database
-  public async getPlantByApiId(id: number): Promise<PlantDetails | null> {
-    return plantModel.findPlantByApiId(id);
+  public async getPlantByAnyId(id: number | string): Promise<PlantDetails | null> {
+    console.log(`PlantService: Fetching plant with id: ${id}`);
+    const plant = await plantModel.findPlantByAnyId(id);
+    console.log(`PlantService: Fetch result:`, plant);
+    return plant;
   }
 
   // Update plant details in database

@@ -12,7 +12,7 @@ export interface DefaultImage {
 
 // type for fetchSpeciesList based on perenual response
 export interface PlantSummary {
-  id?: number | string;
+  id: number;
   common_name: string;
   scientific_name: string[];
   other_name?: string[];
@@ -37,6 +37,7 @@ export interface PruningCount {
 // type for fetchPlantDetails based on perenual response
 export interface PlantDetails extends PlantSummary {
   _id?: string;
+  customId?: string; // For manually created plants
   family?: string | null;
   origin?: string[] | null;
   type: string;

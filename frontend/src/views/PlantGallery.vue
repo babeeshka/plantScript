@@ -81,18 +81,22 @@ export default {
       const apiUrl = import.meta.env.VITE_API_BASE_URL;
       try {
         const params = {
+          page: this.currentPage,
           limit: this.limit,
-          offset: this.offset,
           ...this.selectedFilters,
           searchTerm: this.searchTerm
         };
         const response = await axios.get(`${apiUrl}/db/plants`, { params });
-        this.plants = response.data.data.map((plant: PlantSummary) => ({
-          ...plant,
-          id: plant.id
-        }));
-        this.hasMore = response.data.data.length === this.limit;
-        this.searchExecuted = true;
+        if (response.data.data) {
+          this.plants = [...this.plants, ...response.data.data.map((plant: PlantSummary) => ({
+            ...plant,
+            id: plant.id
+          }))];
+          this.hasMore = response.data.data.length === this.limit;
+          this.searchExecuted = true;
+        } else {
+          console.error("Unexpected response format:", response.data);
+        }
       } catch (error) {
         console.error("Error fetching plants:", error);
       }
@@ -119,11 +123,9 @@ export default {
     async showPlantDetails(plantId: number | string) {
       try {
         const apiUrl = import.meta.env.VITE_API_BASE_URL;
-        const response = await axios.get(`${apiUrl}/db/plants/${plantId}`);
-        this.selectedPlant = {
-          ...response.data,
-          id: response.data.id || response.data._id // Use _id as fallback if id is not present
-        };
+        const id = typeof plantId === 'number' ? plantId : encodeURIComponent(plantId);
+        const response = await axios.get(`${apiUrl}/db/plants/${id}`);
+        this.selectedPlant = response.data;
         console.log('Selected Plant:', this.selectedPlant);
         this.isDialogOpen = true;
       } catch (error) {

@@ -33,7 +33,7 @@ router.get('/', async (req, res) => {
         });
 
         res.json({ data: plants, metadata: { totalPlants: count, totalPages: Math.ceil(count / limit), currentPage: page } });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching plants with pagination:', error);
         res.status(500).json({ error: "An error occurred while fetching plants with pagination" });
     }
@@ -41,21 +41,20 @@ router.get('/', async (req, res) => {
 
 // Route for fetching a specific plant by the external API's ID from the db
 router.get('/:id', async (req, res) => {
-    const id = parseInt(req.params.id);
-    if (isNaN(id)) {
-        return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
     try {
-        const plant = await plantService.getPlantByApiId(id);
+        const id = req.params.id;
+        console.log(`Received request for plant with id: ${id}`);
+        const plant = await plantService.getPlantByAnyId(id);
         if (plant) {
+            console.log(`Found plant: ${plant.common_name}`);
             res.json(plant);
         } else {
-            res.status(404).json({ error: 'Plant not found' });
+            console.log(`Plant not found for id: ${id}`);
+            res.status(404).json({ message: 'Plant not found' });
         }
-    } catch (error) {
-        console.error(`Error fetching plant with API ID ${id}:`, error);
-        res.status(500).json({ error: 'An error occurred while fetching the plant from the database' });
+    } catch (error: any) {
+        console.error('Error fetching plant:', error);
+        res.status(500).json({ message: 'Error fetching plant', error: error.message });
     }
 });
 
